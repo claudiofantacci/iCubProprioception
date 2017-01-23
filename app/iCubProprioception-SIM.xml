@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="yarpmanifest.xsl"?>
+<application>
+
+    <!-- REQUIRED -->
+    <dependencies>
+        <port>/yarprun</port>
+    </dependencies>
+
+    <!-- GENERIC INFORMATION -->
+    <name>iCubProprioception-SIM</name>
+    <description>Superimpose the hand skeleton and/or 3D CAD model on the image plane</description>
+    <version>3.0.0</version>
+
+    <authors>
+        <author email="claudio.fantacci@iit.it">Claudio Fantacci</author>
+    </authors>
+
+
+    <!-- RQUIRED MODULES -->
+    <module>
+        <name>iCubProprioception</name>
+        <node>yarprun</node>
+        <parameters>--from iCubProprioception-Config-SIM.ini</parameters>
+        <dependencies>
+            <port>/icubSim/cam/left</port>
+            <port>/icubSim/cam/right</port>
+        </dependencies>
+    </module>
+
+    <module>
+        <name>yarpview</name>
+        <parameters>--name /view/cam_left --x 20 --y 0 --RefreshTime 30</parameters>
+        <node>yarprun</node>
+    </module>
+
+    <module>
+        <name>yarpview</name>
+        <parameters>--name /view/cam_left/skeleton --x 340 --y 0 --RefreshTime 30</parameters>
+        <node>yarprun</node>
+    </module>
+
+    <module>
+        <name>yarpview</name>
+        <parameters>--name /view/cam_left/cad --x 660 --y 0 --RefreshTime 30</parameters>
+        <node>yarprun</node>
+    </module>
+
+
+    <!-- REQUIRED CONNECTIONS -->
+    <connection persist="true">
+        <from>/icubSim/cam/left</from>
+        <to>/view/cam_left</to>
+        <protocol>tcp</protocol>
+    </connection>
+
+    <!-- RC: SKELETON -->
+    <connection persist="true">
+        <from>/icubSim/cam/left</from>
+        <to>/superimpose_hand/skeleton/cam/left:i</to>
+        <protocol>tcp</protocol>
+    </connection>
+
+    <connection persist="true">
+        <from>/superimpose_hand/skeleton/cam/left:o</from>
+        <to>/view/cam_left/skeleton</to>
+        <protocol>tcp</protocol>
+    </connection>
+
+    <!-- RC: CAD -->
+    <connection persist="true">
+        <from>/icubSim/cam/left</from>
+        <to>/superimpose_hand/cad/cam/left:i</to>
+        <protocol>tcp</protocol>
+    </connection>
+
+    <connection persist="true">
+        <from>/superimpose_hand/cad/cam/left:o</from>
+        <to>/view/cam_left/cad</to>
+        <protocol>tcp</protocol>
+    </connection>
+
+</application>
