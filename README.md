@@ -8,10 +8,6 @@ iCubProprioception works on Linux, macOS and Windows.
 
 ## Dependencies
 iCubProprioception depends on
- - [OpenGL Extension Wrangler, GLEW](http://glew.sourceforge.net)
-     - Debian: apt
-     - macOS: brew
-     - WIN: TBD
  - [GLFW](http://www.glfw.org)
      - Debian: apt
      - macOS: brew
@@ -20,9 +16,11 @@ iCubProprioception depends on
      - Debian, macOS, WIN: [icub-main on GitHub](https://github.com/robotology/icub-main)
  - [iCubContrib](http://wiki.icub.org/iCub/contrib/dox/html/index.html)
      - Debian, macOS, WIN: [icub-contrib-common on GitHub](https://github.com/robotology/icub-contrib-common)
- - [SuperImpose](https://github.com/claudiofantacci/superimpose-hand)
-     - Documentation is WIP
  - [OpenCV](http://opencv.org)
+     - Debian: apt
+     - macOS: brew
+     - WIN: TBD
+ - [OpenGL Extension Wrangler, GLEW](http://glew.sourceforge.net)
      - Debian: apt
      - macOS: brew
      - WIN: TBD
@@ -30,6 +28,8 @@ iCubProprioception depends on
      - Debian: apt
      - macOS: brew
      - WIN: TBD
+ - [SuperImpose](https://github.com/claudiofantacci/superimpose-hand)
+     - Documentation is WIP
  - [Yet Another Robot Platform, YARP](http://www.yarp.it)
      - Debian, macOS, WIN: [yarp on GitHub](https://github.com/robotology/yarp)
 
