@@ -86,7 +86,7 @@ bool SuperimposerFactory::configure(ResourceFinder &rf)
     if (!FileFound(cad_hand_["medium2"])) return false;
     cad_hand_["medium3"] = rf.findFileByName("r_ml3.obj");
     if (!FileFound(cad_hand_["medium3"])) return false;
-    cad_hand_["forearm"] = rf.findFileByName("r_forearm_new_origin.obj");
+    cad_hand_["forearm"] = rf.findFileByName("r_forearm.obj");
     if (!FileFound(cad_hand_["forearm"])) return false;
 
     /* Initializing useful pose matrices and vectors for the hand. */
