@@ -47,7 +47,7 @@ bool CADSuperimposer::setCommandPort()
 }
 
 
-CADSuperimposer::CADSuperimposer(const ConstString & project_name, const ConstString & laterality, const ConstString & camera, PolyDriver & arm_remote_driver, PolyDriver & arm_cartesian_driver, PolyDriver & gaze_driver, const SuperImpose::ObjFileMap & cad_hand, GLFWwindow *& window) : log_ID_("[CADSuperimposer]"), project_name_(project_name), laterality_(laterality), camera_(camera), camsel_((camera == "left")? 0:1), arm_remote_driver_(arm_remote_driver), arm_cartesian_driver_(arm_cartesian_driver), gaze_driver_(gaze_driver), cad_hand_(cad_hand), window_(window) {}
+CADSuperimposer::CADSuperimposer(const ConstString& project_name, const ConstString& laterality, const ConstString& camera, PolyDriver& torso_remote_driver, PolyDriver& arm_remote_driver, PolyDriver& arm_cartesian_driver, PolyDriver& gaze_driver, const SuperImpose::ObjFileMap& cad_hand, GLFWwindow*& window) : log_ID_("[CADSuperimposer]"), project_name_(project_name), laterality_(laterality), camera_(camera), camsel_((camera == "left")? 0:1), torso_remote_driver_(torso_remote_driver), arm_remote_driver_(arm_remote_driver), arm_cartesian_driver_(arm_cartesian_driver), gaze_driver_(gaze_driver), cad_hand_(cad_hand), window_(window) {}
 
 
 bool CADSuperimposer::threadInit()
@@ -55,19 +55,18 @@ bool CADSuperimposer::threadInit()
     yInfo() << log_ID_ << "Initializing hand CAD drawing thread...";
 
     yInfo() << log_ID_ << "Setting interfaces...";
-
     // TODO: standardizzare la gestione degli errori con una funzione.
     arm_cartesian_driver_.view(itf_arm_cart_);
     if (!itf_arm_cart_)
     {
-        yError() << log_ID_ << "Error getting ICartesianControl interface in thread.";
+        yError() << log_ID_ << "Error getting arm ICartesianControl interface in thread.";
         return false;
     }
 
     gaze_driver_.view(itf_head_gaze_);
     if (!itf_head_gaze_)
     {
-        yError() << log_ID_ << "Error getting IGazeControl interface!";
+        yError() << log_ID_ << "Error getting head IGazeControl interface!";
         return false;
     }
 
@@ -75,22 +74,28 @@ bool CADSuperimposer::threadInit()
     arm_remote_driver_.view(itf_fingers_lim);
     if (!itf_fingers_lim)
     {
-        yError() << log_ID_ << "Error getting IControlLimits interface in thread!";
+        yError() << log_ID_ << "Error getting fingers IControlLimits interface in thread!";
+        return false;
+    }
+
+    torso_remote_driver_.view(itf_torso_encoders_);
+    if (!itf_torso_encoders_)
+    {
+        yError() << log_ID_ << "Error getting torso IEncoders interface in thread.";
         return false;
     }
 
     arm_remote_driver_.view(itf_arm_encoders_);
     if (!itf_arm_encoders_)
     {
-        yError() << log_ID_ << "Error getting IEncoders interface!";
+        yError() << log_ID_ << "Error getting arm IEncoders interface!";
         return false;
     }
     itf_arm_encoders_->getAxes(&num_arm_enc_);
-
     yInfo() << log_ID_ << "Interfaces set!";
 
-    yInfo() << log_ID_ << "Opening ports for CAD images...";
 
+    yInfo() << log_ID_ << "Opening ports for CAD images...";
     if (!inport_renderer_img_.open("/"+project_name_+"/cad/cam/"+camera_+":i"))
     {
         yError() << log_ID_ << "Cannot open input image port for "+camera_+" camera!";
@@ -102,18 +107,17 @@ bool CADSuperimposer::threadInit()
         yError() << log_ID_ << "Cannot open output image port for "+camera_+" camera!";
         return false;
     }
-
     yInfo() << log_ID_ << "CAD image ports succesfully opened!";
 
-    yInfo() << log_ID_ << "Opening ports for "+camera_+" camera pose...";
 
+    yInfo() << log_ID_ << "Opening ports for "+camera_+" camera pose...";
     if (!port_cam_pose_.open("/"+project_name_+"/cad/"+camera_+"/pose:o"))
     {
         yError() << log_ID_ << "Cannot open "+camera_+" camera pose output port!";
         return false;
     }
-
     yInfo() << log_ID_ << "Port for "+camera_+" camera succesfully opened!";
+
 
     // FIXME: far diventare la camera parametrica utilizzando CAMERA e rinominare le variabili
     Bottle btl_cam_left_info;
@@ -125,33 +129,42 @@ bool CADSuperimposer::threadInit()
     EYE_FY_ = static_cast<float>(cam_left_info->get(5).asDouble());
     EYE_CY_ = static_cast<float>(cam_left_info->get(6).asDouble());
 
-    yInfo() << log_ID_ << "Setting joint bounds for the fingers...";
 
+    yInfo() << log_ID_ << "Setting "+laterality_+" fingers...";
     finger_[0] = iCubFinger(laterality_+"_thumb");
     finger_[1] = iCubFinger(laterality_+"_index");
     finger_[2] = iCubFinger(laterality_+"_middle");
 
-    std::deque<IControlLimits*> temp_lim;
-    temp_lim.push_front(itf_fingers_lim);
-    for (int i = 0; i < 3; ++i)
-    {
-        if (!finger_[i].alignJointsBounds(temp_lim))
-        {
-            yError() << log_ID_ << "Cannot set joint bound for finger " + std::to_string(i) + ".";
-            return false;
-        }
-    }
+//    std::deque<IControlLimits*> temp_lim;
+//    temp_lim.push_front(itf_fingers_lim);
+//    for (int i = 0; i < 3; ++i)
+//    {
+//        if (!finger_[i].alignJointsBounds(temp_lim))
+//        {
+//            yError() << log_ID_ << "Cannot set joint bound for finger " + std::to_string(i) + ".";
+//            return false;
+//        }
+//    }
+    yInfo() << log_ID_ << "Finger succesfully set!";
 
-    yInfo() << log_ID_ << "Joint bound for finger set!";
+
+    yInfo() << log_ID_ << "Setting "+laterality_+" arm...";
+    arm_ = iCubArm(laterality_);
+    arm_.setAllConstraints(false);
+    arm_.releaseLink(0);
+    arm_.releaseLink(1);
+    arm_.releaseLink(2);
+    yInfo() << log_ID_ << "Arm set!";
+
 
     yInfo() << log_ID_ << "Setting up OpenGL drawer...";
-
     drawer_.Configure(window_, cad_hand_, EYE_FX_, EYE_FY_, EYE_CX_, EYE_CY_);
-    
+    drawer_.setBackgroundOpt(true);
+    drawer_.setWireframeOpt(true);
     yInfo() << log_ID_ << "OpenGL drawer succesfully set!";
 
-    if (!setCommandPort()) return false;
 
+    if (!setCommandPort()) return false;
     yInfo() << log_ID_ << "Initialization completed!";
 
     return true;
@@ -175,14 +188,24 @@ void CADSuperimposer::run() {
         ee_x.push_back(1.0);
         Ha.setCol(3, ee_x);
 
-        Vector encs(static_cast<size_t>(num_arm_enc_));
+        Vector encs_arm(static_cast<size_t>(num_arm_enc_));
         Vector chainjoints;
-        itf_arm_encoders_->getEncoders(encs.data());
+        itf_arm_encoders_->getEncoders(encs_arm.data());
+        yAssert(encs_arm.size() == 16);
         for (unsigned int i = 0; i < 3; ++i)
         {
-            finger_[i].getChainJoints(encs, chainjoints);
+            finger_[i].getChainJoints(encs_arm, chainjoints);
             finger_[i].setAng(CTRL_DEG2RAD * chainjoints);
         }
+        Vector encs_torso(3);
+        itf_torso_encoders_->getEncoders(encs_torso.data());
+        yAssert(encs_torso.size() == 3);
+        Vector encs_tot(10);
+        encs_tot(0) = encs_torso(2);
+        encs_tot(1) = encs_torso(1);
+        encs_tot(2) = encs_torso(0);
+        encs_tot.setSubvector(3, encs_arm.subVector(0, 6));
+        arm_.setAng(CTRL_DEG2RAD * encs_tot);
 
         SuperImpose::ObjPoseMap hand_pose;
         SuperImpose::ObjPose    pose;
@@ -220,6 +243,13 @@ void CADSuperimposer::run() {
                 hand_pose.emplace(finger_s, pose);
             }
         }
+        Matrix H_forearm = arm_.getH(7, true);
+        Vector j_x = H_forearm.getCol(3).subVector(0, 2);
+        Vector j_o = dcm2axis(H_forearm);
+        pose.clear();
+        pose.assign(j_x.data(), j_x.data()+3);
+        pose.insert(pose.end(), j_o.data(), j_o.data()+4);
+        hand_pose.emplace("forearm", pose);
 
         if (imgin != NULL) {
             ImageOf<PixelRgb> & imgout = outport_renderer_img_.prepare();

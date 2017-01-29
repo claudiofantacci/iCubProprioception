@@ -86,6 +86,8 @@ bool SuperimposerFactory::configure(ResourceFinder &rf)
     if (!FileFound(cad_hand_["medium2"])) return false;
     cad_hand_["medium3"] = rf.findFileByName("r_ml3.obj");
     if (!FileFound(cad_hand_["medium3"])) return false;
+    cad_hand_["forearm"] = rf.findFileByName("r_forearm_new_origin.obj");
+    if (!FileFound(cad_hand_["forearm"])) return false;
 
     /* Initializing useful pose matrices and vectors for the hand. */
     frontal_view_R_.resize(3, 3);
@@ -121,6 +123,9 @@ bool SuperimposerFactory::configure(ResourceFinder &rf)
     closed_hand_joints_[3] = 80;
     closed_hand_joints_[4] = 10;
     closed_hand_joints_[5] = 80;
+
+    /* Torso control board. */
+    if (!setTorsoRemoteControlboard()) return false;
 
     /* Right arm control board. */
     if (!setRightArmRemoteControlboard()) return false;
@@ -363,7 +368,7 @@ bool SuperimposerFactory::view_skeleton(const bool status)
 
 bool SuperimposerFactory::view_mesh(const bool status) {
     if (!superimpose_mesh_ && status) {
-        trd_left_cam_cad_ = new CADSuperimposer(project_name_, "right", "left", rightarm_remote_driver_, rightarm_cartesian_driver_, gaze_driver_, cad_hand_, window_);
+        trd_left_cam_cad_ = new CADSuperimposer(project_name_, "right", "left", torso_remote_driver_, rightarm_remote_driver_, rightarm_cartesian_driver_, gaze_driver_, cad_hand_, window_);
         if (trd_left_cam_cad_ != NULL) {
             yInfo() << log_ID_ << "Starting mesh superimposing thread for the right hand on the left camera images...";
 
@@ -421,6 +426,31 @@ bool SuperimposerFactory::FileFound (const ConstString & file)
         yError() << log_ID_ << "File not found!";
         return false;
     }
+    return true;
+}
+
+
+bool SuperimposerFactory::setTorsoRemoteControlboard()
+{
+    Property torso_remote_options;
+    torso_remote_options.put("device", "remote_controlboard");
+    torso_remote_options.put("local", "/"+project_name_+"/control_torso");
+    torso_remote_options.put("remote", "/"+robot_+"/torso");
+
+    torso_remote_driver_.open(torso_remote_options);
+    if (torso_remote_driver_.isValid()) {
+        yInfo() << log_ID_ << "Torso remote_controlboard succefully opened.";
+
+        torso_remote_driver_.view(itf_rightarm_enc_);
+        if (!itf_rightarm_enc_) {
+            yError() << log_ID_ << "Error getting Torso IEncoders interface.\n";
+            return false;
+        }
+    } else {
+        yError() << log_ID_ << "Error opening Torso remote_controlboard device.\n";
+        return false;
+    }
+    
     return true;
 }
 

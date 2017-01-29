@@ -25,7 +25,7 @@
 class CADSuperimposer : public yarp::os::Thread
 {
 public:
-    CADSuperimposer(const yarp::os::ConstString& project_name, const yarp::os::ConstString& laterality, const yarp::os::ConstString& camera, yarp::dev::PolyDriver& arm_remote_driver, yarp::dev::PolyDriver& arm_cartesian_driver, yarp::dev::PolyDriver& gaze_driver, const SuperImpose::ObjFileMap& cad_hand, GLFWwindow*& window);
+    CADSuperimposer(const yarp::os::ConstString& project_name, const yarp::os::ConstString& laterality, const yarp::os::ConstString& camera, yarp::dev::PolyDriver& torso_remote_driver, yarp::dev::PolyDriver& arm_remote_driver, yarp::dev::PolyDriver& arm_cartesian_driver, yarp::dev::PolyDriver& gaze_driver, const SuperImpose::ObjFileMap& cad_hand, GLFWwindow*& window);
 
     bool threadInit   ();
     void run          ();
@@ -40,12 +40,14 @@ private:
     const yarp::os::ConstString     laterality_;
     const yarp::os::ConstString     camera_;
     const int                       camsel_;
+    yarp::dev::PolyDriver         & torso_remote_driver_;
     yarp::dev::PolyDriver         & arm_remote_driver_;
     yarp::dev::PolyDriver         & arm_cartesian_driver_;
     yarp::dev::PolyDriver         & gaze_driver_;
     const SuperImpose::ObjFileMap & cad_hand_;
     GLFWwindow                   *& window_;
 
+    yarp::dev::IEncoders         *  itf_torso_encoders_;
     yarp::dev::IEncoders         *  itf_arm_encoders_;
     yarp::dev::ICartesianControl *  itf_arm_cart_;
     yarp::dev::IGazeControl      *  itf_head_gaze_;
@@ -56,6 +58,7 @@ private:
     float                           EYE_CY_;
 
     iCub::iKin::iCubFinger          finger_[3];
+    iCub::iKin::iCubArm             arm_;
 
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb>> inport_renderer_img_;
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb>> outport_renderer_img_;

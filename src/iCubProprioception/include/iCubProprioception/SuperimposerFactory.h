@@ -62,6 +62,8 @@ private:
     bool                               superimpose_skeleton_;
     bool                               superimpose_mesh_;
 
+    yarp::dev::PolyDriver              torso_remote_driver_;
+
     yarp::dev::PolyDriver              rightarm_remote_driver_;
     yarp::dev::IEncoders             * itf_rightarm_enc_;
     yarp::dev::IPositionControl2     * itf_rightarm_pos_;
@@ -98,6 +100,7 @@ private:
     double                             path_time_;
 
     bool FileFound                     (const yarp::os::ConstString & file);
+    bool setTorsoRemoteControlboard    ();
     bool setRightArmRemoteControlboard ();
     bool setRightArmCartesianController();
     bool setHeadRemoteControlboard     ();
