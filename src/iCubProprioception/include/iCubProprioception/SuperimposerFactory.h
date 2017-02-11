@@ -49,55 +49,56 @@ protected:
     std::string quit      ();
 
 private:
-    const yarp::os::ConstString        log_ID_;
-    const yarp::os::ConstString        project_name_;
+    const yarp::os::ConstString   log_ID_;
+    const yarp::os::ConstString   project_name_;
 
-    GLFWwindow                       * window_;
+    GLFWwindow                  * window_;
 
-    yarp::os::ConstString              robot_;
+    yarp::os::ConstString         robot_;
 
-    bool                               start_;
-    bool                               init_position_;
-    bool                               freerunning_;
-    bool                               superimpose_skeleton_;
-    bool                               superimpose_mesh_;
+    bool                          start_;
+    bool                          init_position_;
+    bool                          freerunning_;
+    bool                          superimpose_skeleton_;
+    bool                          superimpose_mesh_;
 
-    yarp::dev::PolyDriver              torso_remote_driver_;
+    yarp::dev::PolyDriver         torso_remote_driver_;
 
-    yarp::dev::PolyDriver              rightarm_remote_driver_;
-    yarp::dev::IEncoders             * itf_rightarm_enc_;
-    yarp::dev::IPositionControl2     * itf_rightarm_pos_;
-    int                                num_rightarm_enc_;
+    yarp::dev::PolyDriver         rightarm_remote_driver_;
+    yarp::dev::IEncoders        * itf_rightarm_enc_;
+    yarp::dev::IPositionControl2* itf_rightarm_pos_;
+    int                           num_rightarm_enc_;
 
-    yarp::dev::PolyDriver              rightarm_cartesian_driver_;
-    yarp::dev::ICartesianControl     * itf_rightarm_cart_;
+    yarp::dev::PolyDriver         rightarm_cartesian_driver_;
+    yarp::dev::ICartesianControl* itf_rightarm_cart_;
 
-    yarp::dev::PolyDriver              head_remote_driver_;
-    yarp::dev::IPositionControl2     * itf_head_pos_;
+    yarp::dev::PolyDriver         head_remote_driver_;
+    yarp::dev::IPositionControl2* itf_head_pos_;
 
-    yarp::dev::PolyDriver              gaze_driver_;
-    yarp::dev::IGazeControl          * itf_head_gaze_;
+    yarp::dev::PolyDriver         gaze_driver_;
+    yarp::dev::IGazeControl     * itf_head_gaze_;
 
-    SkeletonSuperimposer             * trd_left_cam_skeleton_ = nullptr;
+    SkeletonSuperimposer        * trd_left_cam_skeleton_ = nullptr;
 
-    CADSuperimposer                  * trd_left_cam_cad_ = nullptr;
-    SuperImpose::ObjFileMap            cad_hand_;
+    CADSuperimposer             * trd_left_cam_cad_ = nullptr;
+    SuperImpose::ObjFileMap       cad_hand_;
 
-    yarp::os::Port                     port_command_;
+    yarp::os::Port                port_command_;
 
-    yarp::sig::Matrix                  frontal_view_R_;
-    yarp::sig::Vector                  frontal_view_x_;
+    yarp::sig::Matrix             frontal_view_R_;
+    yarp::sig::Vector             frontal_view_x_;
 
-    yarp::sig::Matrix                  table_view_R_;
-    yarp::sig::Vector                  table_view_x_;
+    yarp::sig::Matrix             table_view_R_;
+    yarp::sig::Vector             table_view_x_;
 
-    double                             open_hand_joints_[6];
-    double                             closed_hand_joints_[6];
+    double                        open_hand_joints_[6];
+    double                        closed_hand_joints_[6];
 
-    double                             radius_;
-    int                                angle_ratio_;
-    double                             motion_time_;
-    double                             path_time_;
+    double                        radius_;
+    int                           angle_ratio_;
+    double                        motion_time_;
+    double                        path_time_;
+
 
     bool FileFound                     (const yarp::os::ConstString & file);
     bool setTorsoRemoteControlboard    ();

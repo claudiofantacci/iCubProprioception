@@ -1,5 +1,7 @@
 #include "iCubProprioception/SkeletonSuperimposer.h"
 
+#include <exception>
+
 #include <iCub/ctrl/math.h>
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -15,10 +17,9 @@ using namespace iCub::ctrl;
 using namespace iCub::iKin;
 
 
-SkeletonSuperimposer::SkeletonSuperimposer(const ConstString & project_name, const ConstString & laterality, const ConstString &camera, PolyDriver &arm_remote_driver, PolyDriver &arm_cartesian_driver, PolyDriver &gaze_driver) : log_ID_("[SkeletonSuperimposer]"), project_name_(project_name), laterality_(laterality), camera_(camera), camsel_((camera == "left")? 0:1), arm_remote_driver_(arm_remote_driver), arm_cartesian_driver_(arm_cartesian_driver), gaze_driver_(gaze_driver) {}
-
-
-bool SkeletonSuperimposer::threadInit() {
+SkeletonSuperimposer::SkeletonSuperimposer(const ConstString & project_name, const ConstString & laterality, const ConstString &camera, PolyDriver &arm_remote_driver, PolyDriver &arm_cartesian_driver, PolyDriver &gaze_driver) :
+    log_ID_("[SkeletonSuperimposer]"), project_name_(project_name), laterality_(laterality), camera_(camera), camsel_((camera == "left")? 0:1), arm_remote_driver_(arm_remote_driver), arm_cartesian_driver_(arm_cartesian_driver), gaze_driver_(gaze_driver)
+{
     yInfo() << log_ID_ << "Initializing hand skeleton drawing thread.";
 
     yInfo() << log_ID_ << "Setting interfaces";
@@ -28,14 +29,14 @@ bool SkeletonSuperimposer::threadInit() {
     if (!itf_fingers_lim)
     {
         yError() << log_ID_ << "Error getting IControlLimits interface in thread.";
-        return false;
+        throw std::runtime_error("Error getting IControlLimits interface in thread.");
     }
 
     arm_remote_driver_.view(itf_arm_encoders_);
     if (!itf_arm_encoders_)
     {
         yError() << log_ID_ << "Error getting IEncoders interface.";
-        return false;
+        throw std::runtime_error("Error getting IEncoders interface.");
     }
     itf_arm_encoders_->getAxes(&num_arm_enc_);
 
@@ -43,14 +44,14 @@ bool SkeletonSuperimposer::threadInit() {
     if (!itf_arm_cart_)
     {
         yError() << log_ID_ << "Error getting ICartesianControl interface in thread.";
-        return false;
+        throw std::runtime_error("Error getting ICartesianControl interface in thread.");
     }
 
     gaze_driver_.view(itf_head_gaze_);
     if (!itf_head_gaze_)
     {
         yError() << log_ID_ << "Error getting IGazeControl interface.";
-        return false;
+        throw std::runtime_error("Error getting IGazeControl interface.");
     }
 
     yInfo() << log_ID_ << "Interfaces set!";
@@ -77,7 +78,7 @@ bool SkeletonSuperimposer::threadInit() {
         if (!finger_[i].alignJointsBounds(temp_lim))
         {
             yError() << log_ID_ << "Cannot set joint bound for finger " + std::to_string(i) + ".";
-            return false;
+            throw std::runtime_error("Cannot set joint bound for finger " + std::to_string(i) + ".");
         }
     }
 
@@ -88,13 +89,13 @@ bool SkeletonSuperimposer::threadInit() {
     if (!inport_skeleton_img_.open("/"+project_name_+"/skeleton/cam/"+camera_+":i"))
     {
         yError() << log_ID_ << "Cannot open input image port for "+camera_+".";
-        return false;
+        throw std::runtime_error("Cannot open input image port for "+camera_+".");
     }
 
     if (!outport_skeleton_img_.open("/"+project_name_+"/skeleton/cam/"+camera_+":o"))
     {
         yError() << log_ID_ << "Cannot open output image port for "+camera_+".";
-        return false;
+        throw std::runtime_error("Cannot open output image port for "+camera_+".");
     }
 
     yInfo() << log_ID_ << "Skeleton image ports succesfully opened!";
@@ -104,20 +105,24 @@ bool SkeletonSuperimposer::threadInit() {
     if (!port_cam_pose_.open("/"+project_name_+"/skeleton/cam/"+camera_+"/pose:o"))
     {
         yError() << log_ID_ << "Cannot open "+camera_+" camera_ pose output port.";
-        return false;
+        throw std::runtime_error("Cannot open "+camera_+" camera_ pose output port.");
     }
 
     yInfo() << log_ID_ << "Port for "+camera_+" camera_ succesfully opened!";
 
     yInfo() << log_ID_ << "Setting up OpenCV drawer...";
 
-    drawer_.Configure(EYE_FX_, EYE_FY_, EYE_CX_, EYE_CY_);
+    drawer_ = new SISkeleton(EYE_FX_, EYE_FY_, EYE_CX_, EYE_CY_);
 
     yInfo() << log_ID_ << "OpenCV drawer succesfully set!";
-
+    
     yInfo() << log_ID_ << "Initialization completed!";
+}
 
-    return true;
+
+SkeletonSuperimposer::~SkeletonSuperimposer() noexcept
+{
+    delete drawer_;
 }
 
 // TODO: uniformare il nome delle parti da disegnare così da avere dei Superimposer standardizzati a cui passare un generico SuperImpose
@@ -189,7 +194,7 @@ void SkeletonSuperimposer::run() {
             ImageOf<PixelRgb> & imgout = outport_skeleton_img_.prepare();
             imgout = *imgin;
             cv::Mat img = cv::cvarrToMat(imgout.getIplImage());
-            drawer_.Superimpose(hand_pose, cam_x.data(), cam_o.data(), img);
+            drawer_->superimpose(hand_pose, cam_x.data(), cam_o.data(), img);
 
             Bottle &camPoseBottle = port_cam_pose_.prepare();
             camPoseBottle.clear();

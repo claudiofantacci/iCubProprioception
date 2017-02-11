@@ -1,5 +1,6 @@
 #include "iCubProprioception/CADSuperimposer.h"
 
+#include <exception>
 #include <utility>
 
 #include <iCub/ctrl/math.h>
@@ -28,29 +29,7 @@ using namespace iCub::ctrl;
 using namespace iCub::iKin;
 
 
-bool CADSuperimposer::setCommandPort()
-{
-//    yInfo() << log_ID_ << "Opening command port.";
-//    if (!port_command.open("/"+project_name_+"/cad/cmd"))
-//    {
-//        yError() << log_ID_ << "Cannot open the command port.";
-//        return false;
-//    }
-//    if (!helper.yarp().attachAsServer(port_command))
-//    {
-//        yError() << log_ID_ << "Cannot attach the command port.";
-//        return false;
-//    }
-//    yInfo() << log_ID_ << "Command port and thread helper succesfully opened and attached. Ready to recieve commands.";
-
-    return true;
-}
-
-
-CADSuperimposer::CADSuperimposer(const ConstString& project_name, const ConstString& laterality, const ConstString& camera, PolyDriver& torso_remote_driver, PolyDriver& arm_remote_driver, PolyDriver& arm_cartesian_driver, PolyDriver& gaze_driver, const SuperImpose::ObjFileMap& cad_hand, GLFWwindow*& window) : log_ID_("[CADSuperimposer]"), project_name_(project_name), laterality_(laterality), camera_(camera), camsel_((camera == "left")? 0:1), torso_remote_driver_(torso_remote_driver), arm_remote_driver_(arm_remote_driver), arm_cartesian_driver_(arm_cartesian_driver), gaze_driver_(gaze_driver), cad_hand_(cad_hand), window_(window) {}
-
-
-bool CADSuperimposer::threadInit()
+CADSuperimposer::CADSuperimposer(const ConstString& project_name, const ConstString& laterality, const ConstString& camera, PolyDriver& torso_remote_driver, PolyDriver& arm_remote_driver, PolyDriver& arm_cartesian_driver, PolyDriver& gaze_driver, const SuperImpose::ObjFileMap& cad_hand, GLFWwindow*& window) : log_ID_("[CADSuperimposer]"), project_name_(project_name), laterality_(laterality), camera_(camera), camsel_((camera == "left")? 0:1), torso_remote_driver_(torso_remote_driver), arm_remote_driver_(arm_remote_driver), arm_cartesian_driver_(arm_cartesian_driver), gaze_driver_(gaze_driver), cad_hand_(cad_hand), window_(window)
 {
     yInfo() << log_ID_ << "Initializing hand CAD drawing thread...";
 
@@ -60,14 +39,14 @@ bool CADSuperimposer::threadInit()
     if (!itf_arm_cart_)
     {
         yError() << log_ID_ << "Error getting arm ICartesianControl interface in thread.";
-        return false;
+        throw std::runtime_error("Error getting arm ICartesianControl interface in thread.");
     }
 
     gaze_driver_.view(itf_head_gaze_);
     if (!itf_head_gaze_)
     {
         yError() << log_ID_ << "Error getting head IGazeControl interface!";
-        return false;
+        throw std::runtime_error("Error getting head IGazeControl interface!");
     }
 
     IControlLimits *itf_fingers_lim;
@@ -75,21 +54,21 @@ bool CADSuperimposer::threadInit()
     if (!itf_fingers_lim)
     {
         yError() << log_ID_ << "Error getting fingers IControlLimits interface in thread!";
-        return false;
+        throw std::runtime_error("Error getting fingers IControlLimits interface in thread!");
     }
 
     torso_remote_driver_.view(itf_torso_encoders_);
     if (!itf_torso_encoders_)
     {
         yError() << log_ID_ << "Error getting torso IEncoders interface in thread.";
-        return false;
+        throw std::runtime_error("Error getting torso IEncoders interface in thread.");
     }
 
     arm_remote_driver_.view(itf_arm_encoders_);
     if (!itf_arm_encoders_)
     {
         yError() << log_ID_ << "Error getting arm IEncoders interface!";
-        return false;
+        throw std::runtime_error("Error getting arm IEncoders interface!");
     }
     itf_arm_encoders_->getAxes(&num_arm_enc_);
     yInfo() << log_ID_ << "Interfaces set!";
@@ -99,13 +78,13 @@ bool CADSuperimposer::threadInit()
     if (!inport_renderer_img_.open("/"+project_name_+"/cad/cam/"+camera_+":i"))
     {
         yError() << log_ID_ << "Cannot open input image port for "+camera_+" camera!";
-        return false;
+        throw std::runtime_error("Cannot open input image port for "+camera_+" camera!");
     }
 
     if (!outport_renderer_img_.open("/"+project_name_+"/cad/cam/"+camera_+":o"))
     {
         yError() << log_ID_ << "Cannot open output image port for "+camera_+" camera!";
-        return false;
+        throw std::runtime_error("Cannot open output image port for "+camera_+" camera!");
     }
     yInfo() << log_ID_ << "CAD image ports succesfully opened!";
 
@@ -114,7 +93,7 @@ bool CADSuperimposer::threadInit()
     if (!port_cam_pose_.open("/"+project_name_+"/cad/"+camera_+"/pose:o"))
     {
         yError() << log_ID_ << "Cannot open "+camera_+" camera pose output port!";
-        return false;
+        throw std::runtime_error("Cannot open "+camera_+" camera pose output port!");
     }
     yInfo() << log_ID_ << "Port for "+camera_+" camera succesfully opened!";
 
@@ -135,16 +114,16 @@ bool CADSuperimposer::threadInit()
     finger_[1] = iCubFinger(laterality_+"_index");
     finger_[2] = iCubFinger(laterality_+"_middle");
 
-//    std::deque<IControlLimits*> temp_lim;
-//    temp_lim.push_front(itf_fingers_lim);
-//    for (int i = 0; i < 3; ++i)
-//    {
-//        if (!finger_[i].alignJointsBounds(temp_lim))
-//        {
-//            yError() << log_ID_ << "Cannot set joint bound for finger " + std::to_string(i) + ".";
-//            return false;
-//        }
-//    }
+    //    std::deque<IControlLimits*> temp_lim;
+    //    temp_lim.push_front(itf_fingers_lim);
+    //    for (int i = 0; i < 3; ++i)
+    //    {
+    //        if (!finger_[i].alignJointsBounds(temp_lim))
+    //        {
+    //            yError() << log_ID_ << "Cannot set joint bound for finger " + std::to_string(i) + ".";
+    //            return false;
+    //        }
+    //    }
     yInfo() << log_ID_ << "Finger succesfully set!";
 
 
@@ -158,16 +137,20 @@ bool CADSuperimposer::threadInit()
 
 
     yInfo() << log_ID_ << "Setting up OpenGL drawer...";
-    drawer_.Configure(window_, cad_hand_, EYE_FX_, EYE_FY_, EYE_CX_, EYE_CY_);
-    drawer_.setBackgroundOpt(true);
-    drawer_.setWireframeOpt(true);
+    drawer_ = new SICAD(window_, cad_hand_, EYE_FX_, EYE_FY_, EYE_CX_, EYE_CY_);
+    drawer_->setBackgroundOpt(true);
+    drawer_->setWireframeOpt(true);
     yInfo() << log_ID_ << "OpenGL drawer succesfully set!";
-
-
-    if (!setCommandPort()) return false;
+    
+    
+    if (!setCommandPort()) throw std::runtime_error("Cannot attach the command port.");
     yInfo() << log_ID_ << "Initialization completed!";
+}
 
-    return true;
+
+CADSuperimposer::~CADSuperimposer() noexcept
+{
+    delete drawer_;
 }
 
 
@@ -255,7 +238,7 @@ void CADSuperimposer::run() {
             ImageOf<PixelRgb> & imgout = outport_renderer_img_.prepare();
             imgout = *imgin;
             cv::Mat img = cv::cvarrToMat(imgout.getIplImage());
-            drawer_.Superimpose(hand_pose, cam_x.data(), cam_o.data(), img);
+            drawer_->superimpose(hand_pose, cam_x.data(), cam_o.data(), img);
 
             Bottle &camPoseBottle = port_cam_pose_.prepare();
             camPoseBottle.clear();
@@ -286,4 +269,23 @@ void CADSuperimposer::threadRelease() {
     if (port_command_.isOpen()) port_command_.close();
 
     yInfo() << log_ID_ << "Deallocation completed!";
+}
+
+
+bool CADSuperimposer::setCommandPort()
+{
+    //    yInfo() << log_ID_ << "Opening command port.";
+    //    if (!port_command.open("/"+project_name_+"/cad/cmd"))
+    //    {
+    //        yError() << log_ID_ << "Cannot open the command port.";
+    //        return false;
+    //    }
+    //    if (!helper.yarp().attachAsServer(port_command))
+    //    {
+    //        yError() << log_ID_ << "Cannot attach the command port.";
+    //        return false;
+    //    }
+    //    yInfo() << log_ID_ << "Command port and thread helper succesfully opened and attached. Ready to recieve commands.";
+    
+    return true;
 }

@@ -13,10 +13,10 @@
 using namespace yarp::os;
 
 
-bool openglSetUp(GLFWwindow *& window, const int width, const int height);
+bool openglSetUp(GLFWwindow*& window, const int width, const int height);
 
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
     ConstString log_ID = "[Main]";
     yInfo() << log_ID << "Configuring and starting module...";
@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
     return EXIT_SUCCESS;
 }
 
-bool openglSetUp(GLFWwindow *& window, const int width, const int height)
+bool openglSetUp(GLFWwindow*& window, const int width, const int height)
 {
     ConstString log_ID = "[OpenGL]";
     yInfo() << log_ID << "Start setting up...";
