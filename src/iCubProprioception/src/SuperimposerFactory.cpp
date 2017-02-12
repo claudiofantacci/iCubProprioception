@@ -15,10 +15,13 @@ using namespace yarp::sig;
 using namespace yarp::math;
 
 
-SuperimposerFactory::SuperimposerFactory(const yarp::os::ConstString & project_name) : log_ID_("[SuperimposerFactory]"), project_name_(project_name) {}
-
-
 SuperimposerFactory::SuperimposerFactory() : log_ID_("[SuperimposerFactory]"), project_name_("SuperimposerModule") {}
+
+
+bool SuperimposerFactory::initOGL(const GLsizei width, const GLsizei height, const GLint view)
+{
+    return CADSuperimposer::initOGL(width, height, view);
+}
 
 
 bool SuperimposerFactory::configure(ResourceFinder &rf)
@@ -159,6 +162,12 @@ bool SuperimposerFactory::configure(ResourceFinder &rf)
 }
 
 
+void SuperimposerFactory::setProjectName(const yarp::os::ConstString& name)
+{
+    project_name_ = name;
+}
+
+
 bool SuperimposerFactory::updateModule()
 {
     if (start_)
@@ -217,13 +226,16 @@ bool SuperimposerFactory::close()
 
 bool SuperimposerFactory::move_hand()
 {
-    if (!init_position_) {
+    if (!init_position_)
+    {
         yInfo() << log_ID_ << "Starting single hand motion.";
 
         start_ = true;
 
         return true;
-    } else {
+    }
+    else
+    {
         yWarning() << log_ID_ << "Can't move hand in this settings! Use initial_position() before using move_hand() again.";
 
         return false;
@@ -233,14 +245,17 @@ bool SuperimposerFactory::move_hand()
 
 bool SuperimposerFactory::move_hand_freerun()
 {
-    if (!init_position_) {
+    if (!init_position_)
+    {
         yInfo() << log_ID_ << "Starting freerun hand motion.";
 
         start_ = true;
         freerunning_ = true;
 
         return true;
-    } else {
+    }
+    else
+    {
         yWarning() << log_ID_ << "Can't move hand in this settings! Use initial_position() before using move_hand() again.";
 
         return false;
@@ -261,11 +276,14 @@ bool SuperimposerFactory::stop_hand()
 
 bool SuperimposerFactory::initial_position()
 {
-    if (!init_position_) {
+    if (!init_position_)
+    {
         yWarning() << log_ID_ << "Already in initial position settings!";
 
         return false;
-    } else {
+    }
+    else
+    {
         yInfo() << log_ID_ << "Reaching initial position...";
 
         init_position_ = !MoveHand(table_view_R_, table_view_x_);
@@ -279,7 +297,8 @@ bool SuperimposerFactory::initial_position()
 
 bool SuperimposerFactory::view_hand()
 {
-    if (!start_) {
+    if (!start_)
+    {
         yInfo() << log_ID_ << "Reaching a position close to iCub left camera with the right hand...";
 
         init_position_ = MoveHand(frontal_view_R_, frontal_view_x_);
@@ -287,7 +306,9 @@ bool SuperimposerFactory::view_hand()
         else yInfo() << log_ID_ << "...done. iCub can't move the hand in this settings.";
 
         return init_position_;
-    } else {
+    }
+    else
+    {
         yWarning() << log_ID_ << "Can't move hand while moving it!";
 
         return false;
@@ -321,22 +342,29 @@ bool SuperimposerFactory::close_fingers()
 
 bool SuperimposerFactory::view_skeleton(const bool status)
 {
-    if (!superimpose_skeleton_ && status) {
+    if (!superimpose_skeleton_ && status)
+    {
         trd_left_cam_skeleton_ = new SkeletonSuperimposer(project_name_, "right", "left", rightarm_remote_driver_, rightarm_cartesian_driver_, gaze_driver_);
 
-        if (trd_left_cam_skeleton_ != NULL) {
+        if (trd_left_cam_skeleton_ != NULL)
+        {
             yInfo() << log_ID_ << "Starting skeleton superimposing thread for the right hand on the left camera images...";
 
-            if (!trd_left_cam_skeleton_->start()) {
+            if (!trd_left_cam_skeleton_->start())
+            {
                 yWarning() << log_ID_ << "...thread could not be started!";
 
                 superimpose_skeleton_ = false;
-            } else {
+            }
+            else
+            {
                 yInfo() << log_ID_ << "...done.";
 
                 superimpose_skeleton_ = true;
             }
-        } else {
+        }
+        else
+        {
             yWarning() << log_ID_ << "Could not initialize hand skeleton superimposition!";
 
             superimpose_skeleton_ = false;
@@ -344,14 +372,19 @@ bool SuperimposerFactory::view_skeleton(const bool status)
 
         return superimpose_skeleton_;
 
-    } else if (superimpose_skeleton_ && !status) {
+    }
+    else if (superimpose_skeleton_ && !status)
+    {
         yInfo() << log_ID_ << "Stopping hand skeleton superimposing thread for the right hand on the left camera images...";
 
-        if (!trd_left_cam_skeleton_->stop()) {
+        if (!trd_left_cam_skeleton_->stop())
+        {
             yWarning() << log_ID_ << "...thread could not be stopped!";
 
             superimpose_skeleton_ = true;
-        } else {
+        }
+        else
+        {
             yInfo() << log_ID_ << "...done.";
 
             delete trd_left_cam_skeleton_;
@@ -362,26 +395,35 @@ bool SuperimposerFactory::view_skeleton(const bool status)
 
         return !superimpose_skeleton_;
 
-    } else return false;
+    }
+    else return false;
 }
 
 
-bool SuperimposerFactory::view_mesh(const bool status) {
-    if (!superimpose_mesh_ && status) {
-        trd_left_cam_cad_ = new CADSuperimposer(project_name_, "right", "left", torso_remote_driver_, rightarm_remote_driver_, rightarm_cartesian_driver_, gaze_driver_, cad_hand_, window_);
-        if (trd_left_cam_cad_ != NULL) {
+bool SuperimposerFactory::view_mesh(const bool status)
+{
+    if (!superimpose_mesh_ && status)
+    {
+        trd_left_cam_cad_ = new CADSuperimposer(project_name_, "right", "left", torso_remote_driver_, rightarm_remote_driver_, rightarm_cartesian_driver_, gaze_driver_, cad_hand_);
+        if (trd_left_cam_cad_ != NULL)
+        {
             yInfo() << log_ID_ << "Starting mesh superimposing thread for the right hand on the left camera images...";
 
-            if (!trd_left_cam_cad_->start()) {
+            if (!trd_left_cam_cad_->start())
+            {
                 yWarning() << log_ID_ << "...thread could not be started!";
 
                 superimpose_mesh_ = false;
-            } else {
+            }
+            else
+            {
                 yInfo() << log_ID_ << "...done.";
 
                 superimpose_mesh_ = true;
             }
-        } else {
+        }
+        else
+        {
             yWarning() << log_ID_ << "Could not initialize hand mesh superimposition!";
 
             superimpose_mesh_ = false;
@@ -389,14 +431,19 @@ bool SuperimposerFactory::view_mesh(const bool status) {
 
         return superimpose_mesh_;
 
-    } else if (superimpose_mesh_ && !status) {
+    }
+    else if (superimpose_mesh_ && !status)
+    {
         yInfo() << log_ID_ << "Stopping hand mesh superimposing thread for the right hand on the left camera images...";
 
-        if (!trd_left_cam_cad_->stop()) {
+        if (!trd_left_cam_cad_->stop())
+        {
             yWarning() << log_ID_ << "...thread could not be stopped!";
 
             superimpose_mesh_ = true;
-        } else {
+        }
+        else
+        {
             yInfo() << log_ID_ << "...done.";
 
             delete trd_left_cam_cad_;
@@ -407,11 +454,13 @@ bool SuperimposerFactory::view_mesh(const bool status) {
 
         return !superimpose_mesh_;
 
-    } else return false;
+    }
+    else return false;
 }
 
 
-std::string SuperimposerFactory::quit() {
+std::string SuperimposerFactory::quit()
+{
     yInfo() << log_ID_ << "Quitting...";
 
     this->stopModule();
@@ -422,7 +471,8 @@ std::string SuperimposerFactory::quit() {
 
 bool SuperimposerFactory::FileFound (const ConstString & file)
 {
-    if (file.empty()) {
+    if (file.empty())
+    {
         yError() << log_ID_ << "File not found!";
         return false;
     }
@@ -438,16 +488,20 @@ bool SuperimposerFactory::setTorsoRemoteControlboard()
     torso_remote_options.put("remote", "/"+robot_+"/torso");
 
     torso_remote_driver_.open(torso_remote_options);
-    if (torso_remote_driver_.isValid()) {
+    if (torso_remote_driver_.isValid())
+    {
         yInfo() << log_ID_ << "Torso remote_controlboard succefully opened.";
 
         torso_remote_driver_.view(itf_rightarm_enc_);
-        if (!itf_rightarm_enc_) {
-            yError() << log_ID_ << "Error getting Torso IEncoders interface.\n";
+        if (!itf_rightarm_enc_)
+        {
+            yError() << log_ID_ << "Error getting Torso IEncoders interface.";
             return false;
         }
-    } else {
-        yError() << log_ID_ << "Error opening Torso remote_controlboard device.\n";
+    }
+    else
+    {
+        yError() << log_ID_ << "Error opening Torso remote_controlboard device.";
         return false;
     }
     
@@ -463,12 +517,14 @@ bool SuperimposerFactory::setRightArmRemoteControlboard()
     rightarm_remote_options.put("remote", "/"+robot_+"/right_arm");
 
     rightarm_remote_driver_.open(rightarm_remote_options);
-    if (rightarm_remote_driver_.isValid()) {
+    if (rightarm_remote_driver_.isValid())
+    {
         yInfo() << log_ID_ << "Right arm remote_controlboard succefully opened.";
 
         rightarm_remote_driver_.view(itf_rightarm_enc_);
-        if (!itf_rightarm_enc_) {
-            yError() << log_ID_ << "Error getting right arm IEncoders interface.\n";
+        if (!itf_rightarm_enc_)
+        {
+            yError() << log_ID_ << "Error getting right arm IEncoders interface.";
             return false;
         }
         num_rightarm_enc_ = 0;
@@ -476,13 +532,14 @@ bool SuperimposerFactory::setRightArmRemoteControlboard()
         yInfo() << log_ID_ << "Right arm encorders succefully read.";
 
         rightarm_remote_driver_.view(itf_rightarm_pos_);
-        if (!itf_rightarm_pos_) {
-            yError() << log_ID_ << "Error getting right arm IPositionControl2 interface.\n";
+        if (!itf_rightarm_pos_)
+        {
+            yError() << log_ID_ << "Error getting right arm IPositionControl2 interface.";
             return false;
         }
         yInfo() << log_ID_ << "Right arm positions succefully read.";
     } else {
-        yError() << log_ID_ << "Error opening right arm remote_controlboard device.\n";
+        yError() << log_ID_ << "Error opening right arm remote_controlboard device.";
         return false;
     }
 
@@ -501,28 +558,28 @@ bool SuperimposerFactory::setRightArmCartesianController()
     if (rightarm_cartesian_driver_.isValid()) {
         rightarm_cartesian_driver_.view(itf_rightarm_cart_);
         if (!itf_rightarm_cart_) {
-            yError() << log_ID_ << "Error getting ICartesianControl interface.\n";
+            yError() << log_ID_ << "Error getting ICartesianControl interface.";
             return false;
         }
         yInfo() << log_ID_ << "cartesiancontrollerclient succefully opened.";
     } else {
-        yError() << log_ID_ << "Error opening cartesiancontrollerclient device.\n";
+        yError() << log_ID_ << "Error opening cartesiancontrollerclient device.";
         return false;
     }
 
     if (!itf_rightarm_cart_->setTrajTime(5.0))
     {
-        yError() << log_ID_ << "Error setting ICartesianControl trajectory time.\n";
+        yError() << log_ID_ << "Error setting ICartesianControl trajectory time.";
         return false;
     }
-    yInfo() << log_ID_ << "Succesfully set ICartesianControl trajectory time!\n";
+    yInfo() << log_ID_ << "Succesfully set ICartesianControl trajectory time!";
 
     if(!itf_rightarm_cart_->setInTargetTol(0.01))
     {
-        yError() << log_ID_ << "Error setting ICartesianControl target tolerance.\n";
+        yError() << log_ID_ << "Error setting ICartesianControl target tolerance.";
         return false;
     }
-    yInfo() << log_ID_ << "Succesfully set ICartesianControl target tolerance!\n";
+    yInfo() << log_ID_ << "Succesfully set ICartesianControl target tolerance!";
 
     return true;
 }
@@ -541,7 +598,7 @@ bool SuperimposerFactory::setHeadRemoteControlboard()
 
         head_remote_driver_.view(itf_head_pos_);
         if (!itf_head_pos_) {
-            yError() << log_ID_ << "Error getting head IPositionControl interface.\n";
+            yError() << log_ID_ << "Error getting head IPositionControl interface.";
             return false;
         }
         yInfo() << log_ID_ << "Head positions succefully read.";
@@ -565,11 +622,11 @@ bool SuperimposerFactory::setGazeController()
     if (gaze_driver_.isValid()) {
         gaze_driver_.view(itf_head_gaze_);
         if (!itf_head_gaze_) {
-            yError() << log_ID_ << "Error getting IGazeControl interface.\n";
+            yError() << log_ID_ << "Error getting IGazeControl interface.";
             return false;
         }
     } else {
-        yError() << log_ID_ << "Gaze control device not available.\n";
+        yError() << log_ID_ << "Gaze control device not available.";
         return false;
     }
 

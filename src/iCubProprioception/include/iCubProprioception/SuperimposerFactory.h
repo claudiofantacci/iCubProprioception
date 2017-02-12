@@ -27,32 +27,44 @@
 class SuperimposerFactory : public yarp::os::RFModule, public iCubProprioceptionIDL
 {
 public:
-    SuperimposerFactory(const yarp::os::ConstString & project_name);
     SuperimposerFactory();
+    
+    static bool initOGL(const GLsizei width, const GLsizei height, const GLint view = 1);
 
-    double getPeriod   () { return 0.0; }
-    bool   configure   (yarp::os::ResourceFinder &rf);
-    void   setWindow   (GLFWwindow *& window) { window_ = window; }
+    double getPeriod() { return 0.0; }
+
+    bool   configure(yarp::os::ResourceFinder& rf);
+
+    void   setProjectName(const yarp::os::ConstString& name);
+
     bool   updateModule();
-    bool   close       ();
+
+    bool   close();
 
 protected:
-    bool move_hand        ();
+    bool move_hand();
+
     bool move_hand_freerun();
-    bool stop_hand        ();
+
+    bool stop_hand();
+
     bool initial_position ();
-    bool view_hand        ();
-    bool open_fingers     ();
-    bool close_fingers    ();
-    bool view_skeleton    (const bool status);
-    bool view_mesh        (const bool status);
-    std::string quit      ();
+
+    bool view_hand();
+
+    bool open_fingers();
+
+    bool close_fingers();
+
+    bool view_skeleton(const bool status);
+
+    bool view_mesh(const bool status);
+
+    std::string quit();
 
 private:
     const yarp::os::ConstString   log_ID_;
-    const yarp::os::ConstString   project_name_;
-
-    GLFWwindow                  * window_;
+    yarp::os::ConstString         project_name_;
 
     yarp::os::ConstString         robot_;
 
@@ -100,16 +112,25 @@ private:
     double                        path_time_;
 
 
-    bool FileFound                     (const yarp::os::ConstString & file);
-    bool setTorsoRemoteControlboard    ();
-    bool setRightArmRemoteControlboard ();
+    bool FileFound(const yarp::os::ConstString& file);
+
+    bool setTorsoRemoteControlboard();
+
+    bool setRightArmRemoteControlboard();
+
     bool setRightArmCartesianController();
-    bool setHeadRemoteControlboard     ();
-    bool setGazeController             ();
-    bool setTorsoDOF                   ();
-    bool setCommandPort                ();
-    bool MoveFingers                   (const double (&joint)[6]);
-    bool MoveHand                      (const yarp::sig::Matrix & R, const yarp::sig::Vector & init_x);
+
+    bool setHeadRemoteControlboard();
+
+    bool setGazeController();
+
+    bool setTorsoDOF();
+
+    bool setCommandPort();
+
+    bool MoveFingers(const double (&joint)[6]);
+
+    bool MoveHand(const yarp::sig::Matrix& R, const yarp::sig::Vector& init_x);
 };
 
 #endif /* SUPERIMPOSEFACTORY_H */
