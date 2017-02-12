@@ -404,7 +404,13 @@ bool SuperimposerFactory::view_mesh(const bool status)
 {
     if (!superimpose_mesh_ && status)
     {
-        trd_left_cam_cad_ = new CADSuperimposer(project_name_, "right", "left", torso_remote_driver_, rightarm_remote_driver_, rightarm_cartesian_driver_, gaze_driver_, cad_hand_);
+        trd_left_cam_cad_ = new CADSuperimposer(project_name_,
+                                                "right",
+                                                "left",
+                                                torso_remote_driver_,
+                                                rightarm_remote_driver_,
+                                                rightarm_cartesian_driver_,
+                                                gaze_driver_, cad_hand_);
         if (trd_left_cam_cad_ != NULL)
         {
             yInfo() << log_ID_ << "Starting mesh superimposing thread for the right hand on the left camera images...";

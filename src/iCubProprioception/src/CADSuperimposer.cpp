@@ -15,7 +15,14 @@ using namespace iCub::ctrl;
 using namespace iCub::iKin;
 
 
-CADSuperimposer::CADSuperimposer(const ConstString& project_name, const ConstString& laterality, const ConstString& camera, PolyDriver& torso_remote_driver, PolyDriver& arm_remote_driver, PolyDriver& arm_cartesian_driver, PolyDriver& gaze_driver, const SuperImpose::ObjFileMap& cad_hand) :
+CADSuperimposer::CADSuperimposer(const ConstString& project_name,
+                                 const ConstString& laterality,
+                                 const ConstString& camera,
+                                 PolyDriver& torso_remote_driver,
+                                 PolyDriver& arm_remote_driver,
+                                 PolyDriver& arm_cartesian_driver,
+                                 PolyDriver& gaze_driver,
+                                 const SuperImpose::ObjFileMap& cad_hand) :
     log_ID_("[CADSuperimposer]"), project_name_(project_name), laterality_(laterality), camera_(camera), camsel_((camera == "left")? 0:1), torso_remote_driver_(torso_remote_driver), arm_remote_driver_(arm_remote_driver), arm_cartesian_driver_(arm_cartesian_driver), gaze_driver_(gaze_driver), cad_hand_(cad_hand)
 {
     yInfo() << log_ID_ << "Initializing hand CAD drawing thread...";
@@ -88,8 +95,8 @@ CADSuperimposer::CADSuperimposer(const ConstString& project_name, const ConstStr
     // FIXME: far diventare la camera parametrica utilizzando CAMERA e rinominare le variabili
     Bottle btl_cam_left_info;
     itf_head_gaze_->getInfo(btl_cam_left_info);
+    yInfo() << log_ID_ << "[CAM INFO]" << btl_cam_left_info.toString();
     Bottle * cam_left_info = btl_cam_left_info.findGroup("camera_intrinsics_left").get(1).asList();
-    yInfo() << log_ID_ << "Camera Info: [" + cam_left_info->toString() + "].";
     eye_fx_ = static_cast<float>(cam_left_info->get(0).asDouble());
     eye_cx_ = static_cast<float>(cam_left_info->get(2).asDouble());
     eye_fy_ = static_cast<float>(cam_left_info->get(5).asDouble());

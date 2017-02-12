@@ -25,7 +25,14 @@
 class CADSuperimposer : public yarp::os::Thread
 {
 public:
-    CADSuperimposer(const yarp::os::ConstString& project_name, const yarp::os::ConstString& laterality, const yarp::os::ConstString& camera, yarp::dev::PolyDriver& torso_remote_driver, yarp::dev::PolyDriver& arm_remote_driver, yarp::dev::PolyDriver& arm_cartesian_driver, yarp::dev::PolyDriver& gaze_driver, const SuperImpose::ObjFileMap& cad_hand);
+    CADSuperimposer(const yarp::os::ConstString& project_name,
+                    const yarp::os::ConstString& laterality,
+                    const yarp::os::ConstString& camera,
+                    yarp::dev::PolyDriver& torso_remote_driver,
+                    yarp::dev::PolyDriver& arm_remote_driver,
+                    yarp::dev::PolyDriver& arm_cartesian_driver,
+                    yarp::dev::PolyDriver& gaze_driver,
+                    const SuperImpose::ObjFileMap& cad_hand);
 
     ~CADSuperimposer() noexcept;
 
