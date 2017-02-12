@@ -19,7 +19,8 @@ class SkeletonSuperimposer : public yarp::os::Thread
 public:
     SkeletonSuperimposer(const yarp::os::ConstString& project_name, const yarp::os::ConstString& laterality, const yarp::os::ConstString& camera, yarp::dev::PolyDriver& arm_remote_driver, yarp::dev::PolyDriver& arm_cartesian_driver, yarp::dev::PolyDriver& gaze_driver);
 
-    bool threadInit   ();
+    ~SkeletonSuperimposer() noexcept;
+
     void run          ();
     void onStop       ();
     void threadRelease();
@@ -45,11 +46,12 @@ private:
 
     iCub::iKin::iCubFinger         finger_[3];
 
+    SISkeleton                  *  drawer_;
+
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb>> inport_skeleton_img_;
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb>> outport_skeleton_img_;
     yarp::os::BufferedPort<yarp::os::Bottle>                        port_cam_pose_;
 
-    SISkeleton drawer_;
 };
 
 #endif /* SKELETONSUPERIMPOSER_H */

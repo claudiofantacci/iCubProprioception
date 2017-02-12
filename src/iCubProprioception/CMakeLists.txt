@@ -90,6 +90,8 @@ set(${EXE_TARGET_NAME}_MESH
         ${PROJECT_SOURCE_DIR}/mesh/icub_right_hand/r_ail1.obj
         ${PROJECT_SOURCE_DIR}/mesh/icub_right_hand/r_ail2.obj
         ${PROJECT_SOURCE_DIR}/mesh/icub_right_hand/r_ail3.obj
+        ${PROJECT_SOURCE_DIR}/mesh/icub_right_hand/r_forearm.obj
+        ${PROJECT_SOURCE_DIR}/mesh/icub_right_hand/r_forearm_full.obj
         ${PROJECT_SOURCE_DIR}/mesh/icub_right_hand/r_indexbase.obj
         ${PROJECT_SOURCE_DIR}/mesh/icub_right_hand/r_ml0.obj
         ${PROJECT_SOURCE_DIR}/mesh/icub_right_hand/r_ml1.obj

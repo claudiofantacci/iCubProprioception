@@ -5,7 +5,7 @@
     <!-- GENERIC INFORMATION -->
     <name>iCubProprioception-DataDump</name>
     <description>Collect data for iCubProprioception module</description>
-    <version>2.0.0</version>
+    <version>2.0.1</version>
 
     <authors>
         <author email="claudio.fantacci@iit.it">Claudio Fantacci</author>
@@ -76,14 +76,14 @@
     <!-- RC: SKELETON -->
     <connection>
         <from>/icub/camcalib/left/out</from>
-        <to>/superimpose_hand/skeleton/cam/left:i</to>
+        <to>/iCubProprioception/skeleton/cam/left:i</to>
         <protocol>tcp</protocol>
     </connection>
 
     <!-- RC: CAD -->
     <connection>
         <from>/icub/camcalib/left/out</from>
-        <to>/superimpose_hand/cad/cam/left:i</to>
+        <to>/iCubProprioception/cad/cam/left:i</to>
         <protocol>tcp</protocol>
     </connection>
 
@@ -107,13 +107,13 @@
     </connection>
 
     <connection>
-        <from>/superimpose_hand/skeleton/cam/left:o</from>
+        <from>/iCubProprioception/skeleton/cam/left:o</from>
         <to>/datadumper/skeleton/left</to>
         <protocol>tcp</protocol>
     </connection>
 
     <connection>
-        <from>/superimpose_hand/cad/cam/left:o</from>
+        <from>/iCubProprioception/cad/cam/left:o</from>
         <to>/datadumper/cad/left</to>
         <protocol>tcp</protocol>
     </connection>
