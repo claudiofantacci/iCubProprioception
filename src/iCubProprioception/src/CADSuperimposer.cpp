@@ -131,7 +131,7 @@ CADSuperimposer::CADSuperimposer(const ConstString& project_name,
 
 
     yInfo() << log_ID_ << "Setting up OpenGL drawer...";
-    drawer_ = new SICAD(cad_hand_, ogl_width_, ogl_height_, eye_fx_, eye_fy_, eye_cx_, eye_cy_);
+    drawer_ = new SICAD(cad_hand_, 320, 240, eye_fx_, eye_fy_, eye_cx_, eye_cy_);
     drawer_->setBackgroundOpt(true);
     drawer_->setWireframeOpt(true);
     yInfo() << log_ID_ << "OpenGL drawer succesfully set!";
@@ -150,13 +150,7 @@ CADSuperimposer::~CADSuperimposer() noexcept
 
 bool CADSuperimposer::initOGL(const GLsizei width, const GLsizei height, const GLint view)
 {
-    if (SICAD::initOGL(width, height, view))
-    {
-        ogl_width_  = width;
-        ogl_height_ = height;
-        return true;
-    }
-    else return false;
+    return SICAD::initOGL(width, height, view);
 }
 
 
@@ -301,7 +295,3 @@ bool CADSuperimposer::setCommandPort()
     
     return true;
 }
-
-
-GLsizei CADSuperimposer::ogl_width_  = 0;
-GLsizei CADSuperimposer::ogl_height_ = 0;

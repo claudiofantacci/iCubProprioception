@@ -71,9 +71,6 @@ private:
     SICAD                        *  drawer_;
 //    ThreadControllerSHC             helper;
 
-    static GLsizei                  ogl_width_;
-    static GLsizei                  ogl_height_;
-
     yarp::os::Port                                                  port_command_;
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb>> inport_renderer_img_;
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb>> outport_renderer_img_;
