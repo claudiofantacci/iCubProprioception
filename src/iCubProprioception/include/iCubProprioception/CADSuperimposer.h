@@ -62,6 +62,8 @@ private:
     yarp::dev::ICartesianControl *  itf_arm_cart_;
     yarp::dev::IGazeControl      *  itf_head_gaze_;
     int                             num_arm_enc_;
+    unsigned int                    cam_width_;
+    unsigned int                    cam_height_;
     float                           eye_fx_;
     float                           eye_fy_;
     float                           eye_cx_;

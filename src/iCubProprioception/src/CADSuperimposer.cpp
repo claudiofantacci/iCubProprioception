@@ -96,6 +96,8 @@ CADSuperimposer::CADSuperimposer(const ConstString& project_name,
     Bottle btl_cam_left_info;
     itf_head_gaze_->getInfo(btl_cam_left_info);
     yInfo() << log_ID_ << "[CAM INFO]" << btl_cam_left_info.toString();
+    cam_width_  = 320;
+    cam_height_ = 240;
     Bottle * cam_left_info = btl_cam_left_info.findGroup("camera_intrinsics_left").get(1).asList();
     eye_fx_ = static_cast<float>(cam_left_info->get(0).asDouble());
     eye_cx_ = static_cast<float>(cam_left_info->get(2).asDouble());
@@ -131,7 +133,7 @@ CADSuperimposer::CADSuperimposer(const ConstString& project_name,
 
 
     yInfo() << log_ID_ << "Setting up OpenGL drawer...";
-    drawer_ = new SICAD(cad_hand_, 320, 240, eye_fx_, eye_fy_, eye_cx_, eye_cy_);
+    drawer_ = new SICAD(cad_hand_, cam_width_, cam_height_, eye_fx_, eye_fy_, eye_cx_, eye_cy_);
     drawer_->setBackgroundOpt(true);
     drawer_->setWireframeOpt(true);
     yInfo() << log_ID_ << "OpenGL drawer succesfully set!";
