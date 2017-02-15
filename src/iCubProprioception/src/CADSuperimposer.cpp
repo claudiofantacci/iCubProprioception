@@ -187,15 +187,21 @@ void CADSuperimposer::run()
             itf_arm_encoders_->getEncoders(encs_arm.data());
             yAssert(encs_arm.size() == 16);
 
-//            Vector analogs;
-//            itf_right_hand_analog_->read(analogs);
-//            yAssert(analogs.size() >= 15);
+#if ICP_USE_ANALOGS
+            Vector analogs;
+            itf_right_hand_analog_->read(analogs);
+            yAssert(analogs.size() >= 15);
+#endif
 
             Vector chainjoints;
             for (unsigned int i = 0; i < 3; ++i)
             {
-//                finger_[i].getChainJoints(encs_arm, analogs, chainjoints);
+#if ICP_USE_ANALOGS
+                finger_[i].getChainJoints(encs_arm, analogs, chainjoints);
+#else
                 finger_[i].getChainJoints(encs_arm, chainjoints);
+#endif
+
                 finger_[i].setAng(CTRL_DEG2RAD * chainjoints);
             }
             Vector encs_torso(3);

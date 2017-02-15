@@ -552,15 +552,17 @@ bool SuperimposerFactory::setRightArmRemoteControlboard()
     righthand_remote_analog.put("remote", "/"+robot_+"/right_hand/analog:o");
 
     drv_right_hand_analog_.open(righthand_remote_analog);
-//    if (drv_right_hand_analog_.isValid())
-//    {
-//        yInfo() << log_ID_ << "Right arm analogsensorclient succefully opened.";
-//    }
-//    else
-//    {
-//        yError() << log_ID_ << "Error opening right arm analogsensorclient device.";
-//        return false;
-//    }
+#if ICP_USE_ANALOGS
+    if (drv_right_hand_analog_.isValid())
+    {
+        yInfo() << log_ID_ << "Right arm analogsensorclient succefully opened.";
+    }
+    else
+    {
+        yError() << log_ID_ << "Error opening right arm analogsensorclient device.";
+        return false;
+    }
+#endif
 
     return true;
 }

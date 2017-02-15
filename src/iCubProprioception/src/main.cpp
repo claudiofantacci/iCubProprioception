@@ -4,7 +4,13 @@
 
 #include "iCubProprioception/SuperimposerFactory.h"
 
+// FIXME: rimuovere questo parametro e metterlo in file di configurazione
+#ifndef ICP_USE_ANALOGS
+#define ICP_USE_ANALOGS FALSE
+#endif
+
 using namespace yarp::os;
+
 
 
 int main(int argc, char* argv[])
