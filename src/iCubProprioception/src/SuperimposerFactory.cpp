@@ -497,21 +497,13 @@ bool SuperimposerFactory::setTorsoRemoteControlboard()
     if (torso_remote_driver_.isValid())
     {
         yInfo() << log_ID_ << "Torso remote_controlboard succefully opened.";
-
-        torso_remote_driver_.view(itf_rightarm_enc_);
-        if (!itf_rightarm_enc_)
-        {
-            yError() << log_ID_ << "Error getting Torso IEncoders interface.";
-            return false;
-        }
+        return true;
     }
     else
     {
         yError() << log_ID_ << "Error opening Torso remote_controlboard device.";
         return false;
     }
-    
-    return true;
 }
 
 
@@ -544,7 +536,9 @@ bool SuperimposerFactory::setRightArmRemoteControlboard()
             return false;
         }
         yInfo() << log_ID_ << "Right arm positions succefully read.";
-    } else {
+    }
+    else
+    {
         yError() << log_ID_ << "Error opening right arm remote_controlboard device.";
         return false;
     }
@@ -561,14 +555,18 @@ bool SuperimposerFactory::setRightArmCartesianController()
     rightarm_cartesian_options.put("remote", "/"+robot_+"/cartesianController/right_arm");
 
     rightarm_cartesian_driver_.open(rightarm_cartesian_options);
-    if (rightarm_cartesian_driver_.isValid()) {
+    if (rightarm_cartesian_driver_.isValid())
+    {
         rightarm_cartesian_driver_.view(itf_rightarm_cart_);
-        if (!itf_rightarm_cart_) {
+        if (!itf_rightarm_cart_)
+        {
             yError() << log_ID_ << "Error getting ICartesianControl interface.";
             return false;
         }
         yInfo() << log_ID_ << "cartesiancontrollerclient succefully opened.";
-    } else {
+    }
+    else
+    {
         yError() << log_ID_ << "Error opening cartesiancontrollerclient device.";
         return false;
     }
@@ -599,16 +597,20 @@ bool SuperimposerFactory::setHeadRemoteControlboard()
     head_option.put("remote", "/"+robot_+"/head");
 
     head_remote_driver_.open(head_option);
-    if (head_remote_driver_.isValid()) {
+    if (head_remote_driver_.isValid())
+    {
         yInfo() << log_ID_ << "Head remote_controlboard succefully opened.";
 
         head_remote_driver_.view(itf_head_pos_);
-        if (!itf_head_pos_) {
+        if (!itf_head_pos_)
+        {
             yError() << log_ID_ << "Error getting head IPositionControl interface.";
             return false;
         }
         yInfo() << log_ID_ << "Head positions succefully read.";
-    } else {
+    }
+    else
+    {
         yError() << log_ID_ << "Error opening head remote_controlboard device.";
         return false;
     }
@@ -625,13 +627,17 @@ bool SuperimposerFactory::setGazeController()
     gaze_option.put("remote", "/iKinGazeCtrl");
 
     gaze_driver_.open(gaze_option);
-    if (gaze_driver_.isValid()) {
+    if (gaze_driver_.isValid())
+    {
         gaze_driver_.view(itf_head_gaze_);
-        if (!itf_head_gaze_) {
+        if (!itf_head_gaze_)
+        {
             yError() << log_ID_ << "Error getting IGazeControl interface.";
             return false;
         }
-    } else {
+    }
+    else
+    {
         yError() << log_ID_ << "Gaze control device not available.";
         return false;
     }
@@ -650,7 +656,8 @@ bool SuperimposerFactory::setTorsoDOF()
     newDOF[0] = 1;
     newDOF[1] = 2;
     newDOF[2] = 1;
-    if (!itf_rightarm_cart_->setDOF(newDOF, curDOF)) {
+    if (!itf_rightarm_cart_->setDOF(newDOF, curDOF))
+    {
         yError() << log_ID_ << "Cannot use torso DOF.";
         return false;
     }
@@ -664,11 +671,13 @@ bool SuperimposerFactory::setTorsoDOF()
 bool SuperimposerFactory::setCommandPort()
 {
     yInfo() << log_ID_ << "Opening command port.";
-    if (!port_command_.open("/"+project_name_+"/cmd")) {
+    if (!port_command_.open("/"+project_name_+"/cmd"))
+    {
         yError() << log_ID_ << "Cannot open the command port.";
         return false;
     }
-    if (!this->yarp().attachAsServer(port_command_)) {
+    if (!this->yarp().attachAsServer(port_command_))
+    {
         yError() << log_ID_ << "Cannot attach the command port.";
         return false;
     }
@@ -685,14 +694,16 @@ bool SuperimposerFactory::MoveFingers(const double (&joint)[6])
     Vector rightarm_encoder(static_cast<size_t>(num_rightarm_enc_));
     itf_rightarm_enc_->getEncoders(rightarm_encoder.data());
     std::list<std::pair<unsigned int, double>> joint_pos_map = {{13, joint[0]},
-        {14, joint[1]},
-        {15, joint[2]},
-        { 8, joint[3]},
-        { 9, joint[4]},
-        {10, joint[5]}};
-    for (auto map = joint_pos_map.cbegin(); map != joint_pos_map.cend(); ++map) {
+                                                                {14, joint[1]},
+                                                                {15, joint[2]},
+                                                                { 8, joint[3]},
+                                                                { 9, joint[4]},
+                                                                {10, joint[5]}};
+    for (auto map = joint_pos_map.cbegin(); map != joint_pos_map.cend(); ++map)
+    {
         yInfo() << log_ID_ << "Moving joint "+std::to_string(map->first)+" to the position "+std::to_string(map->second)+".";
-        if (std::abs(rightarm_encoder[map->first] - map->second) > 5.0) {
+        if (std::abs(rightarm_encoder[map->first] - map->second) > 5.0)
+        {
             rightarm_encoder[map->first] = map->second;
             itf_rightarm_pos_->positionMove(rightarm_encoder.data());
             Time::delay(2.0);
@@ -724,7 +735,8 @@ bool SuperimposerFactory::MoveHand(const Matrix &R, const Vector &init_x)
     Vector init_fixation(init_x);
     init_fixation[0] -= 0.05;
     init_fixation[1] -= 0.05;
-    if (norm(tmp - init_fixation) > 0.10) {
+    if (norm(tmp - init_fixation) > 0.10)
+    {
         yInfo() << log_ID_ << "Moving head to initial fixation point: [" << init_fixation.toString() << "].";
         itf_head_gaze_->lookAtFixationPoint(init_fixation);
         itf_head_gaze_->waitMotionDone(0.1, 15.0);
