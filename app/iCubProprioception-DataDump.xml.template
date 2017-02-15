@@ -5,7 +5,7 @@
     <!-- GENERIC INFORMATION -->
     <name>iCubProprioception-DataDump</name>
     <description>Collect data for iCubProprioception module</description>
-    <version>2.0.1</version>
+    <version>3.0.0</version>
 
     <authors>
         <author email="claudio.fantacci@iit.it">Claudio Fantacci</author>
@@ -71,6 +71,12 @@
         <parameters>--name /datadumper/body/head --txTime --rxTime --type bottle</parameters>
     </module>
 
+    <module>
+        <name>yarpdatadumper</name>
+        <node>localhost</node>
+        <parameters>--name /datadumper/right_hand/analog --txTime --rxTime --type bottle</parameters>
+    </module>
+
 
     <!-- REQUIRED CONNECTIONS -->
     <!-- RC: SKELETON -->
@@ -133,6 +139,12 @@
     <connection>
         <from>/icub/head/state:o</from>
         <to>/datadumper/body/head</to>
+        <protocol>tcp</protocol>
+    </connection>
+
+    <connection>
+        <from>/icub/right_hand/analog:o</from>
+        <to>/datadumper/right_hand/analog</to>
         <protocol>tcp</protocol>
     </connection>
 
