@@ -90,6 +90,8 @@ private:
     yarp::dev::PolyDriver         gaze_driver_;
     yarp::dev::IGazeControl     * itf_head_gaze_;
 
+    yarp::dev::PolyDriver         drv_right_hand_analog_;
+
     SkeletonSuperimposer        * trd_left_cam_skeleton_ = nullptr;
 
     CADSuperimposer             * trd_left_cam_cad_ = nullptr;

@@ -218,6 +218,7 @@ bool SuperimposerFactory::close()
     if (rightarm_remote_driver_.isValid())    rightarm_remote_driver_.close();
     if (head_remote_driver_.isValid())        head_remote_driver_.close();
     if (gaze_driver_.isValid())               gaze_driver_.close();
+    if (drv_right_hand_analog_.isValid())     drv_right_hand_analog_.close();
     
     if (port_command_.isOpen()) port_command_.close();
     return true;
@@ -410,7 +411,9 @@ bool SuperimposerFactory::view_mesh(const bool status)
                                                 torso_remote_driver_,
                                                 rightarm_remote_driver_,
                                                 rightarm_cartesian_driver_,
-                                                gaze_driver_, cad_hand_);
+                                                gaze_driver_,
+                                                drv_right_hand_analog_,
+                                                cad_hand_);
         if (trd_left_cam_cad_ != NULL)
         {
             yInfo() << log_ID_ << "Starting mesh superimposing thread for the right hand on the left camera images...";
@@ -542,6 +545,22 @@ bool SuperimposerFactory::setRightArmRemoteControlboard()
         yError() << log_ID_ << "Error opening right arm remote_controlboard device.";
         return false;
     }
+
+    Property righthand_remote_analog;
+    righthand_remote_analog.put("device", "analogsensorclient");
+    righthand_remote_analog.put("local",  "/"+project_name_+"/right_hand");
+    righthand_remote_analog.put("remote", "/"+robot_+"/right_hand/analog:o");
+
+    drv_right_hand_analog_.open(righthand_remote_analog);
+//    if (drv_right_hand_analog_.isValid())
+//    {
+//        yInfo() << log_ID_ << "Right arm analogsensorclient succefully opened.";
+//    }
+//    else
+//    {
+//        yError() << log_ID_ << "Error opening right arm analogsensorclient device.";
+//        return false;
+//    }
 
     return true;
 }

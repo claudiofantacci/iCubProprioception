@@ -6,6 +6,7 @@
 #include <yarp/dev/CartesianControl.h>
 #include <yarp/dev/IEncoders.h>
 #include <yarp/dev/GazeControl.h>
+#include <yarp/dev/IAnalogSensor.h>
 #include <yarp/dev/PolyDriver.h>
 #include <yarp/sig/Image.h>
 #include <yarp/sig/Vector.h>
@@ -32,6 +33,7 @@ public:
                     yarp::dev::PolyDriver& arm_remote_driver,
                     yarp::dev::PolyDriver& arm_cartesian_driver,
                     yarp::dev::PolyDriver& gaze_driver,
+                    yarp::dev::PolyDriver& drv_right_hand_analog,
                     const SuperImpose::ObjFileMap& cad_hand);
 
     ~CADSuperimposer() noexcept;
@@ -55,12 +57,14 @@ private:
     yarp::dev::PolyDriver         & torso_remote_driver_;
     yarp::dev::PolyDriver         & arm_remote_driver_;
     yarp::dev::PolyDriver         & arm_cartesian_driver_;
+    yarp::dev::PolyDriver         & drv_right_hand_analog_;
     yarp::dev::PolyDriver         & gaze_driver_;
     const SuperImpose::ObjFileMap & cad_hand_;
     yarp::dev::IEncoders         *  itf_torso_encoders_;
     yarp::dev::IEncoders         *  itf_arm_encoders_;
     yarp::dev::ICartesianControl *  itf_arm_cart_;
     yarp::dev::IGazeControl      *  itf_head_gaze_;
+    yarp::dev::IAnalogSensor     *  itf_right_hand_analog_;
     int                             num_arm_enc_;
     unsigned int                    cam_width_;
     unsigned int                    cam_height_;
