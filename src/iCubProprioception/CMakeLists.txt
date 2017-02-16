@@ -8,6 +8,7 @@ set(${EXE_TARGET_NAME}_SRC
         src/ThreadControllerSHC.cpp)
 
 set(${EXE_TARGET_NAME}_HDR
+        include/iCubProprioception/common.h
         include/iCubProprioception/CADSuperimposer.h
         include/iCubProprioception/SkeletonSuperimposer.h
         include/iCubProprioception/SuperimposerFactory.h

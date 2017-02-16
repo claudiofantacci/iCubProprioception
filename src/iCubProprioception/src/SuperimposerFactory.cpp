@@ -1,4 +1,5 @@
 #include "iCubProprioception/SuperimposerFactory.h"
+#include "iCubProprioception/common.h"
 
 #include <list>
 
@@ -146,10 +147,10 @@ bool SuperimposerFactory::configure(ResourceFinder &rf)
     if (!setTorsoDOF()) return false;
 
     /* Set default right hand configuration (closed). */
-    if (!MoveFingers(open_hand_joints_)) return false;
+//    if (!MoveFingers(open_hand_joints_)) return false;
 
     /* Set deafult initial pose of the hand (table view). */
-    if (!MoveHand(table_view_R_, table_view_x_)) return false;
+//    if (!MoveHand(table_view_R_, table_view_x_)) return false;
 
     /* Set initial finger motion point */
     radius_      = 0.08;
@@ -218,7 +219,10 @@ bool SuperimposerFactory::close()
     if (rightarm_remote_driver_.isValid())    rightarm_remote_driver_.close();
     if (head_remote_driver_.isValid())        head_remote_driver_.close();
     if (gaze_driver_.isValid())               gaze_driver_.close();
+    
+#if ICP_USE_ANALOGS == 1
     if (drv_right_hand_analog_.isValid())     drv_right_hand_analog_.close();
+#endif
     
     if (port_command_.isOpen()) port_command_.close();
     return true;
@@ -546,13 +550,13 @@ bool SuperimposerFactory::setRightArmRemoteControlboard()
         return false;
     }
 
+#if ICP_USE_ANALOGS == 1
     Property righthand_remote_analog;
     righthand_remote_analog.put("device", "analogsensorclient");
     righthand_remote_analog.put("local",  "/"+project_name_+"/right_hand");
     righthand_remote_analog.put("remote", "/"+robot_+"/right_hand/analog:o");
 
     drv_right_hand_analog_.open(righthand_remote_analog);
-#if ICP_USE_ANALOGS
     if (drv_right_hand_analog_.isValid())
     {
         yInfo() << log_ID_ << "Right arm analogsensorclient succefully opened.";

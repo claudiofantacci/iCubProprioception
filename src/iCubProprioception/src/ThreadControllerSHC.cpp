@@ -1,4 +1,5 @@
 #include "iCubProprioception/ThreadControllerSHC.h"
+#include "iCubProprioception/common.h"
 
 #include <yarp/os/LogStream.h>
 

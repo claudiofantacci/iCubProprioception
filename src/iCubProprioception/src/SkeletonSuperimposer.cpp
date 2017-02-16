@@ -1,4 +1,5 @@
 #include "iCubProprioception/SkeletonSuperimposer.h"
+#include "iCubProprioception/common.h"
 
 #include <exception>
 

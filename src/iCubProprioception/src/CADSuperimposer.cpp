@@ -1,4 +1,5 @@
 #include "iCubProprioception/CADSuperimposer.h"
+#include "iCubProprioception/common.h"
 
 #include <exception>
 #include <utility>
@@ -24,7 +25,7 @@ CADSuperimposer::CADSuperimposer(const ConstString& project_name,
                                  PolyDriver& gaze_driver,
                                  PolyDriver& drv_right_hand_analog,
                                  const SuperImpose::ObjFileMap& cad_hand) :
-    log_ID_("[CADSuperimposer]"), project_name_(project_name), laterality_(laterality), camera_(camera), camsel_((camera == "left")? 0:1), torso_remote_driver_(torso_remote_driver), arm_remote_driver_(arm_remote_driver), arm_cartesian_driver_(arm_cartesian_driver), gaze_driver_(gaze_driver), drv_right_hand_analog_(drv_right_hand_analog), cad_hand_(cad_hand)
+    log_ID_("[CADSuperimposer]"), project_name_(project_name), laterality_(laterality), camera_(camera), camsel_((camera == "left")? 0:1), torso_remote_driver_(torso_remote_driver), arm_remote_driver_(arm_remote_driver), arm_cartesian_driver_(arm_cartesian_driver), drv_right_hand_analog_(drv_right_hand_analog), gaze_driver_(gaze_driver), cad_hand_(cad_hand)
 {
     yInfo() << log_ID_ << "Initializing hand CAD drawing thread...";
 
@@ -92,11 +93,13 @@ CADSuperimposer::CADSuperimposer(const ConstString& project_name,
     }
     yInfo() << log_ID_ << "Port for "+camera_+" camera succesfully opened!";
 
-//    if (!drv_right_hand_analog_.view(itf_right_hand_analog_))
-//    {
-//        yError() << log_ID_ << "Error getting right hand IAnalogSensor interface!";
-//        throw std::runtime_error("Error getting right hand IAnalogSensor interface!");
-//    }
+#if ICP_USE_ANALOGS == 1
+    if (!drv_right_hand_analog_.view(itf_right_hand_analog_))
+    {
+        yError() << log_ID_ << "Error getting right hand IAnalogSensor interface!";
+        throw std::runtime_error("Error getting right hand IAnalogSensor interface!");
+    }
+#endif
 
     // FIXME: far diventare la camera parametrica utilizzando CAMERA e rinominare le variabili
     Bottle btl_cam_left_info;
@@ -187,7 +190,7 @@ void CADSuperimposer::run()
             itf_arm_encoders_->getEncoders(encs_arm.data());
             yAssert(encs_arm.size() == 16);
 
-#if ICP_USE_ANALOGS
+#if ICP_USE_ANALOGS == 1
             Vector analogs;
             itf_right_hand_analog_->read(analogs);
             yAssert(analogs.size() >= 15);
@@ -196,7 +199,7 @@ void CADSuperimposer::run()
             Vector chainjoints;
             for (unsigned int i = 0; i < 3; ++i)
             {
-#if ICP_USE_ANALOGS
+#if ICP_USE_ANALOGS == 1
                 finger_[i].getChainJoints(encs_arm, analogs, chainjoints);
 #else
                 finger_[i].getChainJoints(encs_arm, chainjoints);

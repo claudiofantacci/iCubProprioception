@@ -3,11 +3,7 @@
 #include <yarp/os/ResourceFinder.h>
 
 #include "iCubProprioception/SuperimposerFactory.h"
-
-// FIXME: rimuovere questo parametro e metterlo in file di configurazione
-#ifndef ICP_USE_ANALOGS
-#define ICP_USE_ANALOGS FALSE
-#endif
+#include "iCubProprioception/common.h"
 
 using namespace yarp::os;
 
@@ -16,7 +12,14 @@ using namespace yarp::os;
 int main(int argc, char* argv[])
 {
     ConstString log_ID = "[Main]";
+
     yInfo() << log_ID << "Configuring and starting module...";
+
+#if ICP_USE_ANALOGS == 1
+    yInfo() << log_ID << "ICP_USE_ANALOGS: TRUE";
+#else
+    yInfo() << log_ID << "ICP_USE_ANALOGS: FALSE";
+#endif
 
     Network yarp;
     if (!yarp.checkNetwork(3.0))
