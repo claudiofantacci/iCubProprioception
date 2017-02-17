@@ -61,10 +61,10 @@ SkeletonSuperimposer::SkeletonSuperimposer(const ConstString & project_name, con
     itf_head_gaze_->getInfo(btl_cam_left_info);
     Bottle * cam_left_info = btl_cam_left_info.findGroup("camera_intrinsics_left").get(1).asList();
     yInfo() << log_ID_ << "Camera Info: [" + cam_left_info->toString() + "].";
-    EYE_FX_ = static_cast<float>(cam_left_info->get(0).asDouble());
-    EYE_CX_ = static_cast<float>(cam_left_info->get(2).asDouble());
-    EYE_FY_ = static_cast<float>(cam_left_info->get(5).asDouble());
-    EYE_CY_ = static_cast<float>(cam_left_info->get(6).asDouble());
+    eye_fx_ = static_cast<float>(cam_left_info->get(0).asDouble());
+    eye_cx_ = static_cast<float>(cam_left_info->get(2).asDouble());
+    eye_fy_ = static_cast<float>(cam_left_info->get(5).asDouble());
+    eye_cy_ = static_cast<float>(cam_left_info->get(6).asDouble());
 
     yInfo() << log_ID_ << "Setting joint bounds for the fingers.";
 
@@ -113,7 +113,7 @@ SkeletonSuperimposer::SkeletonSuperimposer(const ConstString & project_name, con
 
     yInfo() << log_ID_ << "Setting up OpenCV drawer...";
 
-    drawer_ = new SISkeleton(EYE_FX_, EYE_FY_, EYE_CX_, EYE_CY_);
+    drawer_ = new SISkeleton(eye_fx_, eye_fy_, eye_cx_, eye_cy_);
 
     yInfo() << log_ID_ << "OpenCV drawer succesfully set!";
     
@@ -128,13 +128,15 @@ SkeletonSuperimposer::~SkeletonSuperimposer() noexcept
 
 // TODO: uniformare il nome delle parti da disegnare così da avere dei Superimposer standardizzati a cui passare un generico SuperImpose
 // TODO: trovare un modo per avere dei configure nell'interfaccia SuperImpose così da poter usare un factory method per i vari Superimposer
-void SkeletonSuperimposer::run() {
+void SkeletonSuperimposer::run()
+{
     Vector ee_x(3);
     Vector ee_o(4);
     Vector cam_x(3);
     Vector cam_o(4);
 
-    while (!isStopping()) {
+    while (!isStopping())
+    {
         ImageOf<PixelRgb> * imgin = inport_skeleton_img_.read(true);
 
         itf_arm_cart_->getPose(ee_x, ee_o);
@@ -208,12 +210,14 @@ void SkeletonSuperimposer::run() {
 }
 
 
-void SkeletonSuperimposer::onStop() {
+void SkeletonSuperimposer::onStop()
+{
     inport_skeleton_img_.interrupt();
 }
 
 
-void SkeletonSuperimposer::threadRelease() {
+void SkeletonSuperimposer::threadRelease()
+{
     yInfo() << log_ID_ << "Deallocating resource of hand skeleton drawing thread.";
 
     outport_skeleton_img_.interrupt();

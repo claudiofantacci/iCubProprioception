@@ -39,10 +39,10 @@ private:
     yarp::dev::ICartesianControl*  itf_arm_cart_;
     yarp::dev::IGazeControl     *  itf_head_gaze_;
     int                            num_arm_enc_;
-    float                          EYE_FX_;
-    float                          EYE_FY_;
-    float                          EYE_CX_;
-    float                          EYE_CY_;
+    float                          eye_fx_;
+    float                          eye_fy_;
+    float                          eye_cx_;
+    float                          eye_cy_;
 
     iCub::iKin::iCubFinger         finger_[3];
 

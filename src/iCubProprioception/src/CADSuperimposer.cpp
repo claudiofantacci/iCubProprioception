@@ -107,7 +107,7 @@ CADSuperimposer::CADSuperimposer(const ConstString& project_name,
     yInfo() << log_ID_ << "[CAM INFO]" << btl_cam_left_info.toString();
     cam_width_  = 320;
     cam_height_ = 240;
-    Bottle * cam_left_info = btl_cam_left_info.findGroup("camera_intrinsics_left").get(1).asList();
+    Bottle* cam_left_info = btl_cam_left_info.findGroup("camera_intrinsics_left").get(1).asList();
     eye_fx_ = static_cast<float>(cam_left_info->get(0).asDouble());
     eye_cx_ = static_cast<float>(cam_left_info->get(2).asDouble());
     eye_fy_ = static_cast<float>(cam_left_info->get(5).asDouble());
