@@ -20,7 +20,8 @@
 #include <GLFW/glfw3.h>
 
 #include <SuperImpose/SICAD.h>
-//#include "iCubLimbSuperimposer/ThreadControllerSHC.h"
+
+#include "iCubProprioception/ThreadControllerSHC.h"
 
 
 class CADSuperimposer : public yarp::os::Thread
@@ -75,7 +76,7 @@ private:
     iCub::iKin::iCubFinger          finger_[3];
     iCub::iKin::iCubArm             arm_;
     SICAD                        *  drawer_;
-//    ThreadControllerSHC             helper;
+    ThreadControllerSHC             helper_;
 
     yarp::os::Port                                                  port_command_;
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb>> inport_renderer_img_;

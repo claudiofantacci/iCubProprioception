@@ -5,10 +5,10 @@
 
 #include <yarp/os/ConstString.h>
 
-#include "thrift/iCubProprioceptionIDL.h"
+#include "thrift/iCubProprioceptionOGLIDL.h"
 
 
-class ThreadControllerSHC : public iCubProprioceptionIDL
+class ThreadControllerSHC : public iCubProprioceptionOGLIDL
 {
 public:
     enum MipMaps

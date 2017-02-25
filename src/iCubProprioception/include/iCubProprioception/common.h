@@ -3,7 +3,7 @@
 
 // FIXME: rimuovere questo parametro e metterlo in file di configurazione
 #ifndef ICP_USE_ANALOGS
-#define ICP_USE_ANALOGS 1
+#define ICP_USE_ANALOGS 0
 #endif
 
 #endif /* COMMON_H */

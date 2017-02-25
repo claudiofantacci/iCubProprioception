@@ -90,8 +90,8 @@ bool SuperimposerFactory::configure(ResourceFinder &rf)
     if (!FileFound(cad_hand_["medium2"])) return false;
     cad_hand_["medium3"] = rf.findFileByName("r_ml3.obj");
     if (!FileFound(cad_hand_["medium3"])) return false;
-    cad_hand_["forearm"] = rf.findFileByName("r_forearm.obj");
-    if (!FileFound(cad_hand_["forearm"])) return false;
+//    cad_hand_["forearm"] = rf.findFileByName("r_forearm.obj");
+//    if (!FileFound(cad_hand_["forearm"])) return false;
 
     /* Initializing useful pose matrices and vectors for the hand. */
     frontal_view_R_.resize(3, 3);
@@ -145,12 +145,6 @@ bool SuperimposerFactory::configure(ResourceFinder &rf)
 
     /* Enable torso DOF. */
     if (!setTorsoDOF()) return false;
-
-    /* Set default right hand configuration (closed). */
-//    if (!MoveFingers(open_hand_joints_)) return false;
-
-    /* Set deafult initial pose of the hand (table view). */
-//    if (!MoveHand(table_view_R_, table_view_x_)) return false;
 
     /* Set initial finger motion point */
     radius_      = 0.08;
@@ -696,7 +690,7 @@ bool SuperimposerFactory::setTorsoDOF()
 bool SuperimposerFactory::setCommandPort()
 {
     yInfo() << log_ID_ << "Opening command port.";
-    if (!port_command_.open("/"+project_name_+"/cmd"))
+    if (!port_command_.open("/"+project_name_+"/rpc"))
     {
         yError() << log_ID_ << "Cannot open the command port.";
         return false;

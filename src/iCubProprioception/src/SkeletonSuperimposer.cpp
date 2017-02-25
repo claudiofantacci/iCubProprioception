@@ -137,7 +137,7 @@ void SkeletonSuperimposer::run()
 
     while (!isStopping())
     {
-        ImageOf<PixelRgb> * imgin = inport_skeleton_img_.read(true);
+        ImageOf<PixelRgb>* imgin = inport_skeleton_img_.read(true);
 
         itf_arm_cart_->getPose(ee_x, ee_o);
 
@@ -159,7 +159,6 @@ void SkeletonSuperimposer::run()
         SuperImpose::ObjPoseMap hand_pose;
         SuperImpose::ObjPose    pose;
         pose.assign(ee_x.data(), ee_x.data()+3);
-        pose.insert(pose.end(), ee_o.data(), ee_o.data()+4);
         hand_pose.emplace("palm", pose);
         for (unsigned int fng = 0; fng < 3; ++fng)
         {
@@ -168,33 +167,29 @@ void SkeletonSuperimposer::run()
             if (fng != 0)
             {
                 Vector j_x = (Ha * (finger_[fng].getH0().getCol(3))).subVector(0, 2);
-                Vector j_o = dcm2axis(Ha * finger_[fng].getH0());
 
                 if      (fng == 1) { finger_s = "index"; }
                 else if (fng == 2) { finger_s = "medium"; }
 
                 pose.assign(j_x.data(), j_x.data()+3);
-                pose.insert(pose.end(), j_o.data(), j_o.data()+4);
                 hand_pose.emplace(finger_s, pose);
             }
 
             for (unsigned int i = 0; i < finger_[fng].getN(); ++i)
             {
                 Vector j_x = (Ha * (finger_[fng].getH(i, true).getCol(3))).subVector(0, 2);
-                Vector j_o = dcm2axis(Ha * finger_[fng].getH(i, true));
 
                 if      (fng == 0) { finger_s = "thumb"; }
                 else if (fng == 1) { finger_s = "index"; }
                 else if (fng == 2) { finger_s = "medium"; }
 
                 pose.assign(j_x.data(), j_x.data()+3);
-                pose.insert(pose.end(), j_o.data(), j_o.data()+4);
                 hand_pose.emplace(finger_s, pose);
             }
         }
 
         if (imgin != NULL) {
-            ImageOf<PixelRgb> & imgout = outport_skeleton_img_.prepare();
+            ImageOf<PixelRgb>& imgout = outport_skeleton_img_.prepare();
             imgout = *imgin;
             cv::Mat img = cv::cvarrToMat(imgout.getIplImage());
             drawer_->superimpose(hand_pose, cam_x.data(), cam_o.data(), img);

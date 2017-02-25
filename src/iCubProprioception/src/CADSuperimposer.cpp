@@ -143,8 +143,6 @@ CADSuperimposer::CADSuperimposer(const ConstString& project_name,
 
     yInfo() << log_ID_ << "Setting up OpenGL drawer...";
     drawer_ = new SICAD(cad_hand_, cam_width_, cam_height_, eye_fx_, eye_fy_, eye_cx_, eye_cy_);
-    drawer_->setBackgroundOpt(true);
-    drawer_->setWireframeOpt(true);
     yInfo() << log_ID_ << "OpenGL drawer succesfully set!";
     
     
@@ -189,6 +187,15 @@ void CADSuperimposer::run()
             Vector encs_arm(static_cast<size_t>(num_arm_enc_));
             itf_arm_encoders_->getEncoders(encs_arm.data());
             yAssert(encs_arm.size() == 16);
+
+//            encs_arm(7) = 32.0;
+//            encs_arm(8) = 30.0;
+//            encs_arm(9) = 0.0;
+//            encs_arm(10) = 0.0;
+//            encs_arm(11) = 0.0;
+//            encs_arm(12) = 0.0;
+//            encs_arm(13) = 0.0;
+//            encs_arm(14) = 0.0;
 
 #if ICP_USE_ANALOGS == 1
             Vector analogs;
@@ -253,13 +260,16 @@ void CADSuperimposer::run()
                     hand_pose.emplace(finger_s, pose);
                 }
             }
-            Matrix H_forearm = arm_.getH(7, true);
-            Vector j_x = H_forearm.getCol(3).subVector(0, 2);
-            Vector j_o = dcm2axis(H_forearm);
-            pose.clear();
-            pose.assign(j_x.data(), j_x.data()+3);
-            pose.insert(pose.end(), j_o.data(), j_o.data()+4);
-            hand_pose.emplace("forearm", pose);
+//            Matrix H_forearm = arm_.getH(7, true);
+//            Vector j_x = H_forearm.getCol(3).subVector(0, 2);
+//            Vector j_o = dcm2axis(H_forearm);
+//            pose.clear();
+//            pose.assign(j_x.data(), j_x.data()+3);
+//            pose.insert(pose.end(), j_o.data(), j_o.data()+4);
+//            hand_pose.emplace("forearm", pose);
+
+            drawer_->setBackgroundOpt(helper_.getBackgroundOpt());
+            drawer_->setWireframeOpt(helper_.getWireframeOpt());
 
             cv::Mat img = cv::cvarrToMat(imgin->getIplImage(), true);
             drawer_->superimpose(hand_pose, cam_x.data(), cam_o.data(), img);
@@ -303,18 +313,18 @@ void CADSuperimposer::threadRelease()
 
 bool CADSuperimposer::setCommandPort()
 {
-    //    yInfo() << log_ID_ << "Opening command port.";
-    //    if (!port_command.open("/"+project_name_+"/cad/cmd"))
-    //    {
-    //        yError() << log_ID_ << "Cannot open the command port.";
-    //        return false;
-    //    }
-    //    if (!helper.yarp().attachAsServer(port_command))
-    //    {
-    //        yError() << log_ID_ << "Cannot attach the command port.";
-    //        return false;
-    //    }
-    //    yInfo() << log_ID_ << "Command port and thread helper succesfully opened and attached. Ready to recieve commands.";
+    yInfo() << log_ID_ << "Opening command port.";
+    if (!port_command_.open("/"+project_name_+"/render/rpc"))
+    {
+        yError() << log_ID_ << "Cannot open /"+project_name_+"/render/rpc port.";
+        return false;
+    }
+    if (!helper_.yarp().attachAsServer(port_command_))
+    {
+        yError() << log_ID_ << "Cannot attach the renderer RPC port.";
+        return false;
+    }
+    yInfo() << log_ID_ << "Renderer RPC port succesfully opened and attached. Ready to recieve commands.";
     
     return true;
 }
