@@ -5,7 +5,7 @@
     <!-- GENERIC INFORMATION -->
     <name>iCubProprioception</name>
     <description>Superimpose the hand skeleton and/or 3D CAD model on the image plane</description>
-    <version>4.0.2</version>
+    <version>4.0.3</version>
 
     <authors>
         <author email="claudio.fantacci@iit.it">Claudio Fantacci</author>
@@ -43,33 +43,33 @@
 
 
     <!-- REQUIRED CONNECTIONS -->
-    <connection persist="true">
+    <connection>
         <from>/icub/camcalib/left/out</from>
         <to>/view/cam_left</to>
         <protocol>tcp</protocol>
     </connection>
 
     <!-- RC: SKELETON -->
-    <connection persist="true">
+    <connection>
         <from>/icub/camcalib/left/out</from>
         <to>/iCubProprioception/skeleton/cam/left:i</to>
         <protocol>tcp</protocol>
     </connection>
 
-    <connection persist="true">
+    <connection>
         <from>/iCubProprioception/skeleton/cam/left:o</from>
         <to>/view/cam_left/skeleton</to>
         <protocol>tcp</protocol>
     </connection>
 
     <!-- RC: CAD -->
-    <connection persist="true">
+    <connection>
         <from>/icub/camcalib/left/out</from>
         <to>/iCubProprioception/cad/cam/left:i</to>
         <protocol>tcp</protocol>
     </connection>
 
-    <connection persist="true">
+    <connection>
         <from>/iCubProprioception/cad/cam/left:o</from>
         <to>/view/cam_left/cad</to>
         <protocol>tcp</protocol>
