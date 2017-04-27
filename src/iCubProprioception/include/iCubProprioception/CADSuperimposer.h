@@ -35,7 +35,8 @@ public:
                     yarp::dev::PolyDriver& arm_cartesian_driver,
                     yarp::dev::PolyDriver& gaze_driver,
                     yarp::dev::PolyDriver& drv_right_hand_analog,
-                    const SuperImpose::ObjFileMap& cad_hand);
+                    const SuperImpose::ObjFileMap& cad_hand,
+                    const yarp::os::ConstString& shader_path);
 
     ~CADSuperimposer() noexcept;
 
@@ -48,35 +49,36 @@ public:
     void threadRelease();
     
 private:
-    const yarp::os::ConstString     log_ID_;
-    const yarp::os::ConstString     project_name_;
+    const yarp::os::ConstString    log_ID_;
+    const yarp::os::ConstString    project_name_;
     
     // TODO: rivedere il costruttore ed instanziare i PolyDriver in ThreadInit.
-    const yarp::os::ConstString     laterality_;
-    const yarp::os::ConstString     camera_;
-    const int                       camsel_;
-    yarp::dev::PolyDriver         & torso_remote_driver_;
-    yarp::dev::PolyDriver         & arm_remote_driver_;
-    yarp::dev::PolyDriver         & arm_cartesian_driver_;
-    yarp::dev::PolyDriver         & drv_right_hand_analog_;
-    yarp::dev::PolyDriver         & gaze_driver_;
-    const SuperImpose::ObjFileMap & cad_hand_;
-    yarp::dev::IEncoders         *  itf_torso_encoders_;
-    yarp::dev::IEncoders         *  itf_arm_encoders_;
-    yarp::dev::ICartesianControl *  itf_arm_cart_;
-    yarp::dev::IGazeControl      *  itf_head_gaze_;
-    yarp::dev::IAnalogSensor     *  itf_right_hand_analog_;
-    int                             num_arm_enc_;
-    unsigned int                    cam_width_;
-    unsigned int                    cam_height_;
-    float                           eye_fx_;
-    float                           eye_fy_;
-    float                           eye_cx_;
-    float                           eye_cy_;
-    iCub::iKin::iCubFinger          finger_[3];
-    iCub::iKin::iCubArm             arm_;
-    SICAD                        *  drawer_;
-    ThreadControllerSHC             helper_;
+    const yarp::os::ConstString    laterality_;
+    const yarp::os::ConstString    camera_;
+    const int                      camsel_;
+    yarp::dev::PolyDriver        & torso_remote_driver_;
+    yarp::dev::IEncoders         * itf_torso_encoders_;
+    yarp::dev::PolyDriver        & arm_remote_driver_;
+    yarp::dev::IEncoders         * itf_arm_encoders_;
+    yarp::dev::PolyDriver        & arm_cartesian_driver_;
+    yarp::dev::ICartesianControl * itf_arm_cart_;
+    yarp::dev::PolyDriver        & drv_right_hand_analog_;
+    yarp::dev::IGazeControl      * itf_head_gaze_;
+    yarp::dev::PolyDriver        & gaze_driver_;
+    yarp::dev::IAnalogSensor     * itf_right_hand_analog_;
+    const SuperImpose::ObjFileMap& cad_hand_;
+    const yarp::os::ConstString    shader_path_;
+    int                            num_arm_enc_;
+    unsigned int                   cam_width_;
+    unsigned int                   cam_height_;
+    float                          cam_fx_;
+    float                          cam_fy_;
+    float                          cam_cx_;
+    float                          cam_cy_;
+    iCub::iKin::iCubFinger         finger_[3];
+    iCub::iKin::iCubArm            arm_;
+    SICAD                        * drawer_;
+    ThreadControllerSHC            helper_;
 
     yarp::os::Port                                                  port_command_;
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb>> inport_renderer_img_;

@@ -24,8 +24,9 @@ CADSuperimposer::CADSuperimposer(const ConstString& project_name,
                                  PolyDriver& arm_cartesian_driver,
                                  PolyDriver& gaze_driver,
                                  PolyDriver& drv_right_hand_analog,
-                                 const SuperImpose::ObjFileMap& cad_hand) :
-    log_ID_("[CADSuperimposer]"), project_name_(project_name), laterality_(laterality), camera_(camera), camsel_((camera == "left")? 0:1), torso_remote_driver_(torso_remote_driver), arm_remote_driver_(arm_remote_driver), arm_cartesian_driver_(arm_cartesian_driver), drv_right_hand_analog_(drv_right_hand_analog), gaze_driver_(gaze_driver), cad_hand_(cad_hand)
+                                 const SuperImpose::ObjFileMap& cad_hand,
+                                 const ConstString& shader_path) :
+    log_ID_("[CADSuperimposer]"), project_name_(project_name), laterality_(laterality), camera_(camera), camsel_((camera == "left")? 0:1), torso_remote_driver_(torso_remote_driver), arm_remote_driver_(arm_remote_driver), arm_cartesian_driver_(arm_cartesian_driver), drv_right_hand_analog_(drv_right_hand_analog), gaze_driver_(gaze_driver), cad_hand_(cad_hand), shader_path_(shader_path)
 {
     yInfo() << log_ID_ << "Initializing hand CAD drawing thread...";
 
@@ -108,10 +109,10 @@ CADSuperimposer::CADSuperimposer(const ConstString& project_name,
     cam_width_  = 320;
     cam_height_ = 240;
     Bottle* cam_left_info = btl_cam_left_info.findGroup("camera_intrinsics_left").get(1).asList();
-    eye_fx_ = static_cast<float>(cam_left_info->get(0).asDouble());
-    eye_cx_ = static_cast<float>(cam_left_info->get(2).asDouble());
-    eye_fy_ = static_cast<float>(cam_left_info->get(5).asDouble());
-    eye_cy_ = static_cast<float>(cam_left_info->get(6).asDouble());
+    cam_fx_ = static_cast<float>(cam_left_info->get(0).asDouble());
+    cam_cx_ = static_cast<float>(cam_left_info->get(2).asDouble());
+    cam_fy_ = static_cast<float>(cam_left_info->get(5).asDouble());
+    cam_cy_ = static_cast<float>(cam_left_info->get(6).asDouble());
 
 
     yInfo() << log_ID_ << "Setting "+laterality_+" fingers...";
@@ -142,7 +143,8 @@ CADSuperimposer::CADSuperimposer(const ConstString& project_name,
 
 
     yInfo() << log_ID_ << "Setting up OpenGL drawer...";
-    drawer_ = new SICAD(cad_hand_, cam_width_, cam_height_, eye_fx_, eye_fy_, eye_cx_, eye_cy_);
+    drawer_ = new SICAD(cad_hand_, cam_width_, cam_height_, 1, shader_path_,
+                        cam_fx_, cam_fy_, cam_cx_, cam_cy_);
     yInfo() << log_ID_ << "OpenGL drawer succesfully set!";
     
     
@@ -260,13 +262,13 @@ void CADSuperimposer::run()
                     hand_pose.emplace(finger_s, pose);
                 }
             }
-//            Matrix H_forearm = arm_.getH(7, true);
-//            Vector j_x = H_forearm.getCol(3).subVector(0, 2);
-//            Vector j_o = dcm2axis(H_forearm);
-//            pose.clear();
-//            pose.assign(j_x.data(), j_x.data()+3);
-//            pose.insert(pose.end(), j_o.data(), j_o.data()+4);
-//            hand_pose.emplace("forearm", pose);
+            Matrix H_forearm = arm_.getH(7, true);
+            Vector j_x = H_forearm.getCol(3).subVector(0, 2);
+            Vector j_o = dcm2axis(H_forearm);
+            pose.clear();
+            pose.assign(j_x.data(), j_x.data()+3);
+            pose.insert(pose.end(), j_o.data(), j_o.data()+4);
+            hand_pose.emplace("forearm", pose);
 
             drawer_->setBackgroundOpt(helper_.getBackgroundOpt());
             drawer_->setWireframeOpt(helper_.getWireframeOpt());
