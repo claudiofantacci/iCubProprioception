@@ -96,6 +96,7 @@ private:
 
     CADSuperimposer             * trd_left_cam_cad_ = nullptr;
     SuperImpose::ObjFileMap       cad_hand_;
+    yarp::os::ConstString         shader_path_;
 
     yarp::os::Port                port_command_;
 

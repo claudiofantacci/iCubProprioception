@@ -35,6 +35,7 @@ bool SuperimposerFactory::configure(ResourceFinder &rf)
     freerunning_ = false;
     superimpose_skeleton_ = false;
     superimpose_mesh_ = false;
+    ConstString context = rf.getContext();
 
     /* Parsing parameters from config file. */
     /* Robot name */
@@ -59,6 +60,8 @@ bool SuperimposerFactory::configure(ResourceFinder &rf)
         yWarning() << log_ID_ << "Unused config accelerations!";
         yInfo()    << log_ID_ << arm_acc.toString();
     }
+
+    rf.setDefaultContext(context + "/mesh");
 
     cad_hand_["palm"] = rf.findFileByName("r_palm.obj");
     if (!FileFound(cad_hand_["palm"])) return false;
@@ -90,8 +93,13 @@ bool SuperimposerFactory::configure(ResourceFinder &rf)
     if (!FileFound(cad_hand_["medium2"])) return false;
     cad_hand_["medium3"] = rf.findFileByName("r_ml3.obj");
     if (!FileFound(cad_hand_["medium3"])) return false;
-//    cad_hand_["forearm"] = rf.findFileByName("r_forearm.obj");
-//    if (!FileFound(cad_hand_["forearm"])) return false;
+    cad_hand_["forearm"] = rf.findFileByName("r_forearm.obj");
+    if (!FileFound(cad_hand_["forearm"])) return false;
+
+    rf.setDefaultContext(context + "/shader");
+    shader_path_ = rf.findFileByName("shader_model.vert");
+    if (!FileFound(shader_path_)) return false;
+    shader_path_ = shader_path_.substr(0, shader_path_.rfind("/"));
 
     /* Initializing useful pose matrices and vectors for the hand. */
     frontal_view_R_.resize(3, 3);
@@ -476,7 +484,7 @@ std::string SuperimposerFactory::quit()
 }
 
 
-bool SuperimposerFactory::FileFound (const ConstString & file)
+bool SuperimposerFactory::FileFound (const ConstString& file)
 {
     if (file.empty())
     {
