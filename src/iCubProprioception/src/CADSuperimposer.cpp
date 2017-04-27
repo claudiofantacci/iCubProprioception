@@ -120,16 +120,17 @@ CADSuperimposer::CADSuperimposer(const ConstString& project_name,
     finger_[1] = iCubFinger(laterality_+"_index");
     finger_[2] = iCubFinger(laterality_+"_middle");
 
-    //    std::deque<IControlLimits*> temp_lim;
-    //    temp_lim.push_front(itf_fingers_lim);
-    //    for (int i = 0; i < 3; ++i)
-    //    {
-    //        if (!finger_[i].alignJointsBounds(temp_lim))
-    //        {
-    //            yError() << log_ID_ << "Cannot set joint bound for finger " + std::to_string(i) + ".";
-    //            return false;
-    //        }
-    //    }
+    std::deque<IControlLimits*> temp_lim;
+    temp_lim.push_front(itf_fingers_lim);
+    for (int i = 0; i < 3; ++i)
+    {
+        if (!finger_[i].alignJointsBounds(temp_lim))
+        {
+            yError() << log_ID_ << "Cannot set joint bound for finger " + std::to_string(i) + ".";
+            throw std::runtime_error("Cannot set joint bound for finger " + std::to_string(i) + ".");
+        }
+    }
+
     yInfo() << log_ID_ << "Finger succesfully set!";
 
 
