@@ -16,7 +16,7 @@ using namespace yarp::sig;
 using namespace yarp::math;
 
 
-SuperimposerFactory::SuperimposerFactory() : log_ID_("[SuperimposerFactory]"), project_name_("SuperimposerModule") {}
+SuperimposerFactory::SuperimposerFactory() : log_ID_("[SuperimposerFactory]"), project_name_("SuperimposerModule") { }
 
 
 bool SuperimposerFactory::initOGL(const GLsizei width, const GLsizei height, const GLint view)

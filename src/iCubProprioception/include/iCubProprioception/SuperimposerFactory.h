@@ -24,7 +24,8 @@
 #include "thrift/iCubProprioceptionIDL.h"
 
 
-class SuperimposerFactory : public yarp::os::RFModule, public iCubProprioceptionIDL
+class SuperimposerFactory : public yarp::os::RFModule,
+                            public iCubProprioceptionIDL
 {
 public:
     SuperimposerFactory();
