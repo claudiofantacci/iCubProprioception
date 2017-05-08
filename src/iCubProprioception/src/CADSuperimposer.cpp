@@ -160,12 +160,6 @@ CADSuperimposer::~CADSuperimposer() noexcept
 }
 
 
-bool CADSuperimposer::initOGL(const GLsizei width, const GLsizei height, const GLint view)
-{
-    return SICAD::initOGL(width, height, view);
-}
-
-
 void CADSuperimposer::run()
 {
     Vector ee_x (3);

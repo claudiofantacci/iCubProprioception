@@ -16,9 +16,6 @@
 #include <yarp/os/Thread.h>
 #include <iCub/iKin/iKinFwd.h>
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-
 #include <SuperImpose/SICAD.h>
 
 #include "iCubProprioception/ThreadControllerSHC.h"
@@ -39,8 +36,6 @@ public:
                     const yarp::os::ConstString& shader_path);
 
     ~CADSuperimposer() noexcept;
-
-    static bool initOGL(const GLsizei width, const GLsizei height, const GLint view = 1);
 
     void run          ();
 
