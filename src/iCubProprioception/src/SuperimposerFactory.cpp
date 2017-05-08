@@ -61,44 +61,44 @@ bool SuperimposerFactory::configure(ResourceFinder &rf)
     rf.setDefaultContext(context + "/mesh");
 
     cad_hand_["palm"] = rf.findFileByName("r_palm.obj");
-    if (!FileFound(cad_hand_["palm"])) return false;
+    if (!fileFound(cad_hand_["palm"])) return false;
     cad_hand_["thumb1"] = rf.findFileByName("r_tl0.obj");
-    if (!FileFound(cad_hand_["thumb1"])) return false;
+    if (!fileFound(cad_hand_["thumb1"])) return false;
     cad_hand_["thumb2"] = rf.findFileByName("r_tl1.obj");
-    if (!FileFound(cad_hand_["thumb2"])) return false;
+    if (!fileFound(cad_hand_["thumb2"])) return false;
     cad_hand_["thumb3"] = rf.findFileByName("r_tl2.obj");
-    if (!FileFound(cad_hand_["thumb3"])) return false;
+    if (!fileFound(cad_hand_["thumb3"])) return false;
     cad_hand_["thumb4"] = rf.findFileByName("r_tl3.obj");
-    if (!FileFound(cad_hand_["thumb4"])) return false;
+    if (!fileFound(cad_hand_["thumb4"])) return false;
     cad_hand_["thumb5"] = rf.findFileByName("r_tl4.obj");
-    if (!FileFound(cad_hand_["thumb5"])) return false;
+    if (!fileFound(cad_hand_["thumb5"])) return false;
     cad_hand_["index0"] = rf.findFileByName("r_indexbase.obj");
-    if (!FileFound(cad_hand_["index0"])) return false;
+    if (!fileFound(cad_hand_["index0"])) return false;
     cad_hand_["index1"] = rf.findFileByName("r_ail0.obj");
-    if (!FileFound(cad_hand_["index1"])) return false;
+    if (!fileFound(cad_hand_["index1"])) return false;
     cad_hand_["index2"] = rf.findFileByName("r_ail1.obj");
-    if (!FileFound(cad_hand_["index2"])) return false;
+    if (!fileFound(cad_hand_["index2"])) return false;
     cad_hand_["index3"] = rf.findFileByName("r_ail2.obj");
-    if (!FileFound(cad_hand_["index3"])) return false;
+    if (!fileFound(cad_hand_["index3"])) return false;
     cad_hand_["index4"] = rf.findFileByName("r_ail3.obj");
-    if (!FileFound(cad_hand_["index4"])) return false;
+    if (!fileFound(cad_hand_["index4"])) return false;
     cad_hand_["medium0"] = rf.findFileByName("r_ml0.obj");
-    if (!FileFound(cad_hand_["medium0"])) return false;
+    if (!fileFound(cad_hand_["medium0"])) return false;
     cad_hand_["medium1"] = rf.findFileByName("r_ml1.obj");
-    if (!FileFound(cad_hand_["medium1"])) return false;
+    if (!fileFound(cad_hand_["medium1"])) return false;
     cad_hand_["medium2"] = rf.findFileByName("r_ml2.obj");
-    if (!FileFound(cad_hand_["medium2"])) return false;
+    if (!fileFound(cad_hand_["medium2"])) return false;
     cad_hand_["medium3"] = rf.findFileByName("r_ml3.obj");
-    if (!FileFound(cad_hand_["medium3"])) return false;
+    if (!fileFound(cad_hand_["medium3"])) return false;
     cad_hand_["forearm"] = rf.findFileByName("r_forearm.obj");
-    if (!FileFound(cad_hand_["forearm"])) return false;
+    if (!fileFound(cad_hand_["forearm"])) return false;
 
 
     /* Search shader files in /shader context folder */
     rf.setDefaultContext(context + "/shader");
 
     shader_path_ = rf.findFileByName("shader_model.vert");
-    if (!FileFound(shader_path_)) return false;
+    if (!fileFound(shader_path_)) return false;
     shader_path_ = shader_path_.substr(0, shader_path_.rfind("/"));
 
 
@@ -205,7 +205,7 @@ bool SuperimposerFactory::initial_position()
     {
         yInfo() << log_ID_ << "Reaching initial position...";
 
-        init_position_ = !MoveHand(table_view_R_, table_view_x_);
+        init_position_ = !moveHand(table_view_R_, table_view_x_);
         if (!init_position_) yInfo() << log_ID_ << "...done. iCub can move the hand in this settings.";
         else yWarning() << log_ID_ << "...could not reach initial position!";
 
@@ -218,7 +218,7 @@ bool SuperimposerFactory::view_hand()
 {
     yInfo() << log_ID_ << "Reaching a position close to iCub left camera with the right hand...";
 
-    init_position_ = MoveHand(frontal_view_R_, frontal_view_x_);
+    init_position_ = moveHand(frontal_view_R_, frontal_view_x_);
 
     if (!init_position_) yWarning() << log_ID_ << "...could not reach the desired position!";
     else                 yInfo() << log_ID_ << "...done. iCub can't move the hand in this settings.";
@@ -231,7 +231,7 @@ bool SuperimposerFactory::open_fingers()
 {
     yInfo() << log_ID_ << "Opening fingers...";
 
-    bool motion_done = MoveFingers(open_hand_joints_);
+    bool motion_done = moveFingers(open_hand_joints_);
     if (!motion_done) yWarning() << log_ID_ << "...fingers could not be opened!";
     else yInfo() << log_ID_ << "...done.";
 
@@ -243,7 +243,7 @@ bool SuperimposerFactory::close_fingers()
 {
     yInfo() << log_ID_ << "Closing fingers...";
 
-    bool motion_done = MoveFingers(closed_hand_joints_);
+    bool motion_done = moveFingers(closed_hand_joints_);
     if (!motion_done) yWarning() << log_ID_ << "...fingers could not be closed!";
     else yInfo() << log_ID_ << "...done.";
 
@@ -388,7 +388,7 @@ std::string SuperimposerFactory::quit()
 }
 
 
-bool SuperimposerFactory::FileFound (const ConstString& file)
+bool SuperimposerFactory::fileFound (const ConstString& file)
 {
     if (file.empty())
     {
@@ -618,7 +618,7 @@ bool SuperimposerFactory::setCommandPort()
 }
 
 
-bool SuperimposerFactory::MoveFingers(const double joint[6])
+bool SuperimposerFactory::moveFingers(const double joint[6])
 {
     /* Close iCub hand. */
     yInfo() << log_ID_ << "Closing fingers.";
@@ -646,7 +646,7 @@ bool SuperimposerFactory::MoveFingers(const double joint[6])
 }
 
 
-bool SuperimposerFactory::MoveHand(const Matrix &R, const Vector &init_x)
+bool SuperimposerFactory::moveHand(const Matrix &R, const Vector &init_x)
 {
     /* Setting hand pose */
     yInfo() << log_ID_ << "Moving hand to the initial position.";

@@ -101,7 +101,7 @@ private:
     double                        closed_hand_joints_[6];
 
 
-    bool FileFound(const yarp::os::ConstString& file);
+    bool fileFound(const yarp::os::ConstString& file);
 
     bool setTorsoRemoteControlboard();
 
@@ -117,9 +117,9 @@ private:
 
     bool setCommandPort();
 
-    bool MoveFingers(const double joint[6]);
+    bool moveFingers(const double joint[6]);
 
-    bool MoveHand(const yarp::sig::Matrix& R, const yarp::sig::Vector& init_x);
+    bool moveHand(const yarp::sig::Matrix& R, const yarp::sig::Vector& init_x);
 };
 
 #endif /* SUPERIMPOSEFACTORY_H */
