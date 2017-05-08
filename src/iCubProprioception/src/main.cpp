@@ -35,8 +35,7 @@ int main(int argc, char* argv[])
     rf.configure(argc, argv);
 
     /* SuperimposerFactory, derived from RFModule, must be declared, initialized and run in the main thread (thread_0). */
-    SuperimposerFactory sh;
-    sh.setProjectName("iCubProprioception");
+    SuperimposerFactory sh("iCubProprioception");
 
     if (sh.runModuleThreaded(rf) == 0)
     {

@@ -30,12 +30,12 @@ class SuperimposerFactory : public yarp::os::RFModule,
 public:
     SuperimposerFactory();
 
+    SuperimposerFactory(const yarp::os::ConstString& project_name);
+
     double getPeriod() { return 0.0; }
 
     bool   configure(yarp::os::ResourceFinder& rf);
-
-    void   setProjectName(const yarp::os::ConstString& name);
-
+    
     bool   updateModule();
 
     bool   close();

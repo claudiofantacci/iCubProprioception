@@ -16,7 +16,10 @@ using namespace yarp::sig;
 using namespace yarp::math;
 
 
-SuperimposerFactory::SuperimposerFactory() : ID_("SuperimposerModule"), log_ID_("[SuperimposerFactory]") { }
+SuperimposerFactory::SuperimposerFactory(const yarp::os::ConstString& project_name) : ID_(project_name), log_ID_("[" + project_name + "]") { }
+
+
+SuperimposerFactory::SuperimposerFactory() : SuperimposerFactory("SuperimposerModule") { }
 
 
 bool SuperimposerFactory::configure(ResourceFinder &rf)
@@ -156,12 +159,6 @@ bool SuperimposerFactory::configure(ResourceFinder &rf)
 
     /* Open a remote command port and allow the program be started */
     return setCommandPort();
-}
-
-
-void SuperimposerFactory::setProjectName(const yarp::os::ConstString& name)
-{
-    ID_ = name;
 }
 
 
