@@ -19,12 +19,6 @@ using namespace yarp::math;
 SuperimposerFactory::SuperimposerFactory() : ID_("SuperimposerModule"), log_ID_("[SuperimposerFactory]") { }
 
 
-bool SuperimposerFactory::initOGL(const GLsizei width, const GLsizei height, const GLint view)
-{
-    return CADSuperimposer::initOGL(width, height, view);
-}
-
-
 bool SuperimposerFactory::configure(ResourceFinder &rf)
 {
     this->setName(ID_.c_str());

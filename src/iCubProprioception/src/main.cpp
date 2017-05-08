@@ -34,9 +34,6 @@ int main(int argc, char* argv[])
     rf.setDefaultContext("iCubProprioception");
     rf.configure(argc, argv);
 
-    /* Initialize OpenGL context */
-    SuperimposerFactory::initOGL(320, 240, 1);
-
     /* SuperimposerFactory, derived from RFModule, must be declared, initialized and run in the main thread (thread_0). */
     SuperimposerFactory sh;
     sh.setProjectName("iCubProprioception");

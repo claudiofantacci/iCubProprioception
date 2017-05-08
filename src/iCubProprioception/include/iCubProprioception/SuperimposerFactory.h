@@ -29,8 +29,6 @@ class SuperimposerFactory : public yarp::os::RFModule,
 {
 public:
     SuperimposerFactory();
-    
-    static bool initOGL(const GLsizei width, const GLsizei height, const GLint view = 1);
 
     double getPeriod() { return 0.0; }
 
