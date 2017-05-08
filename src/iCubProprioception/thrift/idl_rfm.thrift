@@ -42,22 +42,6 @@ service iCubProprioceptionIDL
     bool close_fingers();
 
     /**
-     * Superimpose the right hand skeleton (starting from the end effector)
-     * onto the iCub right hand in the left camera images.
-     * @param status true/false to turn superimposition on/off.
-     * @return true activation/deactivation success, false otherwise.
-     */
-    bool view_skeleton(1:bool status);
-
-    /**
-     * Superimpose the right hand CAD mesh (palm, thumb, index and medium)
-     * onto the iCub right hand in the left camera images.
-     * @param status true/false to turn superimposition on/off.
-     * @return true activation/deactivation success, false otherwise.
-     */
-    bool view_mesh(1:bool status);
-
-    /**
      * Safely close the module.
      */
     string quit();

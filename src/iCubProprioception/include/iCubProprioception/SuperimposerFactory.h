@@ -14,9 +14,6 @@
 #include <yarp/sig/Matrix.h>
 #include <yarp/sig/Vector.h>
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-
 #include <SuperImpose/SuperImpose.h>
 
 #include "iCubProprioception/SkeletonSuperimposer.h"
@@ -32,7 +29,7 @@ public:
 
     SuperimposerFactory(const yarp::os::ConstString& project_name);
 
-    double getPeriod() { return 0.0; }
+    double getPeriod() { return 0.033; }
 
     bool   configure(yarp::os::ResourceFinder& rf);
     
@@ -62,8 +59,6 @@ private:
     yarp::os::ConstString         robot_;
 
     bool                          init_position_;
-    bool                          superimpose_skeleton_;
-    bool                          superimpose_mesh_;
 
     yarp::dev::PolyDriver         torso_remote_driver_;
 
@@ -83,9 +78,9 @@ private:
 
     yarp::dev::PolyDriver         drv_right_hand_analog_;
 
-    SkeletonSuperimposer        * trd_left_cam_skeleton_ = nullptr;
+    SkeletonSuperimposer        * trd_left_cam_skeleton_ = YARP_NULLPTR;
 
-    CADSuperimposer             * trd_left_cam_cad_ = nullptr;
+    CADSuperimposer             * trd_left_cam_cad_ = YARP_NULLPTR;
     SuperImpose::ObjFileMap       cad_hand_;
     yarp::os::ConstString         shader_path_;
 

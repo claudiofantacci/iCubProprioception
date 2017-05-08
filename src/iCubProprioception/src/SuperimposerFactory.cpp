@@ -3,6 +3,8 @@
 
 #include <list>
 
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 #include <yarp/os/LogStream.h>
 #include <yarp/os/ConstString.h>
 #include <yarp/os/Property.h>
@@ -28,8 +30,6 @@ bool SuperimposerFactory::configure(ResourceFinder &rf)
 
     /* Setting default parameters. */
     init_position_ = false;
-    superimpose_skeleton_ = false;
-    superimpose_mesh_ = false;
     ConstString context = rf.getContext();
 
     /* Parsing parameters from config file. */
@@ -156,6 +156,42 @@ bool SuperimposerFactory::configure(ResourceFinder &rf)
     /* Enable torso DOF. */
     if (!setTorsoDOF()) return false;
 
+
+    /* Launching skeleton superimposer thread */
+    trd_left_cam_skeleton_ = new SkeletonSuperimposer(ID_, "right", "left", rightarm_remote_driver_, rightarm_cartesian_driver_, gaze_driver_);
+
+    if (trd_left_cam_skeleton_ != YARP_NULLPTR)
+    {
+        yInfo() << log_ID_ << "Starting skeleton superimposing thread for the right hand on the left camera images...";
+
+        if (!trd_left_cam_skeleton_->start()) yWarning() << log_ID_ << "...thread could not be started!";
+        else                                  yInfo()    << log_ID_ << "...done.";
+    }
+    else
+        yWarning() << log_ID_ << "Could not initialize hand skeleton superimposition!";
+
+
+    /* Lunching CAD superimposer thread */
+    trd_left_cam_cad_ = new CADSuperimposer(ID_,
+                                            "right",
+                                            "left",
+                                            torso_remote_driver_,
+                                            rightarm_remote_driver_,
+                                            rightarm_cartesian_driver_,
+                                            gaze_driver_,
+                                            drv_right_hand_analog_,
+                                            cad_hand_, shader_path_);
+    if (trd_left_cam_cad_ != YARP_NULLPTR)
+    {
+        yInfo() << log_ID_ << "Starting mesh superimposing thread for the right hand on the left camera images...";
+
+        if (!trd_left_cam_cad_->start()) yWarning() << log_ID_ << "...thread could not be started!";
+        else                             yInfo()    << log_ID_ << "...done.";
+    }
+    else
+        yWarning() << log_ID_ << "Could not initialize hand mesh superimposition!";
+
+
     /* Open a remote command port and allow the program be started */
     return setCommandPort();
 }
@@ -163,6 +199,8 @@ bool SuperimposerFactory::configure(ResourceFinder &rf)
 
 bool SuperimposerFactory::updateModule()
 {
+    glfwPollEvents();
+
     return true;
 }
 
@@ -171,8 +209,8 @@ bool SuperimposerFactory::close()
 {
     yInfo() << log_ID_ << "Calling close functions...";
 
-    if (superimpose_skeleton_) trd_left_cam_skeleton_->stop();
-    if (superimpose_mesh_)     trd_left_cam_cad_->stop();
+    if (trd_left_cam_skeleton_ != YARP_NULLPTR) trd_left_cam_skeleton_->stop();
+    if (trd_left_cam_cad_      != YARP_NULLPTR) trd_left_cam_cad_->stop();
 
     delete trd_left_cam_skeleton_;
     delete trd_left_cam_cad_;
@@ -248,133 +286,6 @@ bool SuperimposerFactory::close_fingers()
     else yInfo() << log_ID_ << "...done.";
 
     return motion_done;
-}
-
-
-bool SuperimposerFactory::view_skeleton(const bool status)
-{
-    if (!superimpose_skeleton_ && status)
-    {
-        trd_left_cam_skeleton_ = new SkeletonSuperimposer(ID_, "right", "left", rightarm_remote_driver_, rightarm_cartesian_driver_, gaze_driver_);
-
-        if (trd_left_cam_skeleton_ != NULL)
-        {
-            yInfo() << log_ID_ << "Starting skeleton superimposing thread for the right hand on the left camera images...";
-
-            if (!trd_left_cam_skeleton_->start())
-            {
-                yWarning() << log_ID_ << "...thread could not be started!";
-
-                superimpose_skeleton_ = false;
-            }
-            else
-            {
-                yInfo() << log_ID_ << "...done.";
-
-                superimpose_skeleton_ = true;
-            }
-        }
-        else
-        {
-            yWarning() << log_ID_ << "Could not initialize hand skeleton superimposition!";
-
-            superimpose_skeleton_ = false;
-        }
-
-        return superimpose_skeleton_;
-
-    }
-    else if (superimpose_skeleton_ && !status)
-    {
-        yInfo() << log_ID_ << "Stopping hand skeleton superimposing thread for the right hand on the left camera images...";
-
-        if (!trd_left_cam_skeleton_->stop())
-        {
-            yWarning() << log_ID_ << "...thread could not be stopped!";
-
-            superimpose_skeleton_ = true;
-        }
-        else
-        {
-            yInfo() << log_ID_ << "...done.";
-
-            delete trd_left_cam_skeleton_;
-            trd_left_cam_skeleton_ = nullptr;
-
-            superimpose_skeleton_ = false;
-        }
-
-        return !superimpose_skeleton_;
-
-    }
-    else return false;
-}
-
-
-bool SuperimposerFactory::view_mesh(const bool status)
-{
-    if (!superimpose_mesh_ && status)
-    {
-        trd_left_cam_cad_ = new CADSuperimposer(ID_,
-                                                "right",
-                                                "left",
-                                                torso_remote_driver_,
-                                                rightarm_remote_driver_,
-                                                rightarm_cartesian_driver_,
-                                                gaze_driver_,
-                                                drv_right_hand_analog_,
-                                                cad_hand_, shader_path_);
-        if (trd_left_cam_cad_ != NULL)
-        {
-            yInfo() << log_ID_ << "Starting mesh superimposing thread for the right hand on the left camera images...";
-
-            if (!trd_left_cam_cad_->start())
-            {
-                yWarning() << log_ID_ << "...thread could not be started!";
-
-                superimpose_mesh_ = false;
-            }
-            else
-            {
-                yInfo() << log_ID_ << "...done.";
-
-                superimpose_mesh_ = true;
-            }
-        }
-        else
-        {
-            yWarning() << log_ID_ << "Could not initialize hand mesh superimposition!";
-
-            superimpose_mesh_ = false;
-        }
-
-        return superimpose_mesh_;
-
-    }
-    else if (superimpose_mesh_ && !status)
-    {
-        yInfo() << log_ID_ << "Stopping hand mesh superimposing thread for the right hand on the left camera images...";
-
-        if (!trd_left_cam_cad_->stop())
-        {
-            yWarning() << log_ID_ << "...thread could not be stopped!";
-
-            superimpose_mesh_ = true;
-        }
-        else
-        {
-            yInfo() << log_ID_ << "...done.";
-
-            delete trd_left_cam_cad_;
-            trd_left_cam_cad_ = nullptr;
-
-            superimpose_mesh_ = false;
-        }
-
-        return !superimpose_mesh_;
-
-    }
-    else return false;
 }
 
 
