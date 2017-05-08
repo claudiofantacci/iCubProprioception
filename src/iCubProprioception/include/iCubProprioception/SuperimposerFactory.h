@@ -64,8 +64,8 @@ protected:
     std::string quit();
 
 private:
+    const yarp::os::ConstString   ID_;
     const yarp::os::ConstString   log_ID_;
-    yarp::os::ConstString         project_name_;
 
     yarp::os::ConstString         robot_;
 
