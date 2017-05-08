@@ -56,6 +56,8 @@ bool SuperimposerFactory::configure(ResourceFinder &rf)
         yInfo()    << log_ID_ << arm_acc.toString();
     }
 
+
+    /* Search mesh files in /mesh context folder */
     rf.setDefaultContext(context + "/mesh");
 
     cad_hand_["palm"] = rf.findFileByName("r_palm.obj");
@@ -91,10 +93,14 @@ bool SuperimposerFactory::configure(ResourceFinder &rf)
     cad_hand_["forearm"] = rf.findFileByName("r_forearm.obj");
     if (!FileFound(cad_hand_["forearm"])) return false;
 
+
+    /* Search shader files in /shader context folder */
     rf.setDefaultContext(context + "/shader");
+
     shader_path_ = rf.findFileByName("shader_model.vert");
     if (!FileFound(shader_path_)) return false;
     shader_path_ = shader_path_.substr(0, shader_path_.rfind("/"));
+
 
     /* Initializing useful pose matrices and vectors for the hand. */
     frontal_view_R_.resize(3, 3);
@@ -130,6 +136,7 @@ bool SuperimposerFactory::configure(ResourceFinder &rf)
     closed_hand_joints_[3] = 80;
     closed_hand_joints_[4] = 10;
     closed_hand_joints_[5] = 80;
+
 
     /* Torso control board. */
     if (!setTorsoRemoteControlboard()) return false;
