@@ -618,7 +618,7 @@ bool SuperimposerFactory::setCommandPort()
 }
 
 
-bool SuperimposerFactory::MoveFingers(const double (&joint)[6])
+bool SuperimposerFactory::MoveFingers(const double joint[6])
 {
     /* Close iCub hand. */
     yInfo() << log_ID_ << "Closing fingers.";

@@ -117,7 +117,7 @@ private:
 
     bool setCommandPort();
 
-    bool MoveFingers(const double (&joint)[6]);
+    bool MoveFingers(const double joint[6]);
 
     bool MoveHand(const yarp::sig::Matrix& R, const yarp::sig::Vector& init_x);
 };
