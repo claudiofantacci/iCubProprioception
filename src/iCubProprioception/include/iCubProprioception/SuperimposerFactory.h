@@ -41,12 +41,6 @@ public:
     bool   close();
 
 protected:
-    bool move_hand();
-
-    bool move_hand_freerun();
-
-    bool stop_hand();
-
     bool initial_position ();
 
     bool view_hand();
@@ -67,9 +61,7 @@ private:
 
     yarp::os::ConstString         robot_;
 
-    bool                          start_;
     bool                          init_position_;
-    bool                          freerunning_;
     bool                          superimpose_skeleton_;
     bool                          superimpose_mesh_;
 
@@ -107,11 +99,6 @@ private:
 
     double                        open_hand_joints_[6];
     double                        closed_hand_joints_[6];
-
-    double                        radius_;
-    int                           angle_ratio_;
-    double                        motion_time_;
-    double                        path_time_;
 
 
     bool FileFound(const yarp::os::ConstString& file);

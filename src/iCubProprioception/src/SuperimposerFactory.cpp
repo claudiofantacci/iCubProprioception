@@ -27,9 +27,7 @@ bool SuperimposerFactory::configure(ResourceFinder &rf)
     this->setName(ID_.c_str());
 
     /* Setting default parameters. */
-    start_ = false;
     init_position_ = false;
-    freerunning_ = false;
     superimpose_skeleton_ = false;
     superimpose_mesh_ = false;
     ConstString context = rf.getContext();
@@ -151,12 +149,6 @@ bool SuperimposerFactory::configure(ResourceFinder &rf)
     /* Enable torso DOF. */
     if (!setTorsoDOF()) return false;
 
-    /* Set initial finger motion point */
-    radius_      = 0.08;
-    angle_ratio_ = 12;
-    motion_time_ = 10.0;
-    path_time_   = motion_time_ / angle_ratio_;
-
     /* Open a remote command port and allow the program be started */
     return setCommandPort();
 }
@@ -164,34 +156,6 @@ bool SuperimposerFactory::configure(ResourceFinder &rf)
 
 bool SuperimposerFactory::updateModule()
 {
-    if (start_)
-    {
-        Vector motion_axis;
-        Vector motion_angle;
-        Vector center(2);
-        double old_traj_time;
-
-        itf_rightarm_cart_->getTrajTime(&old_traj_time);
-        itf_rightarm_cart_->setTrajTime(path_time_);
-
-        itf_rightarm_cart_->getPose(motion_axis, motion_angle);
-        center[0] = motion_axis[0];
-        center[1] = motion_axis[1] - radius_;
-
-        yInfo() << log_ID_ << "Starting finger motion.";
-        for (double alpha = 0.0; alpha < (2* M_PI); alpha += M_PI / angle_ratio_)
-        {
-            motion_axis[0] = (center[0] - (radius_ * sin(alpha)));
-            motion_axis[1] = (center[1] + (radius_ * cos(alpha)));
-            yInfo() << log_ID_ << "Next position: [" << motion_axis.toString() << "].";
-            itf_rightarm_cart_->goToPose(motion_axis, motion_angle);
-            Time::delay(0.7 * path_time_);
-        }
-        yInfo() << log_ID_ << "Motion done.";
-        if (!freerunning_) start_ = false;
-
-        itf_rightarm_cart_->setTrajTime(old_traj_time);
-    }
     return true;
 }
 
@@ -222,56 +186,6 @@ bool SuperimposerFactory::close()
 }
 
 
-bool SuperimposerFactory::move_hand()
-{
-    if (!init_position_)
-    {
-        yInfo() << log_ID_ << "Starting single hand motion.";
-
-        start_ = true;
-
-        return true;
-    }
-    else
-    {
-        yWarning() << log_ID_ << "Can't move hand in this settings! Use initial_position() before using move_hand() again.";
-
-        return false;
-    }
-}
-
-
-bool SuperimposerFactory::move_hand_freerun()
-{
-    if (!init_position_)
-    {
-        yInfo() << log_ID_ << "Starting freerun hand motion.";
-
-        start_ = true;
-        freerunning_ = true;
-
-        return true;
-    }
-    else
-    {
-        yWarning() << log_ID_ << "Can't move hand in this settings! Use initial_position() before using move_hand() again.";
-
-        return false;
-    }
-}
-
-
-bool SuperimposerFactory::stop_hand()
-{
-    yInfo() << log_ID_ << "Stopping hand motion when reaching the initial position.";
-
-    start_ = false;
-    if (freerunning_) freerunning_ = false;
-
-    return true;
-}
-
-
 bool SuperimposerFactory::initial_position()
 {
     if (!init_position_)
@@ -295,22 +209,14 @@ bool SuperimposerFactory::initial_position()
 
 bool SuperimposerFactory::view_hand()
 {
-    if (!start_)
-    {
-        yInfo() << log_ID_ << "Reaching a position close to iCub left camera with the right hand...";
+    yInfo() << log_ID_ << "Reaching a position close to iCub left camera with the right hand...";
 
-        init_position_ = MoveHand(frontal_view_R_, frontal_view_x_);
-        if (!init_position_) yWarning() << log_ID_ << "...could not reach the desired position!";
-        else yInfo() << log_ID_ << "...done. iCub can't move the hand in this settings.";
+    init_position_ = MoveHand(frontal_view_R_, frontal_view_x_);
 
-        return init_position_;
-    }
-    else
-    {
-        yWarning() << log_ID_ << "Can't move hand while moving it!";
+    if (!init_position_) yWarning() << log_ID_ << "...could not reach the desired position!";
+    else                 yInfo() << log_ID_ << "...done. iCub can't move the hand in this settings.";
 
-        return false;
-    }
+    return init_position_;
 }
 
 

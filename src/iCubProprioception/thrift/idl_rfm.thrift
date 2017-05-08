@@ -12,30 +12,6 @@
 service iCubProprioceptionIDL
 {
     /**
-     * Move iCub right hand in a circular path, once.
-     * The hand must be in the initial position to start moving
-     * (see "help initial_poition"), otherwise it does not start the motion.
-     * @return true if the hand can move and start moving, false otherwise.
-     */
-    bool move_hand();
-
-    /**
-     * Move iCub right hand in a circular path, continuously.
-     * The hand must be in the initial position to start moving
-     * (see "help initial_poition"), otherwise it does not start the motion.
-     * @return true if the hand can move and start moving, false otherwise.
-     */
-    bool move_hand_freerun();
-
-    /**
-     * Stop iCub right hand motion.
-     * The hand stops at the initial position location
-     * (see "help initial_poition").
-     * @return true when stop command is processed, false otherwise.
-     */
-    bool stop_hand();
-
-    /**
      * Move the iCub right hand to the initial position
      *     [-0.40]        [-1.0    0.0    0.0]
      * p = [ 0.10]    R = [ 0.0    1.0    0.0]
