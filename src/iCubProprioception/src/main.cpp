@@ -8,7 +8,6 @@
 using namespace yarp::os;
 
 
-
 int main(int argc, char* argv[])
 {
     ConstString log_ID = "[Main]";
@@ -36,19 +35,7 @@ int main(int argc, char* argv[])
 
     /* SuperimposerFactory, derived from RFModule, must be declared, initialized and run in the main thread (thread_0). */
     SuperimposerFactory sh("iCubProprioception");
-
-    if (sh.runModuleThreaded(rf) == 0)
-    {
-        while (!sh.isStopping())
-        {
-            glfwPollEvents();
-        }
-    }
-
-    sh.joinModule();
-
-    glfwMakeContextCurrent(NULL);
-    glfwTerminate();
+    sh.runModule(rf);
 
     yInfo() << log_ID << "Main returning.";
     yInfo() << log_ID << "Application closed.";
