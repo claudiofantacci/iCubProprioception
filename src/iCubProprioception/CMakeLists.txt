@@ -4,14 +4,14 @@ set(${EXE_TARGET_NAME}_SRC
         src/main.cpp
         src/CADSuperimposer.cpp
         src/SkeletonSuperimposer.cpp
-        src/SuperimposerFactory.cpp
+        src/SuperimposerHandler.cpp
         src/ThreadControllerSHC.cpp)
 
 set(${EXE_TARGET_NAME}_HDR
         include/iCubProprioception/common.h
         include/iCubProprioception/CADSuperimposer.h
         include/iCubProprioception/SkeletonSuperimposer.h
-        include/iCubProprioception/SuperimposerFactory.h
+        include/iCubProprioception/SuperimposerHandler.h
         include/iCubProprioception/ThreadControllerSHC.h)
 
 set(${EXE_TARGET_NAME}_THRIFT_HDR

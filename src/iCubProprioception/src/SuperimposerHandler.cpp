@@ -1,4 +1,4 @@
-#include "iCubProprioception/SuperimposerFactory.h"
+#include "iCubProprioception/SuperimposerHandler.h"
 #include "iCubProprioception/common.h"
 
 #include <list>
@@ -18,13 +18,13 @@ using namespace yarp::sig;
 using namespace yarp::math;
 
 
-SuperimposerFactory::SuperimposerFactory(const yarp::os::ConstString& project_name) : ID_(project_name), log_ID_("[" + project_name + "]") { }
+SuperimposerHandler::SuperimposerHandler(const yarp::os::ConstString& project_name) : ID_(project_name), log_ID_("[" + project_name + "]") { }
 
 
-SuperimposerFactory::SuperimposerFactory() : SuperimposerFactory("SuperimposerModule") { }
+SuperimposerHandler::SuperimposerHandler() : SuperimposerHandler("SuperimposerModule") { }
 
 
-bool SuperimposerFactory::configure(ResourceFinder &rf)
+bool SuperimposerHandler::configure(ResourceFinder &rf)
 {
     this->setName(ID_.c_str());
 
@@ -197,7 +197,7 @@ bool SuperimposerFactory::configure(ResourceFinder &rf)
 }
 
 
-bool SuperimposerFactory::updateModule()
+bool SuperimposerHandler::updateModule()
 {
     glfwPollEvents();
 
@@ -205,7 +205,7 @@ bool SuperimposerFactory::updateModule()
 }
 
 
-bool SuperimposerFactory::close()
+bool SuperimposerHandler::close()
 {
     yInfo() << log_ID_ << "Calling close functions...";
 
@@ -231,7 +231,7 @@ bool SuperimposerFactory::close()
 }
 
 
-bool SuperimposerFactory::initial_position()
+bool SuperimposerHandler::initial_position()
 {
     if (!init_position_)
     {
@@ -252,7 +252,7 @@ bool SuperimposerFactory::initial_position()
 }
 
 
-bool SuperimposerFactory::view_hand()
+bool SuperimposerHandler::view_hand()
 {
     yInfo() << log_ID_ << "Reaching a position close to iCub left camera with the right hand...";
 
@@ -265,7 +265,7 @@ bool SuperimposerFactory::view_hand()
 }
 
 
-bool SuperimposerFactory::open_fingers()
+bool SuperimposerHandler::open_fingers()
 {
     yInfo() << log_ID_ << "Opening fingers...";
 
@@ -277,7 +277,7 @@ bool SuperimposerFactory::open_fingers()
 }
 
 
-bool SuperimposerFactory::close_fingers()
+bool SuperimposerHandler::close_fingers()
 {
     yInfo() << log_ID_ << "Closing fingers...";
 
@@ -289,7 +289,7 @@ bool SuperimposerFactory::close_fingers()
 }
 
 
-std::string SuperimposerFactory::quit()
+std::string SuperimposerHandler::quit()
 {
     yInfo() << log_ID_ << "Quitting...";
 
@@ -299,7 +299,7 @@ std::string SuperimposerFactory::quit()
 }
 
 
-bool SuperimposerFactory::fileFound (const ConstString& file)
+bool SuperimposerHandler::fileFound (const ConstString& file)
 {
     if (file.empty())
     {
@@ -310,7 +310,7 @@ bool SuperimposerFactory::fileFound (const ConstString& file)
 }
 
 
-bool SuperimposerFactory::setTorsoRemoteControlboard()
+bool SuperimposerHandler::setTorsoRemoteControlboard()
 {
     Property torso_remote_options;
     torso_remote_options.put("device", "remote_controlboard");
@@ -331,7 +331,7 @@ bool SuperimposerFactory::setTorsoRemoteControlboard()
 }
 
 
-bool SuperimposerFactory::setRightArmRemoteControlboard()
+bool SuperimposerHandler::setRightArmRemoteControlboard()
 {
     Property rightarm_remote_options;
     rightarm_remote_options.put("device", "remote_controlboard");
@@ -389,7 +389,7 @@ bool SuperimposerFactory::setRightArmRemoteControlboard()
 }
 
 
-bool SuperimposerFactory::setRightArmCartesianController()
+bool SuperimposerHandler::setRightArmCartesianController()
 {
     Property rightarm_cartesian_options;
     rightarm_cartesian_options.put("device", "cartesiancontrollerclient");
@@ -431,7 +431,7 @@ bool SuperimposerFactory::setRightArmCartesianController()
 }
 
 
-bool SuperimposerFactory::setHeadRemoteControlboard()
+bool SuperimposerHandler::setHeadRemoteControlboard()
 {
     Property head_option;
     head_option.put("device", "remote_controlboard");
@@ -461,7 +461,7 @@ bool SuperimposerFactory::setHeadRemoteControlboard()
 }
 
 
-bool SuperimposerFactory::setGazeController()
+bool SuperimposerHandler::setGazeController()
 {
     Property gaze_option;
     gaze_option.put("device", "gazecontrollerclient");
@@ -488,7 +488,7 @@ bool SuperimposerFactory::setGazeController()
 }
 
 
-bool SuperimposerFactory::setTorsoDOF()
+bool SuperimposerHandler::setTorsoDOF()
 {
     Vector curDOF;
     itf_rightarm_cart_->getDOF(curDOF);
@@ -510,7 +510,7 @@ bool SuperimposerFactory::setTorsoDOF()
 }
 
 
-bool SuperimposerFactory::setCommandPort()
+bool SuperimposerHandler::setCommandPort()
 {
     yInfo() << log_ID_ << "Opening command port.";
     if (!port_command_.open("/"+ID_+"/rpc"))
@@ -529,7 +529,7 @@ bool SuperimposerFactory::setCommandPort()
 }
 
 
-bool SuperimposerFactory::moveFingers(const double joint[6])
+bool SuperimposerHandler::moveFingers(const double joint[6])
 {
     /* Close iCub hand. */
     yInfo() << log_ID_ << "Closing fingers.";
@@ -557,7 +557,7 @@ bool SuperimposerFactory::moveFingers(const double joint[6])
 }
 
 
-bool SuperimposerFactory::moveHand(const Matrix &R, const Vector &init_x)
+bool SuperimposerHandler::moveHand(const Matrix &R, const Vector &init_x)
 {
     /* Setting hand pose */
     yInfo() << log_ID_ << "Moving hand to the initial position.";

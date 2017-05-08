@@ -2,7 +2,7 @@
 #include <yarp/os/Network.h>
 #include <yarp/os/ResourceFinder.h>
 
-#include "iCubProprioception/SuperimposerFactory.h"
+#include "iCubProprioception/SuperimposerHandler.h"
 #include "iCubProprioception/common.h"
 
 using namespace yarp::os;
@@ -34,7 +34,7 @@ int main(int argc, char* argv[])
     rf.configure(argc, argv);
 
     /* SuperimposerFactory, derived from RFModule, must be declared, initialized and run in the main thread (thread_0). */
-    SuperimposerFactory sh("iCubProprioception");
+    SuperimposerHandler sh("iCubProprioception");
     sh.runModule(rf);
 
     yInfo() << log_ID << "Main returning.";

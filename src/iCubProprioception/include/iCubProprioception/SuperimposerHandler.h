@@ -21,13 +21,13 @@
 #include "thrift/iCubProprioceptionIDL.h"
 
 
-class SuperimposerFactory : public yarp::os::RFModule,
+class SuperimposerHandler : public yarp::os::RFModule,
                             public iCubProprioceptionIDL
 {
 public:
-    SuperimposerFactory();
+    SuperimposerHandler();
 
-    SuperimposerFactory(const yarp::os::ConstString& project_name);
+    SuperimposerHandler(const yarp::os::ConstString& project_name);
 
     double getPeriod() { return 0.033; }
 
