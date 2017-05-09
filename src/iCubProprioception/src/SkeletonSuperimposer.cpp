@@ -19,7 +19,7 @@ using namespace iCub::iKin;
 
 
 SkeletonSuperimposer::SkeletonSuperimposer(const ConstString& project_name, const ConstString& robot, const ConstString& camera) :
-    ID_(project_name + "/SkeletonSuperimposer]"), log_ID_("[" + project_name + "]"),
+    ID_(project_name + "/SkeletonSuperimposer"), log_ID_("[" + ID_ + "]"),
     robot_(robot), camera_(camera)
 {
     yInfo() << log_ID_ << "Initializing skeleton superimposer thread.";

@@ -17,7 +17,7 @@ using namespace iCub::iKin;
 
 CADSuperimposer::CADSuperimposer(const ConstString& project_name, const ConstString& robot, const ConstString& camera,
                                  const SuperImpose::ObjFileMap& cad_hand, const ConstString& shader_path) :
-    ID_(project_name + "/CADSuperimposer]"), log_ID_("[" + project_name + "]"),
+    ID_(project_name + "/CADSuperimposer"), log_ID_("[" + ID_ + "]"),
     robot_(robot), camera_(camera), camsel_((camera == "left")? 0:1),
     cad_hand_(cad_hand), shader_path_(shader_path)
 {
@@ -54,13 +54,13 @@ CADSuperimposer::CADSuperimposer(const ConstString& project_name, const ConstStr
 
 
     yInfo() << log_ID_ << "Opening ports for CAD images...";
-    if (!inport_renderer_img_.open("/" + ID_ + "/cad/cam/" + camera_ + ":i"))
+    if (!inport_renderer_img_.open("/" + ID_ + "/cam/" + camera_ + ":i"))
     {
         yError() << log_ID_ << "Cannot open input image port for " + camera_ + " camera!";
         throw std::runtime_error("Cannot open input image port for " + camera_ + " camera!");
     }
 
-    if (!outport_renderer_img_.open("/" + ID_ + "/cad/cam/" + camera_ + ":o"))
+    if (!outport_renderer_img_.open("/" + ID_ + "/cam/" + camera_ + ":o"))
     {
         yError() << log_ID_ << "Cannot open output image port for " + camera_ + " camera!";
         throw std::runtime_error("Cannot open output image port for " + camera_ + " camera!");
