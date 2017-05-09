@@ -52,6 +52,26 @@ protected:
 
     std::string quit();
 
+    bool fileFound(const yarp::os::ConstString& file);
+
+    bool setTorsoRemoteControlboard();
+
+    bool setRightArmRemoteControlboard();
+
+    bool setRightArmCartesianController();
+
+    bool setHeadRemoteControlboard();
+
+    bool setGazeController();
+
+    bool setTorsoDOF();
+
+    bool setCommandPort();
+
+    bool moveFingers(const double joint[6]);
+
+    bool moveHand(const yarp::sig::Matrix& R, const yarp::sig::Vector& init_x);
+
 private:
     const yarp::os::ConstString   ID_;
     const yarp::os::ConstString   log_ID_;
@@ -94,27 +114,6 @@ private:
 
     double                        open_hand_joints_[6];
     double                        closed_hand_joints_[6];
-
-
-    bool fileFound(const yarp::os::ConstString& file);
-
-    bool setTorsoRemoteControlboard();
-
-    bool setRightArmRemoteControlboard();
-
-    bool setRightArmCartesianController();
-
-    bool setHeadRemoteControlboard();
-
-    bool setGazeController();
-
-    bool setTorsoDOF();
-
-    bool setCommandPort();
-
-    bool moveFingers(const double joint[6]);
-
-    bool moveHand(const yarp::sig::Matrix& R, const yarp::sig::Vector& init_x);
 };
 
 #endif /* SUPERIMPOSEFACTORY_H */
