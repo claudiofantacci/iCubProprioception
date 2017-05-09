@@ -86,7 +86,7 @@ CADSuperimposer::CADSuperimposer(const ConstString& project_name, const ConstStr
     right_finger_[2] = iCubFinger("right_middle");
 
     std::deque<IControlLimits*> temp_lim;
-    temp_lim.push_front(itf_fingers_limits_);
+    temp_lim.push_front(itf_right_fingers_limits_);
     for (int i = 0; i < 3; ++i)
     {
         if (!right_finger_[i].alignJointsBounds(temp_lim))
@@ -141,7 +141,7 @@ void CADSuperimposer::run()
 
         if (imgin != NULL)
         {
-            itf_rightarm_cart_->getPose(ee_x, ee_o);
+            itf_right_arm_cart_->getPose(ee_x, ee_o);
 
             itf_head_gaze_->getLeftEyePose(cam_x, cam_o);
 
@@ -149,8 +149,8 @@ void CADSuperimposer::run()
             ee_x.push_back(1.0);
             Ha.setCol(3, ee_x);
 
-            Vector encs_arm(static_cast<size_t>(num_rightarm_enc_));
-            itf_rightarm_encoders_->getEncoders(encs_arm.data());
+            Vector encs_arm(static_cast<size_t>(num_right_arm_enc_));
+            itf_right_arm_encoders_->getEncoders(encs_arm.data());
             yAssert(encs_arm.size() == 16);
 
 //            encs_arm(7) = 32.0;
@@ -326,17 +326,18 @@ bool CADSuperimposer::setArmRemoteControlboard()
     {
         yInfo() << log_ID_ << "Right arm remote_controlboard succefully opened.";
 
-        drv_right_arm_remote_.view(itf_rightarm_encoders_);
-        if (!itf_rightarm_encoders_)
+        drv_right_arm_remote_.view(itf_right_arm_encoders_);
+        if (!itf_right_arm_encoders_)
         {
             yError() << log_ID_ << "Error getting right arm IEncoders interface.";
             return false;
         }
-        itf_rightarm_encoders_->getAxes(&num_rightarm_enc_);
+
+        itf_right_arm_encoders_->getAxes(&num_right_arm_enc_);
         yInfo() << log_ID_ << "Right arm encorders succefully read.";
 
-        drv_right_arm_remote_.view(itf_fingers_limits_);
-        if (!itf_fingers_limits_)
+        drv_right_arm_remote_.view(itf_right_fingers_limits_);
+        if (!itf_right_fingers_limits_)
         {
             yError() << log_ID_ << "Error getting fingers IControlLimits interface in thread!";
             throw std::runtime_error("Error getting fingers IControlLimits interface in thread!");
@@ -386,8 +387,8 @@ bool CADSuperimposer::setArmCartesianController()
     drv_right_arm_cartesian_.open(rightarm_cartesian_options);
     if (drv_right_arm_cartesian_.isValid())
     {
-        drv_right_arm_cartesian_.view(itf_rightarm_cart_);
-        if (!itf_rightarm_cart_)
+        drv_right_arm_cartesian_.view(itf_right_arm_cart_);
+        if (!itf_right_arm_cart_)
         {
             yError() << log_ID_ << "Error getting ICartesianControl interface.";
             return false;

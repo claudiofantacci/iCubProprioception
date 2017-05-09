@@ -57,7 +57,7 @@ private:
 #endif
     yarp::dev::IGazeControl     *  itf_head_gaze_;
 
-    int                            num_arm_enc_;
+    int                            num_right_arm_enc_;
     float                          eye_fx_;
     float                          eye_fy_;
     float                          eye_cx_;

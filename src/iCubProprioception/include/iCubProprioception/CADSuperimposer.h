@@ -66,9 +66,9 @@ private:
     yarp::dev::PolyDriver          drv_gaze_;
 
     yarp::dev::IEncoders         * itf_torso_encoders_;
-    yarp::dev::IEncoders         * itf_rightarm_encoders_;
-    yarp::dev::IControlLimits    * itf_fingers_limits_;
-    yarp::dev::ICartesianControl * itf_rightarm_cart_;
+    yarp::dev::IEncoders         * itf_right_arm_encoders_;
+    yarp::dev::IControlLimits    * itf_right_fingers_limits_;
+    yarp::dev::ICartesianControl * itf_right_arm_cart_;
 #if ICP_USE_ANALOGS == 1
     yarp::dev::IAnalogSensor     * itf_right_hand_analog_;
 #endif
@@ -77,7 +77,7 @@ private:
     const SuperImpose::ObjFileMap& cad_hand_;
     const yarp::os::ConstString    shader_path_;
 
-    int                            num_rightarm_enc_ = 0;
+    int                            num_right_arm_enc_ = 0;
     unsigned int                   cam_width_;
     unsigned int                   cam_height_;
     float                          cam_fx_;

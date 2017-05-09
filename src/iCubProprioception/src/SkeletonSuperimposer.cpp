@@ -124,7 +124,7 @@ void SkeletonSuperimposer::run()
         ee_x.push_back(1.0);
         Ha.setCol(3, ee_x);
 
-        Vector encs(static_cast<size_t>(num_arm_enc_));
+        Vector encs(static_cast<size_t>(num_right_arm_enc_));
         Vector chainjoints;
         itf_right_arm_encoders_->getEncoders(encs.data());
         for (unsigned int i = 0; i < 3; ++i)
@@ -213,6 +213,9 @@ bool SkeletonSuperimposer::setArmRemoteControlboard()
             yError() << log_ID_ << "Error getting right arm IEncoders interface.";
             return false;
         }
+
+        itf_right_arm_encoders_->getAxes(&num_right_arm_enc_);
+        yInfo() << log_ID_ << "Right arm encorders succefully read.";
 
         drv_right_arm_remote_.view(itf_fingers_limits_);
         if (!itf_fingers_limits_)
