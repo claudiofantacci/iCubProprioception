@@ -50,9 +50,12 @@ private:
     yarp::dev::PolyDriver          drv_right_arm_cartesian_;
     yarp::dev::PolyDriver          drv_gaze_;
     yarp::dev::IEncoders        *  itf_right_arm_encoders_;
-    yarp::dev::ICartesianControl*  itf_right_arm_cart_;
-    yarp::dev::IGazeControl     *  itf_head_gaze_;
     yarp::dev::IControlLimits   *  itf_fingers_limits_;
+    yarp::dev::ICartesianControl*  itf_right_arm_cart_;
+#if ICP_USE_ANALOGS == 1
+    yarp::dev::IAnalogSensor    *  itf_right_hand_analog_;
+#endif
+    yarp::dev::IGazeControl     *  itf_head_gaze_;
     int                            num_arm_enc_;
     float                          eye_fx_;
     float                          eye_fy_;

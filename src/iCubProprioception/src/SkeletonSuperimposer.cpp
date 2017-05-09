@@ -227,6 +227,7 @@ bool SkeletonSuperimposer::setArmRemoteControlboard()
         return false;
     }
 
+    // FIXME: Add getChainJoints() methods with analogs.
 #if ICP_USE_ANALOGS == 1
     Property righthand_remote_analog;
     righthand_remote_analog.put("device", "analogsensorclient");
@@ -237,6 +238,12 @@ bool SkeletonSuperimposer::setArmRemoteControlboard()
     if (drv_right_hand_analog_.isValid())
     {
         yInfo() << log_ID_ << "Right arm analogsensorclient succefully opened.";
+
+        if (!drv_right_hand_analog_.view(itf_right_hand_analog_))
+        {
+            yError() << log_ID_ << "Error getting right hand IAnalogSensor interface!";
+            throw std::runtime_error("Error getting right hand IAnalogSensor interface!");
+        }
     }
     else
     {
