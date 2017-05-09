@@ -4,15 +4,13 @@ set(${EXE_TARGET_NAME}_SRC
         src/main.cpp
         src/CADSuperimposer.cpp
         src/SkeletonSuperimposer.cpp
-        src/SuperimposerFactory.cpp
-        src/ThreadControllerSHC.cpp)
+        src/SuperimposerHandler.cpp)
 
 set(${EXE_TARGET_NAME}_HDR
         include/iCubProprioception/common.h
         include/iCubProprioception/CADSuperimposer.h
         include/iCubProprioception/SkeletonSuperimposer.h
-        include/iCubProprioception/SuperimposerFactory.h
-        include/iCubProprioception/ThreadControllerSHC.h)
+        include/iCubProprioception/SuperimposerHandler.h)
 
 set(${EXE_TARGET_NAME}_THRIFT_HDR
         thrift/idl_rfm.thrift
@@ -82,7 +80,6 @@ set(${EXE_TARGET_NAME}_SHADERS_VERT
 
 set(${EXE_TARGET_NAME}_SHADERS_FRAG
         ${PROJECT_SOURCE_DIR}/shader/shader_model.frag
-        ${PROJECT_SOURCE_DIR}/shader/shader_model_simple.frag
         ${PROJECT_SOURCE_DIR}/shader/shader_background.frag)
 
 set(${EXE_TARGET_NAME}_MESH
@@ -112,12 +109,12 @@ if(${CMAKE_GENERATOR} MATCHES "Xcode")
                        COMMAND ${CMAKE_COMMAND} -E copy ${${EXE_TARGET_NAME}_MESH}         $<TARGET_FILE_DIR:${EXE_TARGET_NAME}>
                        COMMAND ${CMAKE_COMMAND} -E copy ${${EXE_TARGET_NAME}_SHADERS_VERT} $<TARGET_FILE_DIR:${EXE_TARGET_NAME}>
                        COMMAND ${CMAKE_COMMAND} -E copy ${${EXE_TARGET_NAME}_SHADERS_FRAG} $<TARGET_FILE_DIR:${EXE_TARGET_NAME}>)
-else()
-    install(FILES ${${EXE_TARGET_NAME}_SHADERS_VERT} ${${EXE_TARGET_NAME}_SHADERS_FRAG} DESTINATION bin)
 endif()
 
-install(FILES ${${EXE_TARGET_NAME}_APP_SIM}    DESTINATION ${ICUBCONTRIB_APPLICATIONS_INSTALL_DIR})
-install(FILES ${${EXE_TARGET_NAME}_CONFIG_SIM} DESTINATION ${ICUBCONTRIB_CONTEXTS_INSTALL_DIR}/${EXE_TARGET_NAME})
-install(FILES ${${EXE_TARGET_NAME}_APP}        DESTINATION ${ICUBCONTRIB_APPLICATIONS_TEMPLATES_INSTALL_DIR})
-install(FILES ${${EXE_TARGET_NAME}_CONFIG}     DESTINATION ${ICUBCONTRIB_CONTEXTS_INSTALL_DIR}/${EXE_TARGET_NAME})
-install(FILES ${${EXE_TARGET_NAME}_MESH}       DESTINATION ${ICUBCONTRIB_CONTEXTS_INSTALL_DIR}/${EXE_TARGET_NAME})
+install(FILES ${${EXE_TARGET_NAME}_APP_SIM}      DESTINATION ${ICUBCONTRIB_APPLICATIONS_INSTALL_DIR})
+install(FILES ${${EXE_TARGET_NAME}_CONFIG_SIM}   DESTINATION ${ICUBCONTRIB_CONTEXTS_INSTALL_DIR}/${EXE_TARGET_NAME})
+install(FILES ${${EXE_TARGET_NAME}_APP}          DESTINATION ${ICUBCONTRIB_APPLICATIONS_TEMPLATES_INSTALL_DIR})
+install(FILES ${${EXE_TARGET_NAME}_CONFIG}       DESTINATION ${ICUBCONTRIB_CONTEXTS_INSTALL_DIR}/${EXE_TARGET_NAME})
+install(FILES ${${EXE_TARGET_NAME}_SHADERS_VERT} DESTINATION ${ICUBCONTRIB_CONTEXTS_INSTALL_DIR}/${EXE_TARGET_NAME}/shader)
+install(FILES ${${EXE_TARGET_NAME}_SHADERS_FRAG} DESTINATION ${ICUBCONTRIB_CONTEXTS_INSTALL_DIR}/${EXE_TARGET_NAME}/shader)
+install(FILES ${${EXE_TARGET_NAME}_MESH}         DESTINATION ${ICUBCONTRIB_CONTEXTS_INSTALL_DIR}/${EXE_TARGET_NAME}/mesh)

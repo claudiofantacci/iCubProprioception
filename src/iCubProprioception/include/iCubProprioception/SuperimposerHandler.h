@@ -14,9 +14,6 @@
 #include <yarp/sig/Matrix.h>
 #include <yarp/sig/Vector.h>
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-
 #include <SuperImpose/SuperImpose.h>
 
 #include "iCubProprioception/SkeletonSuperimposer.h"
@@ -24,30 +21,23 @@
 #include "thrift/iCubProprioceptionIDL.h"
 
 
-class SuperimposerFactory : public yarp::os::RFModule, public iCubProprioceptionIDL
+class SuperimposerHandler : public yarp::os::RFModule,
+                            public iCubProprioceptionIDL
 {
 public:
-    SuperimposerFactory();
-    
-    static bool initOGL(const GLsizei width, const GLsizei height, const GLint view = 1);
+    SuperimposerHandler();
 
-    double getPeriod() { return 0.0; }
+    SuperimposerHandler(const yarp::os::ConstString& project_name);
+
+    double getPeriod() { return 0.033; }
 
     bool   configure(yarp::os::ResourceFinder& rf);
-
-    void   setProjectName(const yarp::os::ConstString& name);
-
+    
     bool   updateModule();
 
     bool   close();
 
 protected:
-    bool move_hand();
-
-    bool move_hand_freerun();
-
-    bool stop_hand();
-
     bool initial_position ();
 
     bool view_hand();
@@ -62,17 +52,33 @@ protected:
 
     std::string quit();
 
+    bool fileFound(const yarp::os::ConstString& file);
+
+    bool setTorsoRemoteControlboard();
+
+    bool setRightArmRemoteControlboard();
+
+    bool setRightArmCartesianController();
+
+    bool setHeadRemoteControlboard();
+
+    bool setGazeController();
+
+    bool setTorsoDOF();
+
+    bool setCommandPort();
+
+    bool moveFingers(const double joint[6]);
+
+    bool moveHand(const yarp::sig::Matrix& R, const yarp::sig::Vector& init_x);
+
 private:
+    const yarp::os::ConstString   ID_;
     const yarp::os::ConstString   log_ID_;
-    yarp::os::ConstString         project_name_;
 
     yarp::os::ConstString         robot_;
 
-    bool                          start_;
     bool                          init_position_;
-    bool                          freerunning_;
-    bool                          superimpose_skeleton_;
-    bool                          superimpose_mesh_;
 
     yarp::dev::PolyDriver         torso_remote_driver_;
 
@@ -92,10 +98,11 @@ private:
 
     yarp::dev::PolyDriver         drv_right_hand_analog_;
 
-    SkeletonSuperimposer        * trd_left_cam_skeleton_ = nullptr;
+    SkeletonSuperimposer        * trd_left_cam_skeleton_ = YARP_NULLPTR;
 
-    CADSuperimposer             * trd_left_cam_cad_ = nullptr;
+    CADSuperimposer             * trd_left_cam_cad_ = YARP_NULLPTR;
     SuperImpose::ObjFileMap       cad_hand_;
+    yarp::os::ConstString         shader_path_;
 
     yarp::os::Port                port_command_;
 
@@ -107,32 +114,6 @@ private:
 
     double                        open_hand_joints_[6];
     double                        closed_hand_joints_[6];
-
-    double                        radius_;
-    int                           angle_ratio_;
-    double                        motion_time_;
-    double                        path_time_;
-
-
-    bool FileFound(const yarp::os::ConstString& file);
-
-    bool setTorsoRemoteControlboard();
-
-    bool setRightArmRemoteControlboard();
-
-    bool setRightArmCartesianController();
-
-    bool setHeadRemoteControlboard();
-
-    bool setGazeController();
-
-    bool setTorsoDOF();
-
-    bool setCommandPort();
-
-    bool MoveFingers(const double (&joint)[6]);
-
-    bool MoveHand(const yarp::sig::Matrix& R, const yarp::sig::Vector& init_x);
 };
 
 #endif /* SUPERIMPOSEFACTORY_H */

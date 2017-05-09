@@ -2,11 +2,10 @@
 #include <yarp/os/Network.h>
 #include <yarp/os/ResourceFinder.h>
 
-#include "iCubProprioception/SuperimposerFactory.h"
+#include "iCubProprioception/SuperimposerHandler.h"
 #include "iCubProprioception/common.h"
 
 using namespace yarp::os;
-
 
 
 int main(int argc, char* argv[])
@@ -34,25 +33,9 @@ int main(int argc, char* argv[])
     rf.setDefaultContext("iCubProprioception");
     rf.configure(argc, argv);
 
-    /* Initialize OpenGL context */
-    SuperimposerFactory::initOGL(320, 240, 1);
-
     /* SuperimposerFactory, derived from RFModule, must be declared, initialized and run in the main thread (thread_0). */
-    SuperimposerFactory sh;
-    sh.setProjectName("iCubProprioception");
-
-    if (sh.runModuleThreaded(rf) == 0)
-    {
-        while (!sh.isStopping())
-        {
-            glfwPollEvents();
-        }
-    }
-
-    sh.joinModule();
-
-    glfwMakeContextCurrent(NULL);
-    glfwTerminate();
+    SuperimposerHandler sh("iCubProprioception");
+    sh.runModule(rf);
 
     yInfo() << log_ID << "Main returning.";
     yInfo() << log_ID << "Application closed.";
