@@ -5,6 +5,7 @@
 
 #include <iosfwd>
 #include <unordered_map>
+#include <vector>
 
 #include <yarp/dev/CartesianControl.h>
 #include <yarp/dev/IEncoders.h>
@@ -49,6 +50,8 @@ protected:
     bool mesh_background(const bool status);
 
     bool mesh_wireframe (const bool status);
+
+    void getPoses(const yarp::sig::Vector& cur_state, SuperImpose::ObjPoseMap& hand_poses);
     
 private:
     const yarp::os::ConstString    ID_;
@@ -93,6 +96,9 @@ private:
     yarp::os::Port                                                  port_command_;
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb>> inport_renderer_img_;
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb>> outport_renderer_img_;
+
+    yarp::os::BufferedPort<yarp::sig::Vector>                       inport_renderer_pf_mean_;
+    yarp::os::BufferedPort<yarp::sig::Vector>                       inport_renderer_pf_mode_;
     
     bool setCommandPort();
 };

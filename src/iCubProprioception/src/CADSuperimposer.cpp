@@ -65,7 +65,20 @@ CADSuperimposer::CADSuperimposer(const ConstString& project_name, const ConstStr
         yError() << log_ID_ << "Cannot open output image port for " + camera_ + " camera!";
         throw std::runtime_error("Cannot open output image port for " + camera_ + " camera!");
     }
-    yInfo() << log_ID_ << "CAD image ports succesfully opened!";
+
+
+    yInfo() << log_ID_ << "Opening ports for PF estimates...";
+    if (!inport_renderer_pf_mean_.open("/" + ID_ + "/estimates/mean:i"))
+    {
+        yError() << log_ID_ << "Cannot open input port for PF estimates (mean)!";
+        throw std::runtime_error("Cannot open input port for PF estimates (mean)!");
+    }
+
+    if (!inport_renderer_pf_mode_.open("/" + ID_ + "/estimates/mode:i"))
+    {
+        yError() << log_ID_ << "Cannot open input port for PF estimates (mode)!";
+        throw std::runtime_error("Cannot open input port for PF estimates (mode)!");
+    }
 
 
     Bottle btl_cam_left_info;
@@ -137,7 +150,7 @@ void CADSuperimposer::run()
 
     while (!isStopping())
     {
-        ImageOf<PixelRgb> * imgin = inport_renderer_img_.read(true);
+        ImageOf<PixelRgb>* imgin = inport_renderer_img_.read(true);
 
         if (imgin != NULL)
         {
@@ -236,6 +249,24 @@ void CADSuperimposer::run()
             cv::Mat img = cv::cvarrToMat(imgin->getIplImage(), true);
             drawer_->superimpose(hand_pose, cam_x.data(), cam_o.data(), img);
 
+            Vector* estimates_mean = inport_renderer_pf_mean_.read(false);
+            if(estimates_mean != YARP_NULLPTR)
+            {
+                SuperImpose::ObjPoseMap hand_pose;
+                getPoses(*estimates_mean, hand_pose);
+
+                drawer_->superimpose(hand_pose, cam_x.data(), cam_o.data(), img);
+            }
+
+            Vector* estimates_mode = inport_renderer_pf_mode_.read(false);
+            if(estimates_mode != YARP_NULLPTR)
+            {
+                SuperImpose::ObjPoseMap hand_pose;
+                getPoses(*estimates_mode, hand_pose);
+
+                drawer_->superimpose(hand_pose, cam_x.data(), cam_o.data(), img);
+            }
+
             ImageOf<PixelRgb>& imgout = outport_renderer_img_.prepare();
             imgout.setExternal(img.data, img.cols, img.rows);
 
@@ -259,6 +290,9 @@ void CADSuperimposer::threadRelease()
 
     if (!inport_renderer_img_.isClosed())  inport_renderer_img_.close();
     if (!outport_renderer_img_.isClosed()) outport_renderer_img_.close();
+
+    if (!inport_renderer_pf_mean_.isClosed()) inport_renderer_pf_mean_.close();
+    if (!inport_renderer_pf_mode_.isClosed()) inport_renderer_pf_mode_.close();
 
     if (port_command_.isOpen()) port_command_.close();
 
@@ -451,3 +485,60 @@ bool CADSuperimposer::mesh_wireframe(const bool status)
     return true;
 }
 
+
+void CADSuperimposer::getPoses(const Vector& cur_state, SuperImpose::ObjPoseMap& hand_pose)
+{
+    SuperImpose::ObjPose    pose;
+    Vector                  ee_t(4);
+    Vector                  ee_o(4);
+    float                   ang;
+
+
+    ee_t(0) = cur_state(0);
+    ee_t(1) = cur_state(1);
+    ee_t(2) = cur_state(2);
+    ee_t(3) =          1.0;
+    ang     = norm(cur_state.subVector(3, 5));
+    ee_o(0) = cur_state(3) / ang;
+    ee_o(1) = cur_state(4) / ang;
+    ee_o(2) = cur_state(5) / ang;
+    ee_o(3) = ang;
+
+    pose.assign(ee_t.data(), ee_t.data()+3);
+    pose.insert(pose.end(),  ee_o.data(), ee_o.data()+4);
+    hand_pose.emplace("palm", pose);
+
+    yarp::sig::Matrix Ha = axis2dcm(ee_o);
+    Ha.setCol(3, ee_t);
+    for (size_t fng = 0; fng < 3; ++fng)
+    {
+        std::string finger_s;
+        pose.clear();
+        if (fng != 0)
+        {
+            Vector j_x = (Ha * (right_finger_[fng].getH0().getCol(3))).subVector(0, 2);
+            Vector j_o = dcm2axis(Ha * right_finger_[fng].getH0());
+
+            if      (fng == 1) { finger_s = "index0"; }
+            else if (fng == 2) { finger_s = "medium0"; }
+
+            pose.assign(j_x.data(), j_x.data()+3);
+            pose.insert(pose.end(), j_o.data(), j_o.data()+4);
+            hand_pose.emplace(finger_s, pose);
+        }
+
+        for (size_t i = 0; i < right_finger_[fng].getN(); ++i)
+        {
+            Vector j_x = (Ha * (right_finger_[fng].getH(i, true).getCol(3))).subVector(0, 2);
+            Vector j_o = dcm2axis(Ha * right_finger_[fng].getH(i, true));
+
+            if      (fng == 0) { finger_s = "thumb"+std::to_string(i+1); }
+            else if (fng == 1) { finger_s = "index"+std::to_string(i+1); }
+            else if (fng == 2) { finger_s = "medium"+std::to_string(i+1); }
+
+            pose.assign(j_x.data(), j_x.data()+3);
+            pose.insert(pose.end(), j_o.data(), j_o.data()+4);
+            hand_pose.emplace(finger_s, pose);
+        }
+    }
+}
