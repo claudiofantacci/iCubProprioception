@@ -23,6 +23,7 @@ CADSuperimposer::CADSuperimposer(const ConstString& project_name, const ConstStr
 {
     yInfo() << log_ID_ << "Initializing hand CAD drawing thread...";
 
+
     /* Get arm interfaces */
     if(!setTorsoRemoteControlboard())
     {
@@ -80,15 +81,15 @@ CADSuperimposer::CADSuperimposer(const ConstString& project_name, const ConstStr
 
 
     yInfo() << log_ID_ << "Setting fingers...";
-    finger_[0] = iCubFinger("right_thumb");
-    finger_[1] = iCubFinger("right_index");
-    finger_[2] = iCubFinger("right_middle");
+    right_finger_[0] = iCubFinger("right_thumb");
+    right_finger_[1] = iCubFinger("right_index");
+    right_finger_[2] = iCubFinger("right_middle");
 
     std::deque<IControlLimits*> temp_lim;
     temp_lim.push_front(itf_fingers_limits_);
     for (int i = 0; i < 3; ++i)
     {
-        if (!finger_[i].alignJointsBounds(temp_lim))
+        if (!right_finger_[i].alignJointsBounds(temp_lim))
         {
             yError() << log_ID_ << "Cannot set joint bound for finger " + std::to_string(i) + ".";
             throw std::runtime_error("Cannot set joint bound for finger " + std::to_string(i) + ".");
@@ -99,17 +100,19 @@ CADSuperimposer::CADSuperimposer(const ConstString& project_name, const ConstStr
 
 
     yInfo() << log_ID_ << "Setting arms...";
-    arm_ = iCubArm("right");
-    arm_.setAllConstraints(false);
-    arm_.releaseLink(0);
-    arm_.releaseLink(1);
-    arm_.releaseLink(2);
+    right_arm_ = iCubArm("right");
+    right_arm_.setAllConstraints(false);
+    right_arm_.releaseLink(0);
+    right_arm_.releaseLink(1);
+    right_arm_.releaseLink(2);
     yInfo() << log_ID_ << "Arm set!";
 
 
     yInfo() << log_ID_ << "Setting up OpenGL drawer...";
     drawer_ = new SICAD(cad_hand_, cam_width_, cam_height_, 1, shader_path_,
                         cam_fx_, cam_fy_, cam_cx_, cam_cy_);
+    drawer_->setBackgroundOpt(true);
+    drawer_->setWireframeOpt(true);
     
     
     if (!setCommandPort()) throw std::runtime_error("Cannot attach the command port.");
@@ -169,12 +172,12 @@ void CADSuperimposer::run()
             for (unsigned int i = 0; i < 3; ++i)
             {
 #if ICP_USE_ANALOGS == 1
-                finger_[i].getChainJoints(encs_arm, analogs, chainjoints);
+                right_finger_[i].getChainJoints(encs_arm, analogs, chainjoints);
 #else
-                finger_[i].getChainJoints(encs_arm, chainjoints);
+                right_finger_[i].getChainJoints(encs_arm, chainjoints);
 #endif
 
-                finger_[i].setAng(CTRL_DEG2RAD * chainjoints);
+                right_finger_[i].setAng(CTRL_DEG2RAD * chainjoints);
             }
             Vector encs_torso(3);
             itf_torso_encoders_->getEncoders(encs_torso.data());
@@ -184,7 +187,7 @@ void CADSuperimposer::run()
             encs_tot(1) = encs_torso(1);
             encs_tot(2) = encs_torso(0);
             encs_tot.setSubvector(3, encs_arm.subVector(0, 6));
-            arm_.setAng(CTRL_DEG2RAD * encs_tot);
+            right_arm_.setAng(CTRL_DEG2RAD * encs_tot);
 
             SuperImpose::ObjPoseMap hand_pose;
             SuperImpose::ObjPose    pose;
@@ -197,8 +200,8 @@ void CADSuperimposer::run()
                 pose.clear();
                 if (fng != 0)
                 {
-                    Vector j_x = (Ha * (finger_[fng].getH0().getCol(3))).subVector(0, 2);
-                    Vector j_o = dcm2axis(Ha * finger_[fng].getH0());
+                    Vector j_x = (Ha * (right_finger_[fng].getH0().getCol(3))).subVector(0, 2);
+                    Vector j_o = dcm2axis(Ha * right_finger_[fng].getH0());
 
                     if      (fng == 1) { finger_s = "index0"; }
                     else if (fng == 2) { finger_s = "medium0"; }
@@ -208,10 +211,10 @@ void CADSuperimposer::run()
                     hand_pose.emplace(finger_s, pose);
                 }
 
-                for (unsigned int i = 0; i < finger_[fng].getN(); ++i)
+                for (unsigned int i = 0; i < right_finger_[fng].getN(); ++i)
                 {
-                    Vector j_x = (Ha * (finger_[fng].getH(i, true).getCol(3))).subVector(0, 2);
-                    Vector j_o = dcm2axis(Ha * finger_[fng].getH(i, true));
+                    Vector j_x = (Ha * (right_finger_[fng].getH(i, true).getCol(3))).subVector(0, 2);
+                    Vector j_o = dcm2axis(Ha * right_finger_[fng].getH(i, true));
 
                     if      (fng == 0) { finger_s = "thumb"+std::to_string(i+1); }
                     else if (fng == 1) { finger_s = "index"+std::to_string(i+1); }
@@ -222,16 +225,13 @@ void CADSuperimposer::run()
                     hand_pose.emplace(finger_s, pose);
                 }
             }
-            Matrix H_forearm = arm_.getH(7, true);
+            Matrix H_forearm = right_arm_.getH(7, true);
             Vector j_x = H_forearm.getCol(3).subVector(0, 2);
             Vector j_o = dcm2axis(H_forearm);
             pose.clear();
             pose.assign(j_x.data(), j_x.data()+3);
             pose.insert(pose.end(), j_o.data(), j_o.data()+4);
             hand_pose.emplace("forearm", pose);
-
-            drawer_->setBackgroundOpt(helper_.getBackgroundOpt());
-            drawer_->setWireframeOpt(helper_.getWireframeOpt());
 
             cv::Mat img = cv::cvarrToMat(imgin->getIplImage(), true);
             drawer_->superimpose(hand_pose, cam_x.data(), cam_o.data(), img);
@@ -274,7 +274,7 @@ bool CADSuperimposer::setCommandPort()
         yError() << log_ID_ << "Cannot open /" + ID_ + "/render/rpc port.";
         return false;
     }
-    if (!helper_.yarp().attachAsServer(port_command_))
+    if (!this->yarp().attachAsServer(port_command_))
     {
         yError() << log_ID_ << "Cannot attach the renderer RPC port.";
         return false;
@@ -429,3 +429,24 @@ bool CADSuperimposer::setGazeController()
 
     return true;
 }
+
+
+bool CADSuperimposer::mesh_background(const bool status)
+{
+    yInfo() << log_ID_ << ConstString((status ? "Enable" : "Disable")) + " background of the mesh window.";
+
+    drawer_->setBackgroundOpt(status);
+
+    return true;
+}
+
+
+bool CADSuperimposer::mesh_wireframe(const bool status)
+{
+    yInfo() << log_ID_ << ConstString((status ? "Enable" : "Disable")) + " wireframe rendering.";
+
+    drawer_->setWireframeOpt(status);
+
+    return true;
+}
+

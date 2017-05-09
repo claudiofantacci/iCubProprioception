@@ -1,6 +1,9 @@
 #ifndef CADSUPERIMPOSER_H
 #define CADSUPERIMPOSER_H
 
+#include "thrift/iCubProprioceptionOGLIDL.h"
+
+#include <iosfwd>
 #include <unordered_map>
 
 #include <yarp/dev/CartesianControl.h>
@@ -18,10 +21,9 @@
 
 #include <SuperImpose/SICAD.h>
 
-#include "iCubProprioception/ThreadControllerSHC.h"
 
-
-class CADSuperimposer : public yarp::os::Thread
+class CADSuperimposer : public yarp::os::Thread,
+                        public iCubProprioceptionOGLIDL
 {
 public:
     CADSuperimposer(const yarp::os::ConstString& project_name, const yarp::os::ConstString& robot, const yarp::os::ConstString& camera,
@@ -43,6 +45,10 @@ protected:
     bool setArmCartesianController();
 
     bool setGazeController();
+
+    bool mesh_background(const bool status);
+
+    bool mesh_wireframe (const bool status);
     
 private:
     const yarp::os::ConstString    ID_;
@@ -58,6 +64,7 @@ private:
     yarp::dev::PolyDriver          drv_right_hand_analog_;
 #endif
     yarp::dev::PolyDriver          drv_gaze_;
+
     yarp::dev::IEncoders         * itf_torso_encoders_;
     yarp::dev::IEncoders         * itf_rightarm_encoders_;
     yarp::dev::IControlLimits    * itf_fingers_limits_;
@@ -78,11 +85,10 @@ private:
     float                          cam_cx_;
     float                          cam_cy_;
 
-    iCub::iKin::iCubFinger         finger_[3];
-    iCub::iKin::iCubArm            arm_;
+    iCub::iKin::iCubFinger         right_finger_[3];
+    iCub::iKin::iCubArm            right_arm_;
 
     SICAD                        * drawer_;
-    ThreadControllerSHC            helper_;
 
     yarp::os::Port                                                  port_command_;
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb>> inport_renderer_img_;
