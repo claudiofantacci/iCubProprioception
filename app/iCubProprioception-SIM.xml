@@ -10,7 +10,7 @@
     <!-- GENERIC INFORMATION -->
     <name>iCubProprioception-SIM</name>
     <description>Superimpose the hand skeleton and/or 3D CAD model on the image plane</description>
-    <version>3.0.2</version>
+    <version>3.1.0</version>
 
     <authors>
         <author email="claudio.fantacci@iit.it">Claudio Fantacci</author>
@@ -57,12 +57,12 @@
     <!-- RC: SKELETON -->
     <connection>
         <from>/icubSim/cam/left</from>
-        <to>/iCubProprioception/skeleton/cam/left:i</to>
+        <to>/iCubProprioception/SkeletonSuperimposer/cam/left:i</to>
         <protocol>tcp</protocol>
     </connection>
 
     <connection>
-        <from>/iCubProprioception/skeleton/cam/left:o</from>
+        <from>/iCubProprioception/SkeletonSuperimposer/cam/left:o</from>
         <to>/view/cam_left/skeleton</to>
         <protocol>tcp</protocol>
     </connection>

@@ -5,7 +5,7 @@
     <!-- GENERIC INFORMATION -->
     <name>iCubProprioception-DataDump</name>
     <description>Collect data for iCubProprioception module</description>
-    <version>3.0.0</version>
+    <version>3.1.0</version>
 
     <authors>
         <author email="claudio.fantacci@iit.it">Claudio Fantacci</author>
@@ -56,25 +56,25 @@
     <module>
         <name>yarpdatadumper</name>
         <node>localhost</node>
-        <parameters>--name /datadumper/body/torso --txTime --rxTime --type bottle</parameters>
+        <parameters>--name /datadumper/torso --txTime --rxTime --type bottle</parameters>
     </module>
 
     <module>
         <name>yarpdatadumper</name>
         <node>localhost</node>
-        <parameters>--name /datadumper/body/right_arm --txTime --rxTime --type bottle</parameters>
+        <parameters>--name /datadumper/right_arm --txTime --rxTime --type bottle</parameters>
     </module>
 
     <module>
         <name>yarpdatadumper</name>
         <node>localhost</node>
-        <parameters>--name /datadumper/body/head --txTime --rxTime --type bottle</parameters>
+        <parameters>--name /datadumper/head --txTime --rxTime --type bottle</parameters>
     </module>
 
     <module>
         <name>yarpdatadumper</name>
         <node>localhost</node>
-        <parameters>--name /datadumper/right_hand/analog --txTime --rxTime --type bottle</parameters>
+        <parameters>--name /datadumper/analog --txTime --rxTime --type bottle</parameters>
     </module>
 
 
@@ -82,7 +82,7 @@
     <!-- RC: SKELETON -->
     <connection>
         <from>/icub/camcalib/left/out</from>
-        <to>/iCubProprioception/skeleton/cam/left:i</to>
+        <to>/iCubProprioception/SkeletonSuperimposer/cam/left:i</to>
         <protocol>tcp</protocol>
     </connection>
 
@@ -113,7 +113,7 @@
     </connection>
 
     <connection>
-        <from>/iCubProprioception/skeleton/cam/left:o</from>
+        <from>/iCubProprioception/SkeletonSuperimposer/cam/left:o</from>
         <to>/datadumper/skeleton/left</to>
         <protocol>tcp</protocol>
     </connection>
@@ -126,25 +126,25 @@
 
     <connection>
         <from>/icub/torso/state:o</from>
-        <to>/datadumper/body/torso</to>
+        <to>/datadumper/torso</to>
         <protocol>tcp</protocol>
     </connection>
 
     <connection>
         <from>/icub/right_arm/state:o</from>
-        <to>/datadumper/body/right_arm</to>
+        <to>/datadumper/right_arm</to>
         <protocol>tcp</protocol>
     </connection>
 
     <connection>
         <from>/icub/head/state:o</from>
-        <to>/datadumper/body/head</to>
+        <to>/datadumper/head</to>
         <protocol>tcp</protocol>
     </connection>
 
     <connection>
         <from>/icub/right_hand/analog:o</from>
-        <to>/datadumper/right_hand/analog</to>
+        <to>/datadumper/analog</to>
         <protocol>tcp</protocol>
     </connection>
 
