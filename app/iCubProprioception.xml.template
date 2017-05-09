@@ -5,7 +5,7 @@
     <!-- GENERIC INFORMATION -->
     <name>iCubProprioception</name>
     <description>Superimpose the hand skeleton and/or 3D CAD model on the image plane</description>
-    <version>4.1.0</version>
+    <version>4.2.0</version>
 
     <authors>
         <author email="claudio.fantacci@iit.it">Claudio Fantacci</author>
@@ -65,12 +65,12 @@
     <!-- RC: CAD -->
     <connection>
         <from>/icub/camcalib/left/out</from>
-        <to>/iCubProprioception/cad/cam/left:i</to>
+        <to>/iCubProprioception/CADSuperimposer/cam/left:i</to>
         <protocol>tcp</protocol>
     </connection>
 
     <connection>
-        <from>/iCubProprioception/cad/cam/left:o</from>
+        <from>/iCubProprioception/CADSuperimposer/cam/left:o</from>
         <to>/view/cam_left/cad</to>
         <protocol>tcp</protocol>
     </connection>
