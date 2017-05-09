@@ -52,7 +52,7 @@ private:
     yarp::dev::IEncoders        *  itf_arm_encoders_;
     yarp::dev::ICartesianControl*  itf_arm_cart_;
     yarp::dev::IGazeControl     *  itf_head_gaze_;
-    yarp::dev::IControlLimits   *  itf_fingers_lim_;
+    yarp::dev::IControlLimits   *  itf_fingers_limits_;
     int                            num_arm_enc_;
     float                          eye_fx_;
     float                          eye_fy_;

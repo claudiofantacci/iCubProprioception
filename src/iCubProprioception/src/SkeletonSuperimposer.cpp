@@ -64,7 +64,7 @@ SkeletonSuperimposer::SkeletonSuperimposer(const ConstString& project_name, cons
     finger_[2] = iCubFinger("right_middle");
 
     std::deque<IControlLimits*> temp_lim;
-    temp_lim.push_front(itf_fingers_lim_);
+    temp_lim.push_front(itf_fingers_limits_);
     for (int i = 0; i < 3; ++i)
     {
         if (!finger_[i].alignJointsBounds(temp_lim))
@@ -212,6 +212,13 @@ bool SkeletonSuperimposer::setArmRemoteControlboard()
         {
             yError() << log_ID_ << "Error getting right arm IEncoders interface.";
             return false;
+        }
+
+        drv_right_arm_remote_.view(itf_fingers_limits_);
+        if (!itf_fingers_limits_)
+        {
+            yError() << log_ID_ << "Error getting fingers IControlLimits interface.";
+            throw std::runtime_error("Error getting fingers IControlLimits interface.");
         }
     }
     else
