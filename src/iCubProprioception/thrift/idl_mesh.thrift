@@ -25,12 +25,4 @@ service iCubProprioceptionOGLIDL
      * @return true activation/deactivation success, false otherwise.
      */
     bool mesh_wireframe(1:bool status);
-
-    /**
-     * Set mipmaps color filtering technique.
-     * Default is "nearest" (i.e. nearest neighbor).
-     * @param type can be "nearest" (default) or "linear".
-     * @return true on correct activation, false otherwise.
-     */
-    bool mesh_mipmaps(1:string type);
 }
