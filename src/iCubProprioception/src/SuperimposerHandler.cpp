@@ -172,14 +172,7 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
 
 
     /* Lunching CAD superimposer thread */
-    trd_left_cam_cad_ = new CADSuperimposer(ID_,
-                                            "right",
-                                            "left",
-                                            torso_remote_driver_,
-                                            rightarm_remote_driver_,
-                                            rightarm_cartesian_driver_,
-                                            gaze_driver_,
-                                            drv_right_hand_analog_,
+    trd_left_cam_cad_ = new CADSuperimposer(ID_, robot_, "left",
                                             cad_hand_, shader_path_);
     if (trd_left_cam_cad_ != YARP_NULLPTR)
     {
