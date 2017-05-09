@@ -28,21 +28,21 @@ SkeletonSuperimposer::SkeletonSuperimposer(const ConstString& project_name, cons
     /* Get arm interfaces */
     if (!setArmRemoteControlboard())
     {
-        yError() << log_ID_ << "remote_controlboard errored!";
+        yError() << log_ID_ << "Arm remote_controlboard errored!";
         throw std::runtime_error("remote_controlboard errored!");
     }
 
     /* Get arm Cartesian interfaces */
     if (!setArmCartesianController())
     {
-        yError() << log_ID_ << "cartesiancontrollerclient errored!";
+        yError() << log_ID_ << "Arm cartesiancontrollerclient errored!";
         throw std::runtime_error("cartesiancontrollerclient errored!");
     }
 
     /* Get gaze interface */
     if (!setGazeController())
     {
-        yError() << log_ID_ << "gazecontrollerclient errored!";
+        yError() << log_ID_ << "Head gazecontrollerclient errored!";
         throw std::runtime_error("gazecontrollerclient errored!");
     }
 
