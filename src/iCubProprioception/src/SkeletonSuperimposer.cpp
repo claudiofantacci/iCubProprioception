@@ -59,15 +59,15 @@ SkeletonSuperimposer::SkeletonSuperimposer(const ConstString& project_name, cons
 
     yInfo() << log_ID_ << "Initilizing finger interfaces and bounds.";
 
-    finger_[0] = iCubFinger("right_thumb");
-    finger_[1] = iCubFinger("right_index");
-    finger_[2] = iCubFinger("right_middle");
+    right_finger_[0] = iCubFinger("right_thumb");
+    right_finger_[1] = iCubFinger("right_index");
+    right_finger_[2] = iCubFinger("right_middle");
 
     std::deque<IControlLimits*> temp_lim;
     temp_lim.push_front(itf_fingers_limits_);
     for (int i = 0; i < 3; ++i)
     {
-        if (!finger_[i].alignJointsBounds(temp_lim))
+        if (!right_finger_[i].alignJointsBounds(temp_lim))
         {
             yError() << log_ID_ << "Cannot set joint bound for finger " + std::to_string(i) + "!";
             throw std::runtime_error("Cannot set joint bound for finger " + std::to_string(i) + "!");
@@ -129,8 +129,8 @@ void SkeletonSuperimposer::run()
         itf_right_arm_encoders_->getEncoders(encs.data());
         for (unsigned int i = 0; i < 3; ++i)
         {
-            finger_[i].getChainJoints(encs, chainjoints);
-            finger_[i].setAng(CTRL_DEG2RAD * chainjoints);
+            right_finger_[i].getChainJoints(encs, chainjoints);
+            right_finger_[i].setAng(CTRL_DEG2RAD * chainjoints);
         }
 
         SuperImpose::ObjPoseMap hand_pose;
@@ -143,7 +143,7 @@ void SkeletonSuperimposer::run()
             pose.clear();
             if (fng != 0)
             {
-                Vector j_x = (Ha * (finger_[fng].getH0().getCol(3))).subVector(0, 2);
+                Vector j_x = (Ha * (right_finger_[fng].getH0().getCol(3))).subVector(0, 2);
 
                 if      (fng == 1) { finger_s = "index"; }
                 else if (fng == 2) { finger_s = "medium"; }
@@ -152,9 +152,9 @@ void SkeletonSuperimposer::run()
                 hand_pose.emplace(finger_s, pose);
             }
 
-            for (unsigned int i = 0; i < finger_[fng].getN(); ++i)
+            for (unsigned int i = 0; i < right_finger_[fng].getN(); ++i)
             {
-                Vector j_x = (Ha * (finger_[fng].getH(i, true).getCol(3))).subVector(0, 2);
+                Vector j_x = (Ha * (right_finger_[fng].getH(i, true).getCol(3))).subVector(0, 2);
 
                 if      (fng == 0) { finger_s = "thumb"; }
                 else if (fng == 1) { finger_s = "index"; }
