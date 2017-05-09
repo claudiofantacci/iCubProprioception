@@ -23,9 +23,9 @@ public:
 
     ~SkeletonSuperimposer() noexcept;
 
-    void run          ();
+    void run();
 
-    void onStop       ();
+    void onStop();
 
     void threadRelease();
 
