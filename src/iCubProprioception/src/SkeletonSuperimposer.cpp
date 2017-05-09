@@ -116,7 +116,7 @@ void SkeletonSuperimposer::run()
     {
         ImageOf<PixelRgb>* imgin = inport_skeleton_img_.read(true);
 
-        itf_arm_cart_->getPose(ee_x, ee_o);
+        itf_right_arm_cart_->getPose(ee_x, ee_o);
 
         itf_head_gaze_->getLeftEyePose(cam_x, cam_o);
 
@@ -126,7 +126,7 @@ void SkeletonSuperimposer::run()
 
         Vector encs(static_cast<size_t>(num_arm_enc_));
         Vector chainjoints;
-        itf_arm_encoders_->getEncoders(encs.data());
+        itf_right_arm_encoders_->getEncoders(encs.data());
         for (unsigned int i = 0; i < 3; ++i)
         {
             finger_[i].getChainJoints(encs, chainjoints);
@@ -207,8 +207,8 @@ bool SkeletonSuperimposer::setArmRemoteControlboard()
     {
         yInfo() << log_ID_ << "Right arm remote_controlboard succefully opened.";
 
-        drv_right_arm_remote_.view(itf_arm_encoders_);
-        if (!itf_arm_encoders_)
+        drv_right_arm_remote_.view(itf_right_arm_encoders_);
+        if (!itf_right_arm_encoders_)
         {
             yError() << log_ID_ << "Error getting right arm IEncoders interface.";
             return false;
@@ -259,8 +259,8 @@ bool SkeletonSuperimposer::setArmCartesianController()
     drv_right_arm_cartesian_.open(rightarm_cartesian_options);
     if (drv_right_arm_cartesian_.isValid())
     {
-        drv_right_arm_cartesian_.view(itf_arm_cart_);
-        if (!itf_arm_cart_)
+        drv_right_arm_cartesian_.view(itf_right_arm_cart_);
+        if (!itf_right_arm_cart_)
         {
             yError() << log_ID_ << "Error getting ICartesianControl interface.";
             return false;

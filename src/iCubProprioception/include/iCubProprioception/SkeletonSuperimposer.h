@@ -49,8 +49,8 @@ private:
 #endif
     yarp::dev::PolyDriver          drv_right_arm_cartesian_;
     yarp::dev::PolyDriver          drv_gaze_;
-    yarp::dev::IEncoders        *  itf_arm_encoders_;
-    yarp::dev::ICartesianControl*  itf_arm_cart_;
+    yarp::dev::IEncoders        *  itf_right_arm_encoders_;
+    yarp::dev::ICartesianControl*  itf_right_arm_cart_;
     yarp::dev::IGazeControl     *  itf_head_gaze_;
     yarp::dev::IControlLimits   *  itf_fingers_limits_;
     int                            num_arm_enc_;
