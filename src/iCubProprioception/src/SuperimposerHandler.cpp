@@ -158,7 +158,7 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
 
 
     /* Launching skeleton superimposer thread */
-    trd_left_cam_skeleton_ = new SkeletonSuperimposer(ID_, "right", "left", rightarm_remote_driver_, rightarm_cartesian_driver_, gaze_driver_);
+    trd_left_cam_skeleton_ = new SkeletonSuperimposer(ID_, robot_, "left");
 
     if (trd_left_cam_skeleton_ != YARP_NULLPTR)
     {
@@ -299,7 +299,7 @@ std::string SuperimposerHandler::quit()
 }
 
 
-bool SuperimposerHandler::fileFound (const ConstString& file)
+bool SuperimposerHandler::fileFound(const ConstString& file)
 {
     if (file.empty())
     {
