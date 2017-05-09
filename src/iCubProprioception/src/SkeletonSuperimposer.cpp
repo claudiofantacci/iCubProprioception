@@ -20,7 +20,7 @@ using namespace iCub::iKin;
 
 SkeletonSuperimposer::SkeletonSuperimposer(const ConstString& project_name, const ConstString& robot, const ConstString& camera) :
     ID_(project_name + "/SkeletonSuperimposer]"), log_ID_("[" + project_name + "]"),
-    project_name_(project_name), robot_(robot), camera_(camera)
+    robot_(robot), camera_(camera)
 {
     yInfo() << log_ID_ << "Initializing skeleton superimposer thread.";
 
@@ -77,13 +77,13 @@ SkeletonSuperimposer::SkeletonSuperimposer(const ConstString& project_name, cons
 
     yInfo() << log_ID_ << "Opening ports for skeleton images.";
 
-    if (!inport_skeleton_img_.open("/" + project_name_ + "/cam/"+ camera_ +":i"))
+    if (!inport_skeleton_img_.open("/" + ID_ + "/cam/"+ camera_ +":i"))
     {
         yError() << log_ID_ << "Cannot open input image port for "+ camera_ +"!";
         throw std::runtime_error("Cannot open input image port for "+ camera_ +"!");
     }
 
-    if (!outport_skeleton_img_.open("/" + project_name_ + "/cam/"+ camera_ +":o"))
+    if (!outport_skeleton_img_.open("/" + ID_ + "/cam/"+ camera_ +":o"))
     {
         yError() << log_ID_ << "Cannot open output image port for "+ camera_ +"!";
         throw std::runtime_error("Cannot open output image port for "+ camera_ +"!");

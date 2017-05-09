@@ -39,7 +39,6 @@ protected:
 private:
     const yarp::os::ConstString    ID_;
     const yarp::os::ConstString    log_ID_;
-    const yarp::os::ConstString    project_name_;
     const yarp::os::ConstString    robot_;
     const yarp::os::ConstString    camera_;
 
