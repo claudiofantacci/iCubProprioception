@@ -231,7 +231,7 @@ bool SkeletonSuperimposer::setArmRemoteControlboard()
     Property righthand_remote_analog;
     righthand_remote_analog.put("device", "analogsensorclient");
     righthand_remote_analog.put("local",  "/" + ID_ + "/right_hand");
-    righthand_remote_analog.put("remote", "/"+robot_+"/right_hand/analog:o");
+    righthand_remote_analog.put("remote", "/" + robot_ + "/right_hand/analog:o");
 
     drv_right_hand_analog_.open(righthand_remote_analog);
     if (drv_right_hand_analog_.isValid())
