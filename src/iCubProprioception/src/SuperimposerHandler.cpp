@@ -406,7 +406,7 @@ bool SuperimposerHandler::setRightArmCartesianController()
         return false;
     }
 
-    if (!itf_rightarm_cart_->setTrajTime(5.0))
+    if (!itf_rightarm_cart_->setTrajTime(2.5))
     {
         yError() << log_ID_ << "Error setting ICartesianControl trajectory time.";
         return false;
