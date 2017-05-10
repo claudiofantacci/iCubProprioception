@@ -51,7 +51,7 @@ protected:
 
     bool mesh_wireframe (const bool status);
 
-    void getPoses(const yarp::sig::Vector& cur_state, SuperImpose::ObjPoseMap& hand_poses);
+    void getPose(const yarp::sig::Vector& cur_state, SuperImpose::ObjPoseMap& hand_poses);
     
 private:
     const yarp::os::ConstString    ID_;
@@ -93,14 +93,18 @@ private:
 
     SICAD                        * drawer_;
 
+    yarp::sig::Vector              estimates_mean_copy_;
+    yarp::sig::Vector              estimates_mode_copy_;
+
+
+    bool setCommandPort();
+
     yarp::os::Port                                                  port_command_;
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb>> inport_renderer_img_;
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb>> outport_renderer_img_;
 
     yarp::os::BufferedPort<yarp::sig::Vector>                       inport_renderer_pf_mean_;
     yarp::os::BufferedPort<yarp::sig::Vector>                       inport_renderer_pf_mode_;
-    
-    bool setCommandPort();
 };
 
 #endif /* CADSUPERIMPOSER */
