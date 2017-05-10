@@ -78,8 +78,6 @@ private:
 
     yarp::os::ConstString         robot_;
 
-    bool                          init_position_;
-
     yarp::dev::PolyDriver         torso_remote_driver_;
 
     yarp::dev::PolyDriver         rightarm_remote_driver_;

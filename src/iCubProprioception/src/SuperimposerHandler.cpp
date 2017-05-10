@@ -29,7 +29,6 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
     this->setName(ID_.c_str());
 
     /* Setting default parameters. */
-    init_position_ = false;
     ConstString context = rf.getContext();
 
     /* Parsing parameters from config file. */
@@ -226,22 +225,14 @@ bool SuperimposerHandler::close()
 
 bool SuperimposerHandler::initial_position()
 {
-    if (!init_position_)
-    {
-        yWarning() << log_ID_ << "Already in initial position settings!";
+    yInfo() << log_ID_ << "Reaching initial position...";
 
-        return false;
-    }
-    else
-    {
-        yInfo() << log_ID_ << "Reaching initial position...";
+    bool motion_done = moveHand(table_view_R_, table_view_x_);
 
-        init_position_ = !moveHand(table_view_R_, table_view_x_);
-        if (!init_position_) yInfo() << log_ID_ << "...done. iCub can move the hand in this settings.";
-        else yWarning() << log_ID_ << "...could not reach initial position!";
+    if (motion_done) yInfo()    << log_ID_ << "...done!";
+    else             yWarning() << log_ID_ << "...could not reach initial position!";
 
-        return init_position_;
-    }
+    return motion_done;
 }
 
 
@@ -249,12 +240,12 @@ bool SuperimposerHandler::view_hand()
 {
     yInfo() << log_ID_ << "Reaching a position close to iCub left camera with the right hand...";
 
-    init_position_ = moveHand(frontal_view_R_, frontal_view_x_);
+    bool motion_done = moveHand(frontal_view_R_, frontal_view_x_);
 
-    if (!init_position_) yWarning() << log_ID_ << "...could not reach the desired position!";
-    else                 yInfo() << log_ID_ << "...done. iCub can't move the hand in this settings.";
+    if (motion_done) yInfo()    << log_ID_ << "...done!";
+    else             yWarning() << log_ID_ << "...could not reach the desired position!";
 
-    return init_position_;
+    return motion_done;
 }
 
 
@@ -263,8 +254,9 @@ bool SuperimposerHandler::open_fingers()
     yInfo() << log_ID_ << "Opening fingers...";
 
     bool motion_done = moveFingers(open_hand_joints_);
-    if (!motion_done) yWarning() << log_ID_ << "...fingers could not be opened!";
-    else yInfo() << log_ID_ << "...done.";
+
+    if (motion_done) yInfo()    << log_ID_ << "...done!";
+    else             yWarning() << log_ID_ << "...fingers could not be opened!";
 
     return motion_done;
 }
@@ -275,8 +267,9 @@ bool SuperimposerHandler::close_fingers()
     yInfo() << log_ID_ << "Closing fingers...";
 
     bool motion_done = moveFingers(closed_hand_joints_);
-    if (!motion_done) yWarning() << log_ID_ << "...fingers could not be closed!";
-    else yInfo() << log_ID_ << "...done.";
+
+    if (motion_done) yInfo()    << log_ID_ << "...done!";
+    else             yWarning() << log_ID_ << "...fingers could not be closed!";
 
     return motion_done;
 }
