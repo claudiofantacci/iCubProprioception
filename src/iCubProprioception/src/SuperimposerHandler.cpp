@@ -18,10 +18,12 @@ using namespace yarp::sig;
 using namespace yarp::math;
 
 
-SuperimposerHandler::SuperimposerHandler(const yarp::os::ConstString& project_name) : ID_(project_name), log_ID_("[" + project_name + "]") { }
+SuperimposerHandler::SuperimposerHandler(const yarp::os::ConstString& project_name) :
+    ID_(project_name), log_ID_("[" + project_name + "]") { }
 
 
-SuperimposerHandler::SuperimposerHandler() : SuperimposerHandler("SuperimposerModule") { }
+SuperimposerHandler::SuperimposerHandler() :
+    SuperimposerHandler("SuperimposerModule") { }
 
 
 bool SuperimposerHandler::configure(ResourceFinder &rf)
@@ -150,15 +152,29 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
         yWarning() << log_ID_ << "Could not initialize hand skeleton superimposition!";
 
 
-    /* Lunching CAD superimposer thread */
-    trd_left_cam_cad_ = new iKinCADSuperimposer(ID_, robot_, "left",
+    /* Lunching iKin CAD superimposer thread */
+    trd_left_cam_ikin_cad_ = new iKinCADSuperimposer(ID_, robot_, "left",
                                                 cad_hand_, shader_path_);
-    if (trd_left_cam_cad_ != YARP_NULLPTR)
+    if (trd_left_cam_ikin_cad_ != YARP_NULLPTR)
     {
         yInfo() << log_ID_ << "Starting mesh superimposing thread for the right hand on the left camera images...";
 
-        if (!trd_left_cam_cad_->start()) yWarning() << log_ID_ << "...thread could not be started!";
-        else                             yInfo()    << log_ID_ << "...done.";
+        if (!trd_left_cam_ikin_cad_->start()) yWarning() << log_ID_ << "...thread could not be started!";
+        else                                  yInfo()    << log_ID_ << "...done.";
+    }
+    else
+        yWarning() << log_ID_ << "Could not initialize hand mesh superimposition!";
+
+
+    /* Lunching External (input) CAD superimposer thread */
+    trd_left_cam_ext_cad_ = new ExtCADSuperimposer(ID_, robot_, "left",
+                                                   cad_hand_, shader_path_);
+    if (trd_left_cam_ext_cad_ != YARP_NULLPTR)
+    {
+        yInfo() << log_ID_ << "Starting mesh superimposing thread for the right hand on the left camera images...";
+
+        if (!trd_left_cam_ext_cad_->start()) yWarning() << log_ID_ << "...thread could not be started!";
+        else                                 yInfo()    << log_ID_ << "...done.";
     }
     else
         yWarning() << log_ID_ << "Could not initialize hand mesh superimposition!";
@@ -182,10 +198,12 @@ bool SuperimposerHandler::close()
     yInfo() << log_ID_ << "Calling close functions...";
 
     if (trd_left_cam_skeleton_ != YARP_NULLPTR) trd_left_cam_skeleton_->stop();
-    if (trd_left_cam_cad_      != YARP_NULLPTR) trd_left_cam_cad_->stop();
+    if (trd_left_cam_ikin_cad_ != YARP_NULLPTR) trd_left_cam_ikin_cad_->stop();
+    if (trd_left_cam_ext_cad_  != YARP_NULLPTR) trd_left_cam_ext_cad_->stop();
 
     delete trd_left_cam_skeleton_;
-    delete trd_left_cam_cad_;
+    delete trd_left_cam_ikin_cad_;
+    delete trd_left_cam_ext_cad_;
 
     itf_rightarm_cart_->removeTipFrame();
 

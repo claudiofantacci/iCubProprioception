@@ -17,6 +17,7 @@
 #include <SuperImpose/SuperImpose.h>
 
 #include "iCubProprioception/SkeletonSuperimposer.h"
+#include "iCubProprioception/ExtCADSuperimposer.h"
 #include "iCubProprioception/iKinCADSuperimposer.h"
 #include "thrift/iCubProprioceptionIDL.h"
 
@@ -98,7 +99,8 @@ private:
 
     SkeletonSuperimposer        * trd_left_cam_skeleton_ = YARP_NULLPTR;
 
-    iKinCADSuperimposer         * trd_left_cam_cad_ = YARP_NULLPTR;
+    iKinCADSuperimposer         * trd_left_cam_ikin_cad_ = YARP_NULLPTR;
+    ExtCADSuperimposer          * trd_left_cam_ext_cad_ = YARP_NULLPTR;
     SuperImpose::ObjFileMap       cad_hand_;
     yarp::os::ConstString         shader_path_;
 
