@@ -5,7 +5,7 @@
     <!-- GENERIC INFORMATION -->
     <name>iCubProprioception</name>
     <description>Superimpose the hand skeleton and/or 3D CAD model on the image plane</description>
-    <version>4.3.0</version>
+    <version>5.0.0</version>
 
     <authors>
         <author email="claudio.fantacci@iit.it">Claudio Fantacci</author>
@@ -37,7 +37,13 @@
 
     <module>
         <name>yarpview</name>
-        <parameters>--name /view/cam_left/cad --x 660 --y 0 --RefreshTime 30</parameters>
+        <parameters>--name /view/cam_left/ikin_cad --x 660 --y 0 --RefreshTime 30</parameters>
+        <node>localhost</node>
+    </module>
+
+    <module>
+        <name>yarpview</name>
+        <parameters>--name /view/cam_left/ext_cad --x 980 --y 0 --RefreshTime 30</parameters>
         <node>localhost</node>
     </module>
 
@@ -62,29 +68,36 @@
         <protocol>tcp</protocol>
     </connection>
 
-    <!-- RC: CAD -->
+    <!-- RC: iKin CAD -->
     <connection>
-        <from>/icub/camcalib/left/out</from>
-        <to>/iCubProprioception/CADSuperimposer/cam/left:i</to>
+        <from>/icubSim/cam/left</from>
+        <to>/iCubProprioception/iKinCADSuperimposer/cam/left:i</to>
         <protocol>tcp</protocol>
     </connection>
 
     <connection>
-        <from>/iCubProprioception/CADSuperimposer/cam/left:o</from>
-        <to>/view/cam_left/cad</to>
+        <from>/iCubProprioception/iKinCADSuperimposer/cam/left:o</from>
+        <to>/view/cam_left/ikin_cad</to>
         <protocol>tcp</protocol>
     </connection>
 
+    <!-- RC: Ext CAD -->
     <connection>
         <from>/hand-tracking/left/result/estimates:o</from>
-        <to>/iCubProprioception/CADSuperimposer/estimates/mean:i</to>
+        <to>/iCubProprioception/ExtCADSuperimposer/estimates/mean:i</to>
+        <protocol>tcp</protocol>
+    </connection>
+
+    <connection>
+        <from>/iCubProprioception/ExtCADSuperimposer/cam/left:o</from>
+        <to>/view/cam_left/ext_cad</to>
         <protocol>tcp</protocol>
     </connection>
 
     <!-- PF Mode extraction uninplemented
     <connection>
         <from>/hand-tracking/left/result/estimates:o</from>
-        <to>/iCubProprioception/CADSuperimposer/estimates/mode:i</to>
+        <to>/iCubProprioception/ExtCADSuperimposer/estimates/mode:i</to>
         <protocol>tcp</protocol>
     </connection>
     -->
