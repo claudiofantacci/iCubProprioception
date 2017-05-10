@@ -24,7 +24,7 @@ iKinCADSuperimposer::iKinCADSuperimposer(const ConstString& project_name, const 
     yInfo() << log_ID_ << "Initializing hand CAD drawing thread...";
 
 
-    /* Get arm interfaces */
+    /* Get torso interfaces */
     if (!setTorsoRemoteControlboard())
     {
         yError() << log_ID_ << "Torso remote_controlboard errored!";
@@ -54,7 +54,7 @@ iKinCADSuperimposer::iKinCADSuperimposer(const ConstString& project_name, const 
 
 
     /* Port for the CAD superimposer to work */
-    yInfo() << log_ID_ << "Opening ports for CAD images...";
+    yInfo() << log_ID_ << "Opening ports for CAD images.";
     if (!inport_renderer_img_.open("/" + ID_ + "/cam/" + camera_ + ":i"))
     {
         yError() << log_ID_ << "Cannot open input image port for " + camera_ + " camera!";
@@ -68,20 +68,7 @@ iKinCADSuperimposer::iKinCADSuperimposer(const ConstString& project_name, const 
     }
 
 
-    yInfo() << log_ID_ << "Opening ports for PF estimates...";
-    if (!inport_renderer_pf_mean_.open("/" + ID_ + "/estimates/mean:i"))
-    {
-        yError() << log_ID_ << "Cannot open input port for PF estimates (mean)!";
-        throw std::runtime_error("Cannot open input port for PF estimates (mean)!");
-    }
-
-    if (!inport_renderer_pf_mode_.open("/" + ID_ + "/estimates/mode:i"))
-    {
-        yError() << log_ID_ << "Cannot open input port for PF estimates (mode)!";
-        throw std::runtime_error("Cannot open input port for PF estimates (mode)!");
-    }
-
-
+    /* Get camera info */
     Bottle btl_cam_left_info;
     itf_head_gaze_->getInfo(btl_cam_left_info);
     yInfo() << log_ID_ << "[CAM INFO]" << btl_cam_left_info.toString();
@@ -94,7 +81,8 @@ iKinCADSuperimposer::iKinCADSuperimposer(const ConstString& project_name, const 
     cam_cy_     = static_cast<float>(cam_left_info->get(6).asDouble());
 
 
-    yInfo() << log_ID_ << "Setting fingers...";
+    /* Initialize right hand finger interfaces */
+    yInfo() << log_ID_ << "Setting fingers.";
     right_finger_[0] = iCubFinger("right_thumb");
     right_finger_[1] = iCubFinger("right_index");
     right_finger_[2] = iCubFinger("right_middle");
@@ -110,29 +98,29 @@ iKinCADSuperimposer::iKinCADSuperimposer(const ConstString& project_name, const 
         }
     }
 
-    yInfo() << log_ID_ << "Finger succesfully set!";
 
-
-    yInfo() << log_ID_ << "Setting arms...";
+    /* Initialize right arm interface */
+    yInfo() << log_ID_ << "Setting arms.";
     right_arm_ = iCubArm("right");
     right_arm_.setAllConstraints(false);
     right_arm_.releaseLink(0);
     right_arm_.releaseLink(1);
     right_arm_.releaseLink(2);
-    yInfo() << log_ID_ << "Arm set!";
 
 
-    yInfo() << log_ID_ << "Setting up OpenGL drawer...";
+    /* Initialize CAD superimposer */
+    yInfo() << log_ID_ << "Setting up OpenGL drawer.";
     drawer_ = new SICAD(cad_hand_, cam_width_, cam_height_, 1, shader_path_,
                         cam_fx_, cam_fy_, cam_cx_, cam_cy_);
     drawer_->setBackgroundOpt(true);
     drawer_->setWireframeOpt(true);
     
-    
+
+    /* Open command port */
     if (!setCommandPort()) throw std::runtime_error("Cannot attach the command port.");
 
     
-    yInfo() << log_ID_ << "Initialization completed!";
+    yInfo() << log_ID_ << "...initialization completed!";
 }
 
 
@@ -193,6 +181,7 @@ void iKinCADSuperimposer::run()
 
                 right_finger_[i].setAng(CTRL_DEG2RAD * chainjoints);
             }
+
             Vector encs_torso(3);
             itf_torso_encoders_->getEncoders(encs_torso.data());
             yAssert(encs_torso.size() == 3);
@@ -249,33 +238,6 @@ void iKinCADSuperimposer::run()
 
             cv::Mat img = cv::cvarrToMat(imgin->getIplImage(), true);
             drawer_->superimpose(hand_pose, cam_x.data(), cam_o.data(), img);
-
-
-            Vector* estimates_mean = inport_renderer_pf_mean_.read(false);
-            if (estimates_mean              != YARP_NULLPTR) estimates_mean_copy_ = *estimates_mean;
-            if (estimates_mean_copy_.size() != 0)
-            {
-                SuperImpose::ObjPoseMap hand_pose;
-                getPose(estimates_mean_copy_, hand_pose);
-
-                drawer_->superimpose(hand_pose, cam_x.data(), cam_o.data(), img);
-            }
-
-
-            Vector* estimates_mode = inport_renderer_pf_mode_.read(false);
-            if (estimates_mode              != YARP_NULLPTR) estimates_mode_copy_ = *estimates_mode;
-            if (estimates_mode_copy_.size() != 0)
-            {
-                SuperImpose::ObjPoseMap hand_pose;
-                getPose(estimates_mode_copy_, hand_pose);
-
-                drawer_->superimpose(hand_pose, cam_x.data(), cam_o.data(), img);
-            }
-
-
-            ImageOf<PixelRgb>& imgout = outport_renderer_img_.prepare();
-            imgout.setExternal(img.data, img.cols, img.rows);
-            outport_renderer_img_.write();
         }
     }
 }
@@ -295,9 +257,6 @@ void iKinCADSuperimposer::threadRelease()
 
     if (!inport_renderer_img_.isClosed())  inport_renderer_img_.close();
     if (!outport_renderer_img_.isClosed()) outport_renderer_img_.close();
-
-    if (!inport_renderer_pf_mean_.isClosed()) inport_renderer_pf_mean_.close();
-    if (!inport_renderer_pf_mode_.isClosed()) inport_renderer_pf_mode_.close();
 
     if (port_command_.isOpen()) port_command_.close();
 
@@ -491,61 +450,7 @@ bool iKinCADSuperimposer::mesh_wireframe(const bool status)
 }
 
 
-// FIXME: quando ee_pose from PF will be back to dim 7, we can use getPose() in run() as well.
-void iKinCADSuperimposer::getPose(const Vector& ee_pose, SuperImpose::ObjPoseMap& hand_pose)
+bool iKinCADSuperimposer::sync_input(const bool status)
 {
-    SuperImpose::ObjPose    pose;
-    Vector                  ee_t(4);
-    Vector                  ee_o(4);
-    float                   ang;
-
-
-    ee_t(0) = ee_pose(0);
-    ee_t(1) = ee_pose(1);
-    ee_t(2) = ee_pose(2);
-    ee_t(3) =          1.0;
-    ang     = norm(ee_pose.subVector(3, 5));
-    ee_o(0) = ee_pose(3) / ang;
-    ee_o(1) = ee_pose(4) / ang;
-    ee_o(2) = ee_pose(5) / ang;
-    ee_o(3) = ang;
-
-    yarp::sig::Matrix Ha = axis2dcm(ee_o);
-    Ha.setCol(3, ee_t);
-
-    pose.assign(ee_t.data(), ee_t.data()+3);
-    pose.insert(pose.end(),  ee_o.data(), ee_o.data()+4);
-    hand_pose.emplace("palm", pose);
-
-    for (size_t fng = 0; fng < 3; ++fng)
-    {
-        std::string finger_s;
-        pose.clear();
-        if (fng != 0)
-        {
-            Vector j_x = (Ha * (right_finger_[fng].getH0().getCol(3))).subVector(0, 2);
-            Vector j_o = dcm2axis(Ha * right_finger_[fng].getH0());
-
-            if      (fng == 1) { finger_s = "index0"; }
-            else if (fng == 2) { finger_s = "medium0"; }
-
-            pose.assign(j_x.data(), j_x.data()+3);
-            pose.insert(pose.end(), j_o.data(), j_o.data()+4);
-            hand_pose.emplace(finger_s, pose);
-        }
-
-        for (size_t i = 0; i < right_finger_[fng].getN(); ++i)
-        {
-            Vector j_x = (Ha * (right_finger_[fng].getH(i, true).getCol(3))).subVector(0, 2);
-            Vector j_o = dcm2axis(Ha * right_finger_[fng].getH(i, true));
-
-            if      (fng == 0) { finger_s = "thumb"+std::to_string(i+1); }
-            else if (fng == 1) { finger_s = "index"+std::to_string(i+1); }
-            else if (fng == 2) { finger_s = "medium"+std::to_string(i+1); }
-
-            pose.assign(j_x.data(), j_x.data()+3);
-            pose.insert(pose.end(), j_o.data(), j_o.data()+4);
-            hand_pose.emplace(finger_s, pose);
-        }
-    }
+    return false;
 }

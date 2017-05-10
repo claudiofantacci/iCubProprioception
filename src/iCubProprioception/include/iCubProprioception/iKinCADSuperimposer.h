@@ -7,6 +7,8 @@
 #include <unordered_map>
 #include <vector>
 
+#include <iCub/iKin/iKinFwd.h>
+#include <SuperImpose/SICAD.h>
 #include <yarp/dev/CartesianControl.h>
 #include <yarp/dev/IEncoders.h>
 #include <yarp/dev/GazeControl.h>
@@ -18,9 +20,6 @@
 #include <yarp/os/ConstString.h>
 #include <yarp/os/Port.h>
 #include <yarp/os/Thread.h>
-#include <iCub/iKin/iKinFwd.h>
-
-#include <SuperImpose/SICAD.h>
 
 
 class iKinCADSuperimposer : public yarp::os::Thread,
@@ -32,11 +31,11 @@ public:
 
     ~iKinCADSuperimposer() noexcept;
 
-    void run();
+    void run() override;
 
-    void onStop();
+    void onStop() override;
 
-    void threadRelease();
+    void threadRelease() override;
 
 protected:
     bool setTorsoRemoteControlboard();
@@ -47,11 +46,11 @@ protected:
 
     bool setGazeController();
 
-    bool mesh_background(const bool status);
+    bool mesh_background(const bool status) override;
 
-    bool mesh_wireframe (const bool status);
+    bool mesh_wireframe(const bool status) override;
 
-    void getPose(const yarp::sig::Vector& cur_state, SuperImpose::ObjPoseMap& hand_poses);
+    bool sync_input(const bool status) override;
     
 private:
     const yarp::os::ConstString    ID_;
@@ -93,18 +92,12 @@ private:
 
     SICAD                        * drawer_;
 
-    yarp::sig::Vector              estimates_mean_copy_;
-    yarp::sig::Vector              estimates_mode_copy_;
-
 
     bool setCommandPort();
 
     yarp::os::Port                                                  port_command_;
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb>> inport_renderer_img_;
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb>> outport_renderer_img_;
-
-    yarp::os::BufferedPort<yarp::sig::Vector>                       inport_renderer_pf_mean_;
-    yarp::os::BufferedPort<yarp::sig::Vector>                       inport_renderer_pf_mode_;
 };
 
 #endif /* IKINCADSUPERIMPOSER_H */
