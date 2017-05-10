@@ -267,9 +267,9 @@ void iKinCADSuperimposer::threadRelease()
 bool iKinCADSuperimposer::setCommandPort()
 {
     yInfo() << log_ID_ << "Opening command port.";
-    if (!port_command_.open("/" + ID_ + "/render/rpc"))
+    if (!port_command_.open("/" + ID_ + "/render/cmd:i"))
     {
-        yError() << log_ID_ << "Cannot open /" + ID_ + "/render/rpc port.";
+        yError() << log_ID_ << "Cannot open /" + ID_ + "/render/cmd:i port.";
         return false;
     }
     if (!this->yarp().attachAsServer(port_command_))
