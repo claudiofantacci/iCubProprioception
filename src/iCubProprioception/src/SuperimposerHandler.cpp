@@ -35,26 +35,6 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
     /* Robot name */
     robot_ = rf.findGroup("PARAMETER").check("robot", Value("icubSim")).asString();
 
-    /* Joint velocities/accelerations */
-    if (!rf.findGroup("ARMJOINT").findGroup("vel").isNull() && rf.findGroup("ARMJOINT").findGroup("vel").tail().size() == 16)
-    {
-        Vector arm_vel(16);
-        for (int i = 0; i < rf.findGroup("ARMJOINT").findGroup("vel").tail().size(); ++i)
-        {
-            arm_vel[i] = rf.findGroup("ARMJOINT").findGroup("vel").tail().get(i).asDouble();
-        }
-        yWarning() << log_ID_ << "Unused config velocities!";
-        yInfo()    << log_ID_ << arm_vel.toString();
-
-        Vector arm_acc(16);
-        for (int i = 0; i < rf.findGroup("ARMJOINT").findGroup("acc").tail().size(); ++i)
-        {
-            arm_acc[i] = rf.findGroup("ARMJOINT").findGroup("acc").tail().get(i).asDouble();
-        }
-        yWarning() << log_ID_ << "Unused config accelerations!";
-        yInfo()    << log_ID_ << arm_acc.toString();
-    }
-
 
     /* Search mesh files in /mesh context folder */
     rf.setDefaultContext(context + "/mesh");
