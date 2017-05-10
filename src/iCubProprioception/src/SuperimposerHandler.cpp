@@ -413,7 +413,7 @@ bool SuperimposerHandler::setRightArmCartesianController()
     }
     yInfo() << log_ID_ << "Succesfully set ICartesianControl trajectory time!";
 
-    if(!itf_rightarm_cart_->setInTargetTol(0.01))
+    if (!itf_rightarm_cart_->setInTargetTol(0.01))
     {
         yError() << log_ID_ << "Error setting ICartesianControl target tolerance.";
         return false;

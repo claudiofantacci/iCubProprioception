@@ -25,7 +25,7 @@ CADSuperimposer::CADSuperimposer(const ConstString& project_name, const ConstStr
 
 
     /* Get arm interfaces */
-    if(!setTorsoRemoteControlboard())
+    if (!setTorsoRemoteControlboard())
     {
         yError() << log_ID_ << "Torso remote_controlboard errored!";
         throw std::runtime_error("remote_controlboard errored!");
@@ -207,7 +207,7 @@ void CADSuperimposer::run()
             pose.assign(ee_x.data(), ee_x.data()+3);
             pose.insert(pose.end(), ee_o.data(), ee_o.data()+4);
             hand_pose.emplace("palm", pose);
-            for (unsigned int fng = 0; fng < 3; ++fng)
+            for (size_t fng = 0; fng < 3; ++fng)
             {
                 std::string finger_s;
                 pose.clear();
@@ -224,7 +224,7 @@ void CADSuperimposer::run()
                     hand_pose.emplace(finger_s, pose);
                 }
 
-                for (unsigned int i = 0; i < right_finger_[fng].getN(); ++i)
+                for (size_t i = 0; i < right_finger_[fng].getN(); ++i)
                 {
                     Vector j_x = (Ha * (right_finger_[fng].getH(i, true).getCol(3))).subVector(0, 2);
                     Vector j_o = dcm2axis(Ha * right_finger_[fng].getH(i, true));
