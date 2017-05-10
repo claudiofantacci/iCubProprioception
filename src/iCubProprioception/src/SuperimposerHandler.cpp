@@ -151,8 +151,8 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
 
 
     /* Lunching CAD superimposer thread */
-    trd_left_cam_cad_ = new CADSuperimposer(ID_, robot_, "left",
-                                            cad_hand_, shader_path_);
+    trd_left_cam_cad_ = new iKinCADSuperimposer(ID_, robot_, "left",
+                                                cad_hand_, shader_path_);
     if (trd_left_cam_cad_ != YARP_NULLPTR)
     {
         yInfo() << log_ID_ << "Starting mesh superimposing thread for the right hand on the left camera images...";

@@ -1,4 +1,4 @@
-#include "iCubProprioception/CADSuperimposer.h"
+#include "iCubProprioception/iKinCADSuperimposer.h"
 
 #include <exception>
 #include <utility>
@@ -15,9 +15,9 @@ using namespace iCub::ctrl;
 using namespace iCub::iKin;
 
 
-CADSuperimposer::CADSuperimposer(const ConstString& project_name, const ConstString& robot, const ConstString& camera,
+iKinCADSuperimposer::iKinCADSuperimposer(const ConstString& project_name, const ConstString& robot, const ConstString& camera,
                                  const SuperImpose::ObjFileMap& cad_hand, const ConstString& shader_path) :
-    ID_(project_name + "/CADSuperimposer"), log_ID_("[" + ID_ + "]"),
+    ID_(project_name + "/iKinCADSuperimposer"), log_ID_("[" + ID_ + "]"),
     robot_(robot), camera_(camera), camsel_((camera == "left")? 0:1),
     cad_hand_(cad_hand), shader_path_(shader_path)
 {
@@ -136,13 +136,13 @@ CADSuperimposer::CADSuperimposer(const ConstString& project_name, const ConstStr
 }
 
 
-CADSuperimposer::~CADSuperimposer() noexcept
+iKinCADSuperimposer::~iKinCADSuperimposer() noexcept
 {
     delete drawer_;
 }
 
 
-void CADSuperimposer::run()
+void iKinCADSuperimposer::run()
 {
     Vector ee_x (3);
     Vector ee_o (4);
@@ -281,13 +281,13 @@ void CADSuperimposer::run()
 }
 
 
-void CADSuperimposer::onStop()
+void iKinCADSuperimposer::onStop()
 {
     inport_renderer_img_.interrupt();
 }
 
 
-void CADSuperimposer::threadRelease()
+void iKinCADSuperimposer::threadRelease()
 {
     yInfo() << log_ID_ << "Deallocating resource...";
 
@@ -305,7 +305,7 @@ void CADSuperimposer::threadRelease()
 }
 
 
-bool CADSuperimposer::setCommandPort()
+bool iKinCADSuperimposer::setCommandPort()
 {
     yInfo() << log_ID_ << "Opening command port.";
     if (!port_command_.open("/" + ID_ + "/render/rpc"))
@@ -324,7 +324,7 @@ bool CADSuperimposer::setCommandPort()
 }
 
 
-bool CADSuperimposer::setTorsoRemoteControlboard()
+bool iKinCADSuperimposer::setTorsoRemoteControlboard()
 {
     Property torso_remote_options;
     torso_remote_options.put("device", "remote_controlboard");
@@ -353,7 +353,7 @@ bool CADSuperimposer::setTorsoRemoteControlboard()
 }
 
 
-bool CADSuperimposer::setArmRemoteControlboard()
+bool iKinCADSuperimposer::setArmRemoteControlboard()
 {
     Property rightarm_remote_options;
     rightarm_remote_options.put("device", "remote_controlboard");
@@ -416,7 +416,7 @@ bool CADSuperimposer::setArmRemoteControlboard()
 }
 
 
-bool CADSuperimposer::setArmCartesianController()
+bool iKinCADSuperimposer::setArmCartesianController()
 {
     Property rightarm_cartesian_options;
     rightarm_cartesian_options.put("device", "cartesiancontrollerclient");
@@ -444,7 +444,7 @@ bool CADSuperimposer::setArmCartesianController()
 }
 
 
-bool CADSuperimposer::setGazeController()
+bool iKinCADSuperimposer::setGazeController()
 {
     Property gaze_option;
     gaze_option.put("device", "gazecontrollerclient");
@@ -471,7 +471,7 @@ bool CADSuperimposer::setGazeController()
 }
 
 
-bool CADSuperimposer::mesh_background(const bool status)
+bool iKinCADSuperimposer::mesh_background(const bool status)
 {
     yInfo() << log_ID_ << ConstString((status ? "Enable" : "Disable")) + " background of the mesh window.";
 
@@ -481,7 +481,7 @@ bool CADSuperimposer::mesh_background(const bool status)
 }
 
 
-bool CADSuperimposer::mesh_wireframe(const bool status)
+bool iKinCADSuperimposer::mesh_wireframe(const bool status)
 {
     yInfo() << log_ID_ << ConstString((status ? "Enable" : "Disable")) + " wireframe rendering.";
 
@@ -492,7 +492,7 @@ bool CADSuperimposer::mesh_wireframe(const bool status)
 
 
 // FIXME: quando ee_pose from PF will be back to dim 7, we can use getPose() in run() as well.
-void CADSuperimposer::getPose(const Vector& ee_pose, SuperImpose::ObjPoseMap& hand_pose)
+void iKinCADSuperimposer::getPose(const Vector& ee_pose, SuperImpose::ObjPoseMap& hand_pose)
 {
     SuperImpose::ObjPose    pose;
     Vector                  ee_t(4);

@@ -1,5 +1,5 @@
-#ifndef CADSUPERIMPOSER_H
-#define CADSUPERIMPOSER_H
+#ifndef IKINCADSUPERIMPOSER_H
+#define IKINCADSUPERIMPOSER_H
 
 #include "thrift/iCubProprioceptionOGLIDL.h"
 
@@ -23,14 +23,14 @@
 #include <SuperImpose/SICAD.h>
 
 
-class CADSuperimposer : public yarp::os::Thread,
-                        public iCubProprioceptionOGLIDL
+class iKinCADSuperimposer : public yarp::os::Thread,
+                            public iCubProprioceptionOGLIDL
 {
 public:
-    CADSuperimposer(const yarp::os::ConstString& project_name, const yarp::os::ConstString& robot, const yarp::os::ConstString& camera,
-                    const SuperImpose::ObjFileMap& cad_hand, const yarp::os::ConstString& shader_path);
+    iKinCADSuperimposer(const yarp::os::ConstString& project_name, const yarp::os::ConstString& robot, const yarp::os::ConstString& camera,
+                        const SuperImpose::ObjFileMap& cad_hand, const yarp::os::ConstString& shader_path);
 
-    ~CADSuperimposer() noexcept;
+    ~iKinCADSuperimposer() noexcept;
 
     void run();
 
@@ -107,4 +107,4 @@ private:
     yarp::os::BufferedPort<yarp::sig::Vector>                       inport_renderer_pf_mode_;
 };
 
-#endif /* CADSUPERIMPOSER */
+#endif /* IKINCADSUPERIMPOSER_H */

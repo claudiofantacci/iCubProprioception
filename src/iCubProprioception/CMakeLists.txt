@@ -2,13 +2,13 @@ set(EXE_TARGET_NAME iCubProprioception)
 
 set(${EXE_TARGET_NAME}_SRC
         src/main.cpp
-        src/CADSuperimposer.cpp
+        src/iKinCADSuperimposer.cpp
         src/SkeletonSuperimposer.cpp
         src/SuperimposerHandler.cpp)
 
 set(${EXE_TARGET_NAME}_HDR
         include/iCubProprioception/common.h
-        include/iCubProprioception/CADSuperimposer.h
+        include/iCubProprioception/iKinCADSuperimposer.h
         include/iCubProprioception/SkeletonSuperimposer.h
         include/iCubProprioception/SuperimposerHandler.h)
 
