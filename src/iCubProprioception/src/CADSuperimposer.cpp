@@ -53,6 +53,7 @@ CADSuperimposer::CADSuperimposer(const ConstString& project_name, const ConstStr
     }
 
 
+    /* Port for the CAD superimposer to work */
     yInfo() << log_ID_ << "Opening ports for CAD images...";
     if (!inport_renderer_img_.open("/" + ID_ + "/cam/" + camera_ + ":i"))
     {
