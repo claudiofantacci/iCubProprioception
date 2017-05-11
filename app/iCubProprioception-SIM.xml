@@ -7,10 +7,11 @@
         <port>/yarprun</port>
     </dependencies>
 
+
     <!-- GENERIC INFORMATION -->
     <name>iCubProprioception-SIM</name>
     <description>Superimpose the hand skeleton and/or 3D CAD model on the image plane</description>
-    <version>4.0.0</version>
+    <version>4.0.1</version>
 
     <authors>
         <author email="claudio.fantacci@iit.it">Claudio Fantacci</author>
@@ -93,18 +94,16 @@
         <protocol>tcp</protocol>
     </connection>
 
+    <!--connection>
+        <from>/hand-tracking/left/result/estimates:o</from>
+        <to>/iCubProprioception/ExtCADSuperimposer/estimates/mode:i</to>
+        <protocol>tcp</protocol>
+    </connection-->
+
     <connection>
         <from>/iCubProprioception/ExtCADSuperimposer/cam/left:o</from>
         <to>/view/cam_left/ext_cad</to>
         <protocol>tcp</protocol>
     </connection>
-
-    <!-- PF Mode extraction uninplemented
-    <connection>
-        <from>/hand-tracking/left/result/estimates:o</from>
-        <to>/iCubProprioception/ExtCADSuperimposer/estimates/mode:i</to>
-        <protocol>tcp</protocol>
-    </connection>
-    -->
 
 </application>
