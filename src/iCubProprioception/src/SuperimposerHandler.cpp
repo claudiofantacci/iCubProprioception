@@ -1,6 +1,7 @@
 #include "iCubProprioception/SuperimposerHandler.h"
 #include "iCubProprioception/common.h"
 
+#include <exception>
 #include <list>
 
 #include <GL/glew.h>
@@ -138,7 +139,8 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
 
 
     /* Launching skeleton superimposer thread */
-    trd_left_cam_skeleton_ = new SkeletonSuperimposer(ID_, robot_, "left");
+    try { trd_left_cam_skeleton_ = new SkeletonSuperimposer(ID_, robot_, "left"); }
+    catch (const std::runtime_error& e) { yError() << e.what(); }
 
     if (trd_left_cam_skeleton_ != YARP_NULLPTR)
     {
@@ -152,8 +154,9 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
 
 
     /* Lunching iKin CAD superimposer thread */
-    trd_left_cam_ikin_cad_ = new iKinCADSuperimposer(ID_, robot_, "left",
-                                                cad_hand_, shader_path_);
+    try { trd_left_cam_ikin_cad_ = new iKinCADSuperimposer(ID_, robot_, "left", cad_hand_, shader_path_); }
+    catch (const std::runtime_error& e) { yError() << e.what(); }
+
     if (trd_left_cam_ikin_cad_ != YARP_NULLPTR)
     {
         yInfo() << log_ID_ << "Starting mesh superimposing thread for the right hand on the left camera images...";
@@ -166,8 +169,9 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
 
 
     /* Lunching External (input) CAD superimposer thread */
-    trd_left_cam_ext_cad_ = new ExtCADSuperimposer(ID_, robot_, "left",
-                                                   cad_hand_, shader_path_);
+    try { trd_left_cam_ext_cad_ = new ExtCADSuperimposer(ID_, robot_, "left", cad_hand_, shader_path_); }
+    catch (const std::runtime_error& e) { yError() << e.what(); }
+
     if (trd_left_cam_ext_cad_ != YARP_NULLPTR)
     {
         yInfo() << log_ID_ << "Starting mesh superimposing thread for the right hand on the left camera images...";
