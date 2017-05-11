@@ -3,8 +3,6 @@
 
 #include "thrift/iCubProprioceptionOGLIDL.h"
 
-#include <iosfwd>
-#include <unordered_map>
 #include <vector>
 
 #include <iCub/iKin/iKinFwd.h>
