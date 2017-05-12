@@ -45,6 +45,14 @@ ExtCADSuperimposer::ExtCADSuperimposer(const ConstString& project_name, const Co
 ExtCADSuperimposer::~ExtCADSuperimposer() noexcept { }
 
 
+void ExtCADSuperimposer::threadRelease()
+{
+    if (!inport_pose_ext_.isClosed()) inport_pose_ext_.close();
+
+    iKinCADSuperimposer::threadRelease();
+}
+
+
 yarp::sig::Vector ExtCADSuperimposer::getEndEffectorPose()
 {
     Vector* estimates_mean = inport_pose_ext_.read(synch_);

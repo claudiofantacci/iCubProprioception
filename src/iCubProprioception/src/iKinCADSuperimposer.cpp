@@ -72,6 +72,12 @@ iKinCADSuperimposer::iKinCADSuperimposer(const ConstString& project_name, const 
 iKinCADSuperimposer::~iKinCADSuperimposer() noexcept { }
 
 
+void iKinCADSuperimposer::threadRelease()
+{
+    CADSuperimposer::threadRelease();
+}
+
+
 Vector iKinCADSuperimposer::getEndEffectorPose()
 {
     Vector ee_x(3);

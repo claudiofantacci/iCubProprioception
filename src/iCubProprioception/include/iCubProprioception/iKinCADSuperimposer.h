@@ -21,6 +21,8 @@ public:
 
     ~iKinCADSuperimposer() noexcept;
 
+    void threadRelease() override;
+
 protected:
     yarp::sig::Vector getEndEffectorPose() override;
 

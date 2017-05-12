@@ -232,6 +232,7 @@ void CADSuperimposer::threadRelease()
 {
     yInfo() << log_ID_ << "Deallocating resource...";
 
+
     outport_renderer_img_.interrupt();
 
     if (!inport_renderer_img_.isClosed())  inport_renderer_img_.close();
@@ -239,7 +240,8 @@ void CADSuperimposer::threadRelease()
 
     if (port_command_.isOpen()) port_command_.close();
 
-    yInfo() << log_ID_ << "Deallocation completed!";
+
+    yInfo() << log_ID_ << "...deallocation completed!";
 }
 
 

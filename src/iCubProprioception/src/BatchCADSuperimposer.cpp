@@ -80,6 +80,18 @@ CADSuperimposer(project_name + "/BatchCADSuperimposer", robot, camera, cad_hand,
 BatchCADSuperimposer::~BatchCADSuperimposer() noexcept { }
 
 
+void BatchCADSuperimposer::threadRelease()
+{
+    if (!inport_pose_ext_.isClosed())           inport_pose_ext_.close();
+    if (!inport_head_enc_.isClosed())           inport_head_enc_.close();
+    if (!inport_torso_enc_.isClosed())          inport_torso_enc_.close();
+    if (!inport_right_arm_enc_.isClosed())      inport_right_arm_enc_.close();
+    if (!inport_right_hand_analogs_.isClosed()) inport_right_hand_analogs_.close();
+
+    CADSuperimposer::threadRelease();
+}
+
+
 Vector BatchCADSuperimposer::getEndEffectorPose()
 {
     Vector* estimates_mean = inport_pose_ext_.read(synch_);
