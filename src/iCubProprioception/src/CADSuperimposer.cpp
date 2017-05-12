@@ -165,7 +165,7 @@ void CADSuperimposer::run()
 
         if (imgin != NULL)
         {
-            left_eye_.setAng (CTRL_DEG2RAD * readRootToLeftEye());
+            left_eye_.setAng(CTRL_DEG2RAD * readRootToLeftEye());
 
 
             ee_pose = getEndEffectorPose();

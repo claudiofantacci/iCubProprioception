@@ -26,26 +26,28 @@ iKinCADSuperimposer::iKinCADSuperimposer(const ConstString& project_name, const 
     if (!setTorsoRemoteControlboard())
     {
         yError() << log_ID_ << "Torso remote_controlboard errored!";
-        throw std::runtime_error("remote_controlboard errored!");
+        throw std::runtime_error("Torso remote_controlboard errored!");
     }
+
 
     /* Get arm interfaces */
     if (!setArmRemoteControlboard())
     {
         yError() << log_ID_ << "Arm remote_controlboard errored!";
-        throw std::runtime_error("remote_controlboard errored!");
+        throw std::runtime_error("Arm remote_controlboard errored!");
     }
+
 
     /* Get arm Cartesian interfaces */
     if (!setArmCartesianController())
     {
         yError() << log_ID_ << "Arm cartesiancontrollerclient errored!";
-        throw std::runtime_error("cartesiancontrollerclient errored!");
+        throw std::runtime_error("Arm cartesiancontrollerclient errored!");
     }
 
 
     /* Initialize right arm interface */
-    yInfo() << log_ID_ << "Setting right arm.";
+    yInfo() << log_ID_ << "Setting right arm interface.";
 
     right_arm_ = iCubArm("right");
 
