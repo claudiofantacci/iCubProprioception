@@ -307,12 +307,6 @@ bool CADSuperimposer::mesh_wireframe(const bool status)
 }
 
 
-bool CADSuperimposer::sync_input(const bool status)
-{
-    return false;
-}
-
-
 bool CADSuperimposer::openGazeController()
 {
     std::lock_guard<std::mutex> lock(mtx_gaze_);

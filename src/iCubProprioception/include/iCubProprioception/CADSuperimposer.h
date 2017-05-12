@@ -58,8 +58,6 @@ protected:
 
     bool mesh_wireframe(const bool status) override;
 
-    bool sync_input(const bool status) override;
-
 private:
     const SuperImpose::ObjFileMap & cad_hand_;
     const yarp::os::ConstString     shader_path_;
