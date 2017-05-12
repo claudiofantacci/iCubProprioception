@@ -148,6 +148,8 @@ void iKinCADSuperimposer::getExtraObjPoseMap(SuperImpose::ObjPoseMap& hand_pose)
 {
     SuperImpose::ObjPose pose;
 
+    right_arm_.setAng(CTRL_DEG2RAD * readRootToEE());
+
     Matrix H_forearm = right_arm_.getH(7, true);
 
     Vector j_x = H_forearm.getCol(3).subVector(0, 2);
