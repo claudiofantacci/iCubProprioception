@@ -43,6 +43,17 @@ iKinCADSuperimposer::iKinCADSuperimposer(const ConstString& project_name, const 
         throw std::runtime_error("cartesiancontrollerclient errored!");
     }
 
+
+    /* Initialize right arm interface */
+    yInfo() << log_ID_ << "Setting right arm.";
+
+    right_arm_ = iCubArm("right");
+
+    right_arm_.setAllConstraints(false);
+    right_arm_.releaseLink(0);
+    right_arm_.releaseLink(1);
+    right_arm_.releaseLink(2);
+
     
     yInfo() << log_ID_ << "...iKinCADSuperimposer ctor completed!";
 }
@@ -120,6 +131,22 @@ Vector iKinCADSuperimposer::getTorsoEncoders()
     std::swap(enc_torso(0), enc_torso(2));
 
     return enc_torso;
+}
+
+
+void iKinCADSuperimposer::getExtraObjPoseMap(SuperImpose::ObjPoseMap& hand_pose)
+{
+    SuperImpose::ObjPose pose;
+
+    Matrix H_forearm = right_arm_.getH(7, true);
+
+    Vector j_x = H_forearm.getCol(3).subVector(0, 2);
+    Vector j_o = dcm2axis(H_forearm);
+
+    pose.assign(j_x.data(), j_x.data()+3);
+    pose.insert(pose.end(), j_o.data(), j_o.data()+4);
+
+    hand_pose.emplace("forearm", pose);
 }
 
 
@@ -259,4 +286,19 @@ bool iKinCADSuperimposer::setArmCartesianController()
     }
 
     return true;
+}
+
+
+Vector iKinCADSuperimposer::readRootToEE()
+{
+    Vector enc_arm = getRightArmEncoders();
+
+    Vector root_ee_enc(10);
+
+    root_ee_enc.setSubvector(0, getTorsoEncoders());
+
+    for (size_t i = 0; i < 7; ++i)
+        root_ee_enc(i+3) = enc_arm(i);
+
+    return root_ee_enc;
 }

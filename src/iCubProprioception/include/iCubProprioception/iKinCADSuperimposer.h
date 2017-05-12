@@ -34,6 +34,8 @@ protected:
 
     yarp::sig::Vector getTorsoEncoders() override;
 
+    void getExtraObjPoseMap(SuperImpose::ObjPoseMap& hand_pose) override;
+
 
     bool setHeadRemoteControlboard();
 
@@ -59,6 +61,10 @@ private:
 #if ICP_USE_ANALOGS == 1
     yarp::dev::IAnalogSensor    * itf_right_hand_analog_;
 #endif
+
+    iCub::iKin::iCubArm           right_arm_;
+
+    yarp::sig::Vector readRootToEE();
 };
 
 #endif /* IKINCADSUPERIMPOSER_H */

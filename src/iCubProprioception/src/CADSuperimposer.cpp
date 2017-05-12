@@ -106,6 +106,8 @@ CADSuperimposer::CADSuperimposer(const ConstString& project_name, const ConstStr
 
 
     /* Initiliaze left eye interface */
+    yInfo() << log_ID_ << "Setting left eye.";
+
     left_eye_ = iCubEye(camera_ + "_v2");
     left_eye_.setAllConstraints(false);
     left_eye_.releaseLink(0);
@@ -113,19 +115,8 @@ CADSuperimposer::CADSuperimposer(const ConstString& project_name, const ConstStr
     left_eye_.releaseLink(2);
 
 
-    /* Initialize right arm interface */
-    yInfo() << log_ID_ << "Setting arms.";
-
-    right_arm_ = iCubArm("right");
-
-    right_arm_.setAllConstraints(false);
-    right_arm_.releaseLink(0);
-    right_arm_.releaseLink(1);
-    right_arm_.releaseLink(2);
-
-
     /* Initialize right hand finger interfaces */
-    yInfo() << log_ID_ << "Setting fingers.";
+    yInfo() << log_ID_ << "Setting right hand fingers.";
 
     right_finger_[0] = iCubFinger("right_thumb");
     right_finger_[1] = iCubFinger("right_index");
@@ -175,7 +166,6 @@ void CADSuperimposer::run()
         if (imgin != NULL)
         {
             left_eye_.setAng (CTRL_DEG2RAD * readRootToLeftEye());
-            right_arm_.setAng(CTRL_DEG2RAD * readRootToEE()     );
 
 
             ee_pose = getEndEffectorPose();
@@ -297,22 +287,6 @@ void CADSuperimposer::getRightHandObjPoseMap(const Vector& ee_pose, SuperImpose:
 }
 
 
-void CADSuperimposer::getExtraObjPoseMap(SuperImpose::ObjPoseMap& hand_pose)
-{
-    SuperImpose::ObjPose pose;
-
-    Matrix H_forearm = right_arm_.getH(7, true);
-
-    Vector j_x = H_forearm.getCol(3).subVector(0, 2);
-    Vector j_o = dcm2axis(H_forearm);
-
-    pose.assign(j_x.data(), j_x.data()+3);
-    pose.insert(pose.end(), j_o.data(), j_o.data()+4);
-
-    hand_pose.emplace("forearm", pose);
-}
-
-
 bool CADSuperimposer::mesh_background(const bool status)
 {
     yInfo() << log_ID_ << ConstString((status ? "Enable" : "Disable")) + " background of the mesh window.";
@@ -389,21 +363,6 @@ bool CADSuperimposer::setCommandPort()
     yInfo() << log_ID_ << "Renderer RPC port succesfully opened and attached. Ready to recieve commands.";
 
     return true;
-}
-
-
-Vector CADSuperimposer::readRootToEE()
-{
-    Vector enc_arm = getRightArmEncoders();
-
-    Vector root_ee_enc(10);
-
-    root_ee_enc.setSubvector(0, getTorsoEncoders());
-
-    for (size_t i = 0; i < 7; ++i)
-        root_ee_enc(i+3) = enc_arm(i);
-
-    return root_ee_enc;
 }
 
 

@@ -51,7 +51,7 @@ protected:
 
     virtual yarp::sig::Vector getTorsoEncoders() = 0;
 
-    virtual void getExtraObjPoseMap(SuperImpose::ObjPoseMap& hand_pose);
+    virtual void getExtraObjPoseMap(SuperImpose::ObjPoseMap& hand_pose) = 0;
 
 
     bool mesh_background(const bool status) override;
@@ -76,7 +76,6 @@ private:
     float                           cam_cy_;
 
     iCub::iKin::iCubEye             left_eye_;
-    iCub::iKin::iCubArm             right_arm_;
     iCub::iKin::iCubFinger          right_finger_[3];
 
     SICAD                         * drawer_;
