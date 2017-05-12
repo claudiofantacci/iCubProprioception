@@ -23,7 +23,7 @@ BatchCADSuperimposer::BatchCADSuperimposer(const ConstString& project_name, cons
 
 
     /* Port for the external pose */
-    if(!inport_pose_ext_.open("/" + ID_ + "/" + camera_ + "/pose:i"))
+    if(!inport_pose_ext_.open("/" + ID_ + "/" + camera_ + "/hand/right_pose:i"))
     {
         yError() << log_ID_ << "Cannot open input port for external pose!";
         throw std::runtime_error("Cannot open input port for external pose!");

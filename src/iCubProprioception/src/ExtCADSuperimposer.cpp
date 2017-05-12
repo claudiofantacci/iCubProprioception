@@ -32,7 +32,7 @@ ExtCADSuperimposer::ExtCADSuperimposer(const ConstString& project_name, const Co
 
     /* Port for the external input (6D pose) */
     yInfo() << log_ID_ << "Opening ports for external end effector pose.";
-    if (!inport_pose_ext_.open("/" + ID_ + "/pose:i"))
+    if (!inport_pose_ext_.open("/" + ID_ + "/hand/right_pose:i"))
     {
         yError() << log_ID_ << "Cannot open input port for external pose!";
         throw std::runtime_error("Cannot open input port for external pose!");
