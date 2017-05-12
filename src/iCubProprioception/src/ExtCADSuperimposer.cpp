@@ -18,7 +18,7 @@ using namespace iCub::iKin;
 ExtCADSuperimposer::ExtCADSuperimposer(const ConstString& project_name, const ConstString& robot, const ConstString& camera,
                                        const SuperImpose::ObjFileMap& cad_hand, const ConstString& shader_path) :
     ID_(project_name + "/ExtCADSuperimposer"), log_ID_("[" + ID_ + "]"),
-    robot_(robot), camera_(camera), camsel_((camera == "left")? 0:1),
+    robot_(robot), camera_(camera),
     cad_hand_(cad_hand), shader_path_(shader_path)
 {
     yInfo() << log_ID_ << "Initializing hand CAD drawing thread...";

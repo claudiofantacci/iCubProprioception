@@ -55,7 +55,6 @@ private:
     const yarp::os::ConstString    log_ID_;
     const yarp::os::ConstString    robot_;
     const yarp::os::ConstString    camera_;
-    const int                      camsel_;
     
     yarp::dev::PolyDriver          drv_torso_remote_;
     yarp::dev::PolyDriver          drv_right_arm_remote_;
