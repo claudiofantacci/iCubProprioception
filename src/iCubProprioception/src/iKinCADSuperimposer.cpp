@@ -22,6 +22,14 @@ iKinCADSuperimposer::iKinCADSuperimposer(const ConstString& project_name, const 
     yInfo() << log_ID_ << "Invoked iKinCADSuperimposer (derived class) ctor...";
 
 
+    /* Get head interfaces */
+    if (!setHeadRemoteControlboard())
+    {
+        yError() << log_ID_ << "Head remote_controlboard errored!";
+        throw std::runtime_error("Head remote_controlboard errored!");
+    }
+
+
     /* Get torso interfaces */
     if (!setTorsoRemoteControlboard())
     {
