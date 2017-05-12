@@ -51,9 +51,6 @@ protected:
 
     virtual yarp::sig::Vector getTorsoEncoders() = 0;
 
-
-    virtual void getRightHandObjPoseMap(const yarp::sig::Vector& ee_pose, SuperImpose::ObjPoseMap& hand_pose);
-
     virtual void getExtraObjPoseMap(SuperImpose::ObjPoseMap& hand_pose);
 
 
@@ -88,6 +85,8 @@ private:
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb>> inport_renderer_img_;
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb>> outport_renderer_img_;
 
+
+    void getRightHandObjPoseMap(const yarp::sig::Vector& ee_pose, SuperImpose::ObjPoseMap& hand_pose);
 
     bool openGazeController();
 
