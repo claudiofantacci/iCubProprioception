@@ -33,20 +33,28 @@ public:
     void threadRelease() override;
 
 protected:
-    virtual yarp::sig::ImageOf<yarp::sig::PixelRgb>* getImage() = 0;
-
-    virtual yarp::sig::Vector                        getEndEffectorPose() = 0;
-
-    virtual yarp::sig::Vector                        getLeftEyePose() = 0;
-
-    virtual yarp::sig::Vector                        getRightArmEncoders() = 0;
-
-    virtual yarp::sig::Vector                        getRightArmAnalogs() = 0;
-
-    virtual yarp::sig::Vector                        getTorsoEncoders() = 0;
+    const yarp::os::ConstString ID_;
+    const yarp::os::ConstString log_ID_;
+    const yarp::os::ConstString robot_;
+    const yarp::os::ConstString camera_;
 
 
-    virtual void getObjPoseMap(const yarp::sig::Vector& ee_pose, SuperImpose::ObjPoseMap& hand_pose);
+    virtual yarp::sig::Vector getEndEffectorPose() = 0;
+
+    virtual yarp::sig::Vector getHeadEncoders() = 0;
+
+    virtual yarp::sig::Vector getRightArmEncoders() = 0;
+
+#if ICP_USE_ANALOGS == 1
+    virtual yarp::sig::Vector getRightHandAnalogs() = 0;
+#endif
+
+    virtual yarp::sig::Vector getTorsoEncoders() = 0;
+
+
+    virtual void getRightHandObjPoseMap(const yarp::sig::Vector& ee_pose, SuperImpose::ObjPoseMap& hand_pose);
+
+    virtual void getExtraObjPoseMap(SuperImpose::ObjPoseMap& hand_pose);
 
 
     bool mesh_background(const bool status) override;
@@ -56,11 +64,6 @@ protected:
     bool sync_input(const bool status) override;
 
 private:
-    const yarp::os::ConstString     ID_;
-    const yarp::os::ConstString     log_ID_;
-    const yarp::os::ConstString     robot_;
-    const yarp::os::ConstString     camera_;
-
     const SuperImpose::ObjFileMap & cad_hand_;
     const yarp::os::ConstString     shader_path_;
 
@@ -75,8 +78,9 @@ private:
     float                           cam_cx_;
     float                           cam_cy_;
 
-    iCub::iKin::iCubFinger          right_finger_[3];
+    iCub::iKin::iCubEye             left_eye_;
     iCub::iKin::iCubArm             right_arm_;
+    iCub::iKin::iCubFinger          right_finger_[3];
 
     SICAD                         * drawer_;
 
@@ -86,6 +90,10 @@ private:
 
 
     bool openGazeController();
+
+    yarp::sig::Vector readRootToEE();
+
+    yarp::sig::Vector readRootToLeftEye();
 
     bool setCommandPort();
 };

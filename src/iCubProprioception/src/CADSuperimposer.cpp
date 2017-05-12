@@ -28,11 +28,12 @@ CADSuperimposer::CADSuperimposer(const ConstString& project_name, const ConstStr
     robot_(robot), camera_(camera),
     cad_hand_(cad_hand), shader_path_(shader_path)
 {
-    yInfo() << log_ID_ << "Initializing hand CAD drawing thread...";
+    yInfo() << log_ID_ << "Invoked CADSuperimposer (base class) ctor...";
 
 
     /* Port for the CAD superimposer to work */
     yInfo() << log_ID_ << "Opening ports for CAD images.";
+
     if (!inport_renderer_img_.open("/" + ID_ + "/cam/" + camera_ + ":i"))
     {
         yError() << log_ID_ << "Cannot open input image port for " + camera_ + " camera!";
@@ -46,6 +47,7 @@ CADSuperimposer::CADSuperimposer(const ConstString& project_name, const ConstStr
     }
 
 
+    /* Setting up common gaze controller and camera parameters */
     if (openGazeController())
     {
         std::lock_guard<std::mutex> lock(mtx_gaze_);
@@ -103,26 +105,43 @@ CADSuperimposer::CADSuperimposer(const ConstString& project_name, const ConstStr
     yInfo() << log_ID_ << "[CAM]" << " - cy:"     << cam_cy_;
 
 
-    /* Initialize right hand finger interfaces */
-    yInfo() << log_ID_ << "Setting fingers.";
-    right_finger_[0] = iCubFinger("right_thumb");
-    right_finger_[1] = iCubFinger("right_index");
-    right_finger_[2] = iCubFinger("right_middle");
+    /* Initiliaze left eye interface */
+    left_eye_ = iCubEye(camera_ + "_v2");
+    left_eye_.setAllConstraints(false);
+    left_eye_.releaseLink(0);
+    left_eye_.releaseLink(1);
+    left_eye_.releaseLink(2);
 
 
     /* Initialize right arm interface */
     yInfo() << log_ID_ << "Setting arms.";
+
     right_arm_ = iCubArm("right");
+
     right_arm_.setAllConstraints(false);
     right_arm_.releaseLink(0);
     right_arm_.releaseLink(1);
     right_arm_.releaseLink(2);
 
 
+    /* Initialize right hand finger interfaces */
+    yInfo() << log_ID_ << "Setting fingers.";
+
+    right_finger_[0] = iCubFinger("right_thumb");
+    right_finger_[1] = iCubFinger("right_index");
+    right_finger_[2] = iCubFinger("right_middle");
+
+    right_finger_[0].setAllConstraints(false);
+    right_finger_[1].setAllConstraints(false);
+    right_finger_[2].setAllConstraints(false);
+
+
     /* Initialize CAD superimposer */
     yInfo() << log_ID_ << "Setting up OpenGL drawer.";
+
     drawer_ = new SICAD(cad_hand_, cam_width_, cam_height_, 1, shader_path_,
                         cam_fx_, cam_fy_, cam_cx_, cam_cy_);
+
     drawer_->setBackgroundOpt(true);
     drawer_->setWireframeOpt(true);
 
@@ -131,7 +150,7 @@ CADSuperimposer::CADSuperimposer(const ConstString& project_name, const ConstStr
     if (!setCommandPort()) throw std::runtime_error("Cannot attach the command port.");
 
 
-    yInfo() << log_ID_ << "...initialization completed!";
+    yInfo() << log_ID_ << "...CADSuperimposer ctor completed!";
 }
 
 
@@ -151,10 +170,14 @@ void CADSuperimposer::run()
 
     while (!isStopping())
     {
-        ImageOf<PixelRgb>* imgin = getImage();
+        ImageOf<PixelRgb>* imgin = inport_renderer_img_.read(true);
 
         if (imgin != NULL)
         {
+            left_eye_.setAng (CTRL_DEG2RAD * readRootToLeftEye());
+            right_arm_.setAng(CTRL_DEG2RAD * readRootToEE()     );
+
+
             ee_pose = getEndEffectorPose();
             if (ee_pose.size() == 6)
             {
@@ -165,11 +188,9 @@ void CADSuperimposer::run()
                 ee_pose.push_back(ang);
             }
 
-            cam_pose = getLeftEyePose();
 
-            Matrix Ha = axis2dcm(ee_pose.subVector(3, 5));
-            Ha.setSubcol(ee_pose.subVector(0, 2), 0, 3);
-            Ha(3, 3) = 1.0;
+            cam_pose = left_eye_.EndEffPose();
+
 
             encs_arm = getRightArmEncoders();
 //            encs_arm(7) = 32.0;
@@ -199,15 +220,10 @@ void CADSuperimposer::run()
                 right_finger_[i].setAng(CTRL_DEG2RAD * chainjoints);
             }
 
-            encs_torso     = getTorsoEncoders();
-            encs_rot_ee(0) = encs_torso(2);
-            encs_rot_ee(1) = encs_torso(1);
-            encs_rot_ee(2) = encs_torso(0);
-            encs_rot_ee.setSubvector(3, encs_arm.subVector(0, 6));
-            right_arm_.setAng(CTRL_DEG2RAD * encs_rot_ee);
 
             SuperImpose::ObjPoseMap hand_pose;
-            getObjPoseMap(ee_pose, hand_pose);
+            getRightHandObjPoseMap(ee_pose, hand_pose);
+            getExtraObjPoseMap(hand_pose);
 
             cv::Mat img = cv::cvarrToMat(imgin->getIplImage(), true);
             drawer_->superimpose(hand_pose, cam_pose.data(), cam_pose.data()+3, img);
@@ -237,7 +253,7 @@ void CADSuperimposer::threadRelease()
 }
 
 
-void CADSuperimposer::getObjPoseMap(const Vector& ee_pose, SuperImpose::ObjPoseMap& hand_pose)
+void CADSuperimposer::getRightHandObjPoseMap(const Vector& ee_pose, SuperImpose::ObjPoseMap& hand_pose)
 {
     SuperImpose::ObjPose pose;
 
@@ -256,7 +272,7 @@ void CADSuperimposer::getObjPoseMap(const Vector& ee_pose, SuperImpose::ObjPoseM
             Vector j_x = (Ha * (right_finger_[fng].getH0().getCol(3))).subVector(0, 2);
             Vector j_o = dcm2axis(Ha * right_finger_[fng].getH0());
 
-            if      (fng == 1) { finger_s = "index0"; }
+            if      (fng == 1) { finger_s = "index0";  }
             else if (fng == 2) { finger_s = "medium0"; }
 
             pose.assign(j_x.data(), j_x.data()+3);
@@ -269,22 +285,57 @@ void CADSuperimposer::getObjPoseMap(const Vector& ee_pose, SuperImpose::ObjPoseM
             Vector j_x = (Ha * (right_finger_[fng].getH(i, true).getCol(3))).subVector(0, 2);
             Vector j_o = dcm2axis(Ha * right_finger_[fng].getH(i, true));
 
-            if      (fng == 0) { finger_s = "thumb"+std::to_string(i+1); }
-            else if (fng == 1) { finger_s = "index"+std::to_string(i+1); }
-            else if (fng == 2) { finger_s = "medium"+std::to_string(i+1); }
+            if      (fng == 0) { finger_s = "thumb"  + std::to_string(i+1); }
+            else if (fng == 1) { finger_s = "index"  + std::to_string(i+1); }
+            else if (fng == 2) { finger_s = "medium" + std::to_string(i+1); }
 
             pose.assign(j_x.data(), j_x.data()+3);
             pose.insert(pose.end(), j_o.data(), j_o.data()+4);
             hand_pose.emplace(finger_s, pose);
         }
     }
+}
+
+
+void CADSuperimposer::getExtraObjPoseMap(SuperImpose::ObjPoseMap& hand_pose)
+{
+    SuperImpose::ObjPose pose;
+
     Matrix H_forearm = right_arm_.getH(7, true);
+
     Vector j_x = H_forearm.getCol(3).subVector(0, 2);
     Vector j_o = dcm2axis(H_forearm);
-    pose.clear();
+
     pose.assign(j_x.data(), j_x.data()+3);
     pose.insert(pose.end(), j_o.data(), j_o.data()+4);
+
     hand_pose.emplace("forearm", pose);
+}
+
+
+bool CADSuperimposer::mesh_background(const bool status)
+{
+    yInfo() << log_ID_ << ConstString((status ? "Enable" : "Disable")) + " background of the mesh window.";
+    
+    drawer_->setBackgroundOpt(status);
+    
+    return true;
+}
+
+
+bool CADSuperimposer::mesh_wireframe(const bool status)
+{
+    yInfo() << log_ID_ << ConstString((status ? "Enable" : "Disable")) + " wireframe rendering.";
+
+    drawer_->setWireframeOpt(status);
+    
+    return true;
+}
+
+
+bool CADSuperimposer::sync_input(const bool status)
+{
+    return false;
 }
 
 
@@ -341,27 +392,35 @@ bool CADSuperimposer::setCommandPort()
 }
 
 
-bool CADSuperimposer::mesh_background(const bool status)
+Vector CADSuperimposer::readRootToEE()
 {
-    yInfo() << log_ID_ << ConstString((status ? "Enable" : "Disable")) + " background of the mesh window.";
-    
-    drawer_->setBackgroundOpt(status);
-    
-    return true;
+    Vector enc_arm = getRightArmEncoders();
+
+    Vector root_ee_enc(10);
+
+    root_ee_enc.setSubvector(0, getTorsoEncoders());
+
+    for (size_t i = 0; i < 7; ++i)
+        root_ee_enc(i+3) = enc_arm(i);
+
+    return root_ee_enc;
 }
 
 
-bool CADSuperimposer::mesh_wireframe(const bool status)
+Vector CADSuperimposer::readRootToLeftEye()
 {
-    yInfo() << log_ID_ << ConstString((status ? "Enable" : "Disable")) + " wireframe rendering.";
-    
-    drawer_->setWireframeOpt(status);
-    
-    return true;
-}
+    Vector enc_head = getHeadEncoders();
 
+    Vector root_eye_enc(8);
 
-bool CADSuperimposer::sync_input(const bool status)
-{
-    return false;
+    root_eye_enc.setSubvector(0, getTorsoEncoders());
+
+    for (size_t i = 0; i < 4; ++i)
+        root_eye_enc(3+i) = enc_head(i);
+
+    root_eye_enc(7) = enc_head(4) + enc_head(5) / 2.0;
+
+    /* if (cam == "right") root_eye_enc(7) = enc_head(4) - enc_head(5) / 2.0; */
+
+    return root_eye_enc;
 }
