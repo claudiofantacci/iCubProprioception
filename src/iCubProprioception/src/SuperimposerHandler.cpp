@@ -36,7 +36,7 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
 
     /* Parsing parameters from config file. */
     /* Robot name */
-    robot_ = rf.findGroup("PARAMETER").check("robot", Value("icubSim")).asString();
+    robot_ = rf.check("robot", Value("icubSim")).asString();
 
 
     /* Search mesh files in /mesh context folder */
