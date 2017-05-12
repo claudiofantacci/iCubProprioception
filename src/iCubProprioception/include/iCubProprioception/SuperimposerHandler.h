@@ -19,6 +19,7 @@
 #include "iCubProprioception/SkeletonSuperimposer.h"
 #include "iCubProprioception/ExtCADSuperimposer.h"
 #include "iCubProprioception/iKinCADSuperimposer.h"
+#include "iCubProprioception/BatchCADSuperimposer.h"
 #include "thrift/iCubProprioceptionIDL.h"
 
 
@@ -97,10 +98,11 @@ private:
 
     yarp::dev::PolyDriver         drv_right_hand_analog_;
 
-    SkeletonSuperimposer        * trd_left_cam_skeleton_ = YARP_NULLPTR;
+    SkeletonSuperimposer        * trd_left_cam_skeleton_  = YARP_NULLPTR;
 
-    iKinCADSuperimposer         * trd_left_cam_ikin_cad_ = YARP_NULLPTR;
-    ExtCADSuperimposer          * trd_left_cam_ext_cad_  = YARP_NULLPTR;
+    iKinCADSuperimposer         * trd_left_cam_ikin_cad_  = YARP_NULLPTR;
+    ExtCADSuperimposer          * trd_left_cam_ext_cad_   = YARP_NULLPTR;
+    BatchCADSuperimposer        * trd_left_cam_batch_cad_ = YARP_NULLPTR;
     SuperImpose::ObjFileMap       cad_hand_;
     yarp::os::ConstString         shader_path_;
 

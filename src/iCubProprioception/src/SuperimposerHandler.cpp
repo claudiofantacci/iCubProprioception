@@ -159,28 +159,43 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
 
     if (trd_left_cam_ikin_cad_ != YARP_NULLPTR)
     {
-        yInfo() << log_ID_ << "Starting mesh superimposing thread for the right hand on the left camera images...";
+        yInfo() << log_ID_ << "Starting iKinFwd mesh superimposing thread for the right hand on the left camera images...";
 
         if (!trd_left_cam_ikin_cad_->start()) yWarning() << log_ID_ << "...thread could not be started!";
         else                                  yInfo()    << log_ID_ << "...done.";
     }
     else
-        yWarning() << log_ID_ << "Could not initialize hand mesh superimposition!";
+        yWarning() << log_ID_ << "Could not initialize iKinFwd hand mesh superimposition!";
 
 
-    /* Lunching External (input) CAD superimposer thread */
+    /* Lunching External (pose) CAD superimposer thread */
     try { trd_left_cam_ext_cad_ = new ExtCADSuperimposer(ID_, robot_, "left", cad_hand_, shader_path_); }
     catch (const std::runtime_error& e) { yError() << e.what(); }
 
     if (trd_left_cam_ext_cad_ != YARP_NULLPTR)
     {
-        yInfo() << log_ID_ << "Starting mesh superimposing thread for the right hand on the left camera images...";
+        yInfo() << log_ID_ << "Starting iKinFwd external (pose) mesh superimposing thread for the right hand on the left camera images...";
 
         if (!trd_left_cam_ext_cad_->start()) yWarning() << log_ID_ << "...thread could not be started!";
         else                                 yInfo()    << log_ID_ << "...done.";
     }
     else
-        yWarning() << log_ID_ << "Could not initialize hand mesh superimposition!";
+        yWarning() << log_ID_ << "Could not initialize iKinFwd external (pose) hand mesh superimposition!";
+
+
+    /* Lunching Batch (pose and ecnoders) CAD superimposer thread */
+    try { trd_left_cam_batch_cad_ = new BatchCADSuperimposer(ID_, robot_, "left", cad_hand_, shader_path_); }
+    catch (const std::runtime_error& e) { yError() << e.what(); }
+
+    if (trd_left_cam_batch_cad_ != YARP_NULLPTR)
+    {
+        yInfo() << log_ID_ << "Starting Batch mesh superimposing thread for the right hand on the left camera images...";
+
+        if (!trd_left_cam_batch_cad_->start()) yWarning() << log_ID_ << "...thread could not be started!";
+        else                                   yInfo()    << log_ID_ << "...done.";
+    }
+    else
+        yWarning() << log_ID_ << "Could not initialize Batch hand mesh superimposition!";
 
 
     /* Open a remote command port and allow the program be started */
