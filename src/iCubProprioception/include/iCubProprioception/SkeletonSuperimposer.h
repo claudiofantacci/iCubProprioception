@@ -19,7 +19,7 @@
 class SkeletonSuperimposer : public yarp::os::Thread
 {
 public:
-    SkeletonSuperimposer(const yarp::os::ConstString& project_name, const yarp::os::ConstString& robot, const yarp::os::ConstString& camera);
+    SkeletonSuperimposer(const yarp::os::ConstString& port_prefix, const yarp::os::ConstString& robot, const yarp::os::ConstString& camera);
 
     ~SkeletonSuperimposer() noexcept;
 

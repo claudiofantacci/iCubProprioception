@@ -139,7 +139,7 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
 
 
     /* Launching skeleton superimposer thread */
-    try { trd_left_cam_skeleton_ = new SkeletonSuperimposer(ID_, robot_, "left"); }
+    try { trd_left_cam_skeleton_ = new SkeletonSuperimposer(ID_ + "/SkeletonSuperimposer", robot_, "left"); }
     catch (const std::runtime_error& e) { yError() << e.what(); }
 
     if (trd_left_cam_skeleton_ != YARP_NULLPTR)
@@ -154,7 +154,7 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
 
 
     /* Lunching iKin CAD superimposer thread */
-    try { trd_left_cam_ikin_cad_ = new iKinCADSuperimposer(ID_, robot_, "left", cad_hand_, shader_path_); }
+    try { trd_left_cam_ikin_cad_ = new iKinCADSuperimposer(ID_ + "/iKinCADSuperimposer", robot_, "left", cad_hand_, shader_path_); }
     catch (const std::runtime_error& e) { yError() << e.what(); }
 
     if (trd_left_cam_ikin_cad_ != YARP_NULLPTR)
@@ -169,7 +169,7 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
 
 
     /* Lunching External (pose) CAD superimposer thread */
-    try { trd_left_cam_ext_cad_ = new ExtCADSuperimposer(ID_, robot_, "left", cad_hand_, shader_path_); }
+    try { trd_left_cam_ext_cad_ = new ExtCADSuperimposer(ID_ + "/ExtCADSuperimposer", robot_, "left", cad_hand_, shader_path_); }
     catch (const std::runtime_error& e) { yError() << e.what(); }
 
     if (trd_left_cam_ext_cad_ != YARP_NULLPTR)
@@ -184,7 +184,7 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
 
 
     /* Lunching Batch (pose and ecnoders) CAD superimposer thread */
-    try { trd_left_cam_batch_cad_ = new BatchCADSuperimposer(ID_, robot_, "left", cad_hand_, shader_path_); }
+    try { trd_left_cam_batch_cad_ = new BatchCADSuperimposer(ID_ + "/BatchCADSuperimposer", robot_, "left", cad_hand_, shader_path_); }
     catch (const std::runtime_error& e) { yError() << e.what(); }
 
     if (trd_left_cam_batch_cad_ != YARP_NULLPTR)

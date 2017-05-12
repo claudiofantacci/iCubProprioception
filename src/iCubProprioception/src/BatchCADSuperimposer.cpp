@@ -15,9 +15,9 @@ using namespace iCub::ctrl;
 using namespace iCub::iKin;
 
 
-BatchCADSuperimposer::BatchCADSuperimposer(const ConstString& project_name, const ConstString& robot, const ConstString& camera,
+BatchCADSuperimposer::BatchCADSuperimposer(const ConstString& port_prefix, const ConstString& robot, const ConstString& camera,
                                            const SuperImpose::ObjFileMap& cad_hand, const ConstString& shader_path) :
-    CADSuperimposer(project_name + "/BatchCADSuperimposer", robot, camera, cad_hand, shader_path)
+    CADSuperimposer(port_prefix, robot, camera, cad_hand, shader_path)
 {
     yInfo() << log_ID_ << "Invoked BatchCADSuperimposer (derived class) ctor...";
 

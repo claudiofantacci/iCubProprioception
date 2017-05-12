@@ -15,9 +15,9 @@ using namespace iCub::ctrl;
 using namespace iCub::iKin;
 
 
-ExtCADSuperimposer::ExtCADSuperimposer(const ConstString& project_name, const ConstString& robot, const ConstString& camera,
+ExtCADSuperimposer::ExtCADSuperimposer(const ConstString& port_prefix, const ConstString& robot, const ConstString& camera,
                                        const SuperImpose::ObjFileMap& cad_hand, const ConstString& shader_path) :
-    iKinCADSuperimposer(project_name + "/ExtCADSuperimposer", robot, camera, cad_hand, shader_path)
+    iKinCADSuperimposer(port_prefix, robot, camera, cad_hand, shader_path)
 {
     yInfo() << log_ID_ << "Invoked ExtCADSuperimposer (derived class) ctor...";
 

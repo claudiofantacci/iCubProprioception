@@ -22,9 +22,9 @@ PolyDriver    CADSuperimposer::drv_gaze_;
 IGazeControl* CADSuperimposer::itf_gaze_ = YARP_NULLPTR;
 
 
-CADSuperimposer::CADSuperimposer(const ConstString& project_name, const ConstString& robot, const ConstString& camera,
+CADSuperimposer::CADSuperimposer(const ConstString& port_prefix, const ConstString& robot, const ConstString& camera,
                                  const SuperImpose::ObjFileMap& cad_hand, const ConstString& shader_path) :
-    ID_(project_name + "/CADSuperimposer"), log_ID_("[" + ID_ + "]"),
+    ID_(port_prefix), log_ID_("[" + ID_ + "]"),
     robot_(robot), camera_(camera),
     cad_hand_(cad_hand), shader_path_(shader_path)
 {
@@ -68,9 +68,9 @@ CADSuperimposer::CADSuperimposer(const ConstString& project_name, const ConstStr
         yWarning() << log_ID_ << "[CAM PARAMS]" << "No intrinisc camera information could be found by the ctor. Looking for fallback values in parameters.ini.";
 
         ResourceFinder rf;
-        rf.setVerbose();
-        rf.setDefaultContext(project_name);
+        rf.setVerbose(true);
         rf.setDefaultConfigFile("parameters.ini");
+        rf.setDefaultContext("iCubProprioception");
         rf.configure(0, YARP_NULLPTR);
 
         Bottle* fallback_intrinsic = rf.findGroup("FALLBACK").find("intrinsic_" + camera_).asList();

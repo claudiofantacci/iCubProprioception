@@ -16,7 +16,7 @@
 class BatchCADSuperimposer : public CADSuperimposer
 {
 public:
-    BatchCADSuperimposer(const yarp::os::ConstString& project_name, const yarp::os::ConstString& robot, const yarp::os::ConstString& camera,
+    BatchCADSuperimposer(const yarp::os::ConstString& port_prefix, const yarp::os::ConstString& robot, const yarp::os::ConstString& camera,
                          const SuperImpose::ObjFileMap& cad_hand, const yarp::os::ConstString& shader_path);
 
     ~BatchCADSuperimposer() noexcept;
