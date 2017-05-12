@@ -32,7 +32,7 @@ ExtCADSuperimposer::ExtCADSuperimposer(const ConstString& project_name, const Co
 
     /* Port for the external input (6D pose) */
     yInfo() << log_ID_ << "Opening ports for external end effector pose.";
-    if (!inport_renderer_ext_.open("/" + ID_ + "/pose:i"))
+    if (!inport_pose_ext_.open("/" + ID_ + "/pose:i"))
     {
         yError() << log_ID_ << "Cannot open input port for external pose!";
         throw std::runtime_error("Cannot open input port for external pose!");
@@ -47,10 +47,10 @@ ExtCADSuperimposer::~ExtCADSuperimposer() noexcept { }
 
 yarp::sig::Vector ExtCADSuperimposer::getEndEffectorPose()
 {
-    Vector* estimates_mean = inport_renderer_ext_.read(synch_);
+    Vector* estimates_mean = inport_pose_ext_.read(synch_);
 
     if (estimates_mean        != YARP_NULLPTR) ext_pose_copy_ = *estimates_mean;
-    if (ext_pose_copy_.size() == 0)            ext_pose_copy_ = *(inport_renderer_ext_.read(true));
+    if (ext_pose_copy_.size() == 0)            ext_pose_copy_ = *(inport_pose_ext_.read(true));
 
     return ext_pose_copy_;
 }

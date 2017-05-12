@@ -37,7 +37,7 @@ private:
 
     bool                                      synch_ = true;
 
-    yarp::os::BufferedPort<yarp::sig::Vector> inport_renderer_ext_;
+    yarp::os::BufferedPort<yarp::sig::Vector> inport_pose_ext_;
 };
 
 #endif /* EXTCADSUPERIMPOSER_H */
