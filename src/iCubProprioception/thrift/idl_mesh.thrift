@@ -31,6 +31,16 @@ service iCubProprioceptionOGLIDL
     bool mesh_wireframe(1:bool status);
 
     /**
+     * Render extra meshes other than the hand. Extra meshes are implementation
+     * dependent and may not be available.
+     *
+     * @param status true/false to enable/disbale extra meshes rendering.
+     *
+     * @return true activation/deactivation success, false otherwise.
+     */
+    bool render_extra_mesh(1:bool status);
+
+    /**
      * Synchronize rendering FPS to the input rate of the poses received from
      * the ports.
      *
