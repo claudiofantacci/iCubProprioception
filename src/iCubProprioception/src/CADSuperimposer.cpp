@@ -244,7 +244,7 @@ void CADSuperimposer::getRightHandObjPoseMap(const Vector& ee_pose, SuperImpose:
 {
     SuperImpose::ObjPose pose;
 
-    Matrix Ha = axis2dcm(ee_pose.subVector(3, 5));
+    Matrix Ha = axis2dcm(ee_pose.subVector(3, 6));
     Ha.setSubcol(ee_pose.subVector(0, 2), 0, 3);
     Ha(3, 3) = 1.0;
 
