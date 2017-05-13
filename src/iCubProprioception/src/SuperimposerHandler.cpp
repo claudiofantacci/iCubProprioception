@@ -122,20 +122,19 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
 
     // FIXME: Spostare i movimenti del robot in un'altro thread. L'RFM module serve solo da handler.
     /* Torso control board. */
-    if (!setTorsoRemoteControlboard()) /* return false */;
+    setTorsoRemoteControlboard();
 
     /* Right arm control board. */
-    if (!setRightArmRemoteControlboard()) /* return false */;
+    setRightArmRemoteControlboard();
 
     /* Right arm cartesian controler. */
-    if (!setRightArmCartesianController()) /* return false */;
-    else if (!setTorsoDOF())  /* return false */;
+    if (setRightArmCartesianController()) setTorsoDOF();
 
     /* Head control board. */
-    if (!setHeadRemoteControlboard()) /* return false */;
+    setHeadRemoteControlboard();
 
     /* Gaze control. */
-    if (!setGazeController()) /* return false */;
+    setGazeController();
 
 
     /* Launching skeleton superimposer thread */
