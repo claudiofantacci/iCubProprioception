@@ -23,7 +23,7 @@ BatchCADSuperimposer::BatchCADSuperimposer(const ConstString& port_prefix, const
 
 
     /* Port for the external pose */
-    if(!inport_pose_ext_.open("/" + ID_ + "/" + camera_ + "/hand/right_pose:i"))
+    if(!inport_pose_ext_.open("/" + ID_ + "/" + camera_ + "/cam/hand/right_pose:i"))
     {
         yError() << log_ID_ << "Cannot open input port for external pose!";
         throw std::runtime_error("Cannot open input port for external pose!");
@@ -31,7 +31,7 @@ BatchCADSuperimposer::BatchCADSuperimposer(const ConstString& port_prefix, const
     
 
     /* Port for the head encoders */
-    if(!inport_head_enc_.open("/" + ID_ + "/" + camera_ + "/head:i"))
+    if(!inport_head_enc_.open("/" + ID_ + "/" + camera_ + "/cam/head:i"))
     {
         yError() << log_ID_ << "Cannot open input port for head encoders!";
         throw std::runtime_error("Cannot open input port for head encoders!");
@@ -39,7 +39,7 @@ BatchCADSuperimposer::BatchCADSuperimposer(const ConstString& port_prefix, const
 
 
     /* Port for the right arm encoders */
-    if(!inport_right_arm_enc_.open("/" + ID_ + "/" + camera_ + "/right_arm:i"))
+    if(!inport_right_arm_enc_.open("/" + ID_ + "/" + camera_ + "/cam/right_arm:i"))
     {
         yError() << log_ID_ << "Cannot open input port for right arm encoders!";
         throw std::runtime_error("Cannot open input port for right arm encoders!");
@@ -47,7 +47,7 @@ BatchCADSuperimposer::BatchCADSuperimposer(const ConstString& port_prefix, const
 
 
     /* Port for the torso encoders */
-    if(!inport_torso_enc_.open("/" + ID_ + "/" + camera_ + "/torso:i"))
+    if(!inport_torso_enc_.open("/" + ID_ + "/" + camera_ + "/cam/torso:i"))
     {
         yError() << log_ID_ << "Cannot open input port for torso encoders!";
         throw std::runtime_error("Cannot open input port for torso encoders!");
@@ -55,7 +55,7 @@ BatchCADSuperimposer::BatchCADSuperimposer(const ConstString& port_prefix, const
 
 
     /* Port for the right hand analogs */
-    if(!inport_right_hand_analogs_.open("/" + ID_ + "/" + camera_ + "/right_analogs:i"))
+    if(!inport_right_hand_analogs_.open("/" + ID_ + "/" + camera_ + "/cam/right_analogs:i"))
     {
         yError() << log_ID_ << "Cannot open input port for right hand analogs!";
         throw std::runtime_error("Cannot open input port for right hand analogs!");
