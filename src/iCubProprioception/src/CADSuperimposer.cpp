@@ -154,7 +154,7 @@ void CADSuperimposer::run()
 
     while (!isStopping())
     {
-        ImageOf<PixelRgb>* imgin = inport_renderer_img_.read(true);
+        ImageOf<PixelRgb>* imgin  = inport_renderer_img_.read(true);
 
         if (imgin != NULL)
         {
@@ -201,13 +201,17 @@ void CADSuperimposer::run()
                 right_finger_[i].setAng(CTRL_DEG2RAD * chainjoints);
             }
 
-
             SuperImpose::ObjPoseMap hand_pose;
             getRightHandObjPoseMap(ee_pose, hand_pose);
             getExtraObjPoseMap(hand_pose);
 
             cv::Mat img = cv::cvarrToMat(imgin->getIplImage(), true);
             drawer_->superimpose(hand_pose, cam_pose.data(), cam_pose.data()+3, img);
+
+            ImageOf<PixelRgb>& imgout = outport_renderer_img_.prepare();
+            imgout.setExternal(img.data, img.cols, img.rows);
+
+            outport_renderer_img_.write();
         }
     }
 }
