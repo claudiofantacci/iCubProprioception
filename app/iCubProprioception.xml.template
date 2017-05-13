@@ -4,8 +4,8 @@
 
     <!-- GENERIC INFORMATION -->
     <name>iCubProprioception</name>
-    <description>Superimpose the hand skeleton and/or 3D CAD model on the image plane</description>
-    <version>5.0.2</version>
+    <description>Superimpose the hand skeleton and/or 3D CAD model on the camera images of iCub</description>
+    <version>5.0.3</version>
 
     <authors>
         <author email="claudio.fantacci@iit.it">Claudio Fantacci</author>
