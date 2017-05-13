@@ -517,7 +517,7 @@ bool SuperimposerHandler::setTorsoDOF()
 bool SuperimposerHandler::setCommandPort()
 {
     yInfo() << log_ID_ << "Opening command port.";
-    if (!port_command_.open("/"+ID_+"/rpc"))
+    if (!port_command_.open("/"+ID_+"/cmd:i"))
     {
         yError() << log_ID_ << "Cannot open the command port.";
         return false;
