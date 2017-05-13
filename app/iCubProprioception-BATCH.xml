@@ -94,61 +94,61 @@
 
     <connection>
         <from>/hand-tracking/left/result/estimates:o</from>
-        <to>/iCubProprioception/BatchCADSuperimposer/left/hand/right_pose:i</to>
+        <to>/iCubProprioception/BatchCADSuperimposer/cam/left/hand/right_pose:i</to>
         <protocol>tcp</protocol>
     </connection>
 
     <connection>
         <from>/hand-tracking/right/result/estimates:o</from>
-        <to>/iCubProprioception/BatchCADSuperimposer/right/hand/right_pose:i</to>
+        <to>/iCubProprioception/BatchCADSuperimposer/cam/right/hand/right_pose:i</to>
         <protocol>tcp</protocol>
     </connection>
 
     <connection>
         <from>/icub/head/state:o</from>
-        <to>/iCubProprioception/BatchCADSuperimposer/left/torso:i</to>
+        <to>/iCubProprioception/BatchCADSuperimposer/cam/left/torso:i</to>
         <protocol>tcp</protocol>
     </connection>
 
     <connection>
         <from>/icub/head/state:o</from>
-        <to>/iCubProprioception/BatchCADSuperimposer/right/torso:i</to>
+        <to>/iCubProprioception/BatchCADSuperimposer/cam/right/torso:i</to>
         <protocol>tcp</protocol>
     </connection>
 
     <connection>
         <from>/icub/right_arm/state:o</from>
-        <to>/iCubProprioception/BatchCADSuperimposer/left/right_arm:i</to>
+        <to>/iCubProprioception/BatchCADSuperimposer/cam/left/right_arm:i</to>
         <protocol>tcp</protocol>
     </connection>
 
     <connection>
         <from>/icub/right_arm/state:o</from>
-        <to>/iCubProprioception/BatchCADSuperimposer/right/right_arm:i</to>
+        <to>/iCubProprioception/BatchCADSuperimposer/cam/right/right_arm:i</to>
         <protocol>tcp</protocol>
     </connection>
 
     <connection>
         <from>/icub/torso/state:o</from>
-        <to>/iCubProprioception/BatchCADSuperimposer/left/torso:i</to>
+        <to>/iCubProprioception/BatchCADSuperimposer/cam/left/torso:i</to>
         <protocol>tcp</protocol>
     </connection>
 
     <connection>
         <from>/icub/torso/state:o</from>
-        <to>/iCubProprioception/BatchCADSuperimposer/right/torso:i</to>
+        <to>/iCubProprioception/BatchCADSuperimposer/cam/right/torso:i</to>
         <protocol>tcp</protocol>
     </connection>
 
     <!--connection>
         <from>/icub/right_arm/analogs/state:o</from>
-        <to>/iCubProprioception/BatchCADSuperimposer/left/right_analogs:i</to>
+        <to>/iCubProprioception/BatchCADSuperimposer/cam/left/right_analogs:i</to>
         <protocol>tcp</protocol>
     </connection-->
 
     <!--connection>
         <from>/icub/right_arm/analogs/state:o</from>
-        <to>/iCubProprioception/BatchCADSuperimposer/right/right_analogs:i</to>
+        <to>/iCubProprioception/BatchCADSuperimposer/cam/right/right_analogs:i</to>
         <protocol>tcp</protocol>
     </connection-->
 
