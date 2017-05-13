@@ -145,11 +145,11 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
     {
         yInfo() << log_ID_ << "Starting skeleton superimposing thread for the right hand on the left camera images...";
 
-        if (!trd_left_cam_skeleton_->start()) yWarning() << log_ID_ << "...thread could not be started!";
-        else                                  yInfo()    << log_ID_ << "...done.";
+        if (!trd_left_cam_skeleton_->start()) yError() << log_ID_ << "...thread could not be started!";
+        else                                  yInfo()  << log_ID_ << "...done.";
     }
     else
-        yWarning() << log_ID_ << "Could not initialize hand skeleton superimposition!";
+        yError() << log_ID_ << "Could not initialize hand skeleton superimposition!";
 
 
     /* Lunching iKin CAD superimposer thread */
@@ -160,11 +160,11 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
     {
         yInfo() << log_ID_ << "Starting iKinFwd mesh superimposing thread for the right hand on the left camera images...";
 
-        if (!trd_left_cam_ikin_cad_->start()) yWarning() << log_ID_ << "...thread could not be started!";
-        else                                  yInfo()    << log_ID_ << "...done.";
+        if (!trd_left_cam_ikin_cad_->start()) yError() << log_ID_ << "...thread could not be started!";
+        else                                  yInfo()  << log_ID_ << "...done.";
     }
     else
-        yWarning() << log_ID_ << "Could not initialize iKinFwd hand mesh superimposition!";
+        yError() << log_ID_ << "Could not initialize iKinFwd hand mesh superimposition!";
 
 
     /* Lunching External (pose) CAD superimposer thread */
@@ -175,11 +175,11 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
     {
         yInfo() << log_ID_ << "Starting iKinFwd external (pose) mesh superimposing thread for the right hand on the left camera images...";
 
-        if (!trd_left_cam_ext_cad_->start()) yWarning() << log_ID_ << "...thread could not be started!";
-        else                                 yInfo()    << log_ID_ << "...done.";
+        if (!trd_left_cam_ext_cad_->start()) yError() << log_ID_ << "...thread could not be started!";
+        else                                 yInfo()  << log_ID_ << "...done.";
     }
     else
-        yWarning() << log_ID_ << "Could not initialize iKinFwd external (pose) hand mesh superimposition!";
+        yError() << log_ID_ << "Could not initialize iKinFwd external (pose) hand mesh superimposition!";
 
 
     /* Lunching Batch (pose and ecnoders) CAD superimposer thread */
@@ -190,11 +190,11 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
     {
         yInfo() << log_ID_ << "Starting Batch mesh superimposing thread for the right hand on the left camera images...";
 
-        if (!trd_left_cam_batch_cad_->start()) yWarning() << log_ID_ << "...thread could not be started!";
-        else                                   yInfo()    << log_ID_ << "...done.";
+        if (!trd_left_cam_batch_cad_->start()) yError() << log_ID_ << "...thread could not be started!";
+        else                                   yInfo()  << log_ID_ << "...done.";
     }
     else
-        yWarning() << log_ID_ << "Could not initialize Batch hand mesh superimposition!";
+        yError() << log_ID_ << "Could not initialize Batch hand mesh superimposition!";
 
 
     /* Open a remote command port and allow the program be started */
