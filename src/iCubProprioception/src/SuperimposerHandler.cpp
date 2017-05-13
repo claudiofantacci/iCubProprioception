@@ -38,9 +38,9 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
     /* Parsing parameters from CLI. */
     /* Robot name */
     robot_    = rf.check("robot", Value("icubSim")).asString();
-    skeleton_ = ((rf.findGroup("ske").size() == 1 ? true : (rf.findGroup("ske").size() == 2 ? rf.find("ske").asBool() : false)));
-    ikin_     = ((rf.findGroup("ikin").size() == 1 ? true : (rf.findGroup("ikin").size() == 2 ? rf.find("ikin").asBool() : false)));
-    ext_      = ((rf.findGroup("ext").size() == 1 ? true : (rf.findGroup("ext").size() == 2 ? rf.find("ext").asBool() : false)));
+    skeleton_ = ((rf.findGroup("ske").size()   == 1 ? true : (rf.findGroup("ske").size()   == 2 ? rf.find("ske").asBool()   : false)));
+    ikin_     = ((rf.findGroup("ikin").size()  == 1 ? true : (rf.findGroup("ikin").size()  == 2 ? rf.find("ikin").asBool()  : false)));
+    ext_      = ((rf.findGroup("ext").size()   == 1 ? true : (rf.findGroup("ext").size()   == 2 ? rf.find("ext").asBool()   : false)));
     batch_    = ((rf.findGroup("batch").size() == 1 ? true : (rf.findGroup("batch").size() == 2 ? rf.find("batch").asBool() : false)));
 
     yInfo() << log_ID_ << "Running with:";
