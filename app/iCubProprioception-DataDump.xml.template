@@ -5,7 +5,7 @@
     <!-- GENERIC INFORMATION -->
     <name>iCubProprioception-DataDump</name>
     <description>Collect data for iCubProprioception module</description>
-    <version>4.2.0</version>
+    <version>4.2.1</version>
 
     <authors>
         <author email="claudio.fantacci@iit.it">Claudio Fantacci</author>
@@ -109,6 +109,12 @@
     <connection>
         <from>/icub/camcalib/left/out</from>
         <to>/iCubProprioception/ExtCADSuperimposer/cam/left:i</to>
+        <protocol>tcp</protocol>
+    </connection>
+
+    <connection>
+        <from>/icub/camcalib/right/out</from>
+        <to>/iCubProprioception/ExtCADSuperimposer/cam/right:i</to>
         <protocol>tcp</protocol>
     </connection>
 

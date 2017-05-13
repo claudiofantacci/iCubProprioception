@@ -5,98 +5,122 @@
     <!-- GENERIC INFORMATION -->
     <name>iCubProprioception</name>
     <description>Superimpose the hand skeleton and/or 3D CAD model on the camera images of iCub</description>
-    <version>5.0.3</version>
+    <version>6.0.0</version>
 
     <authors>
         <author email="claudio.fantacci@iit.it">Claudio Fantacci</author>
     </authors>
 
 
-    <!-- REQUIRED MODULES -->
+    <!-- RQUIRED MODULES -->
     <module>
         <name>iCubProprioception</name>
-        <node>localhost</node>
+        <node>yarprun</node>
         <parameters>--robot icub --from parameters.ini</parameters>
         <dependencies>
-            <port>/icub/camcalib/left/out</port>
-            <port>/icub/camcalib/right/out</port>
+            <port>/icub/camcalib/left</port>
+            <port>/icub/camcalibg/right</port>
         </dependencies>
     </module>
 
     <module>
         <name>yarpview</name>
-        <parameters>--name /view/cam_left --x 20 --y 0 --RefreshTime 30</parameters>
-        <node>localhost</node>
+        <parameters>--name /view/cam/left --x 20 --y 0 --RefreshTime 30</parameters>
+        <node>yarprun</node>
     </module>
 
     <module>
         <name>yarpview</name>
-        <parameters>--name /view/cam_left/skeleton --x 340 --y 0 --RefreshTime 30</parameters>
-        <node>localhost</node>
+        <parameters>--name /view/cam/left/skeleton --x 340 --y 0 --RefreshTime 30</parameters>
+        <node>yarprun</node>
     </module>
 
     <module>
         <name>yarpview</name>
-        <parameters>--name /view/cam_left/ikin_cad --x 660 --y 0 --RefreshTime 30</parameters>
-        <node>localhost</node>
+        <parameters>--name /view/cam/left/ikin --x 660 --y 0 --RefreshTime 30</parameters>
+        <node>yarprun</node>
     </module>
 
     <module>
         <name>yarpview</name>
-        <parameters>--name /view/cam_left/ext_cad --x 980 --y 0 --RefreshTime 30</parameters>
-        <node>localhost</node>
+        <parameters>--name /view/cam/left/ext --x 980 --y 0 --RefreshTime 30</parameters>
+        <node>yarprun</node>
+    </module>
+
+    <module>
+        <name>yarpview</name>
+        <parameters>--name /view/cam/right/ext --x 1300 --y 0 --RefreshTime 30</parameters>
+        <node>yarprun</node>
     </module>
 
 
     <!-- REQUIRED CONNECTIONS -->
     <connection>
-        <from>/icub/camcalib/left/out</from>
-        <to>/view/cam_left</to>
+        <from>/icub/camcalib/left</from>
+        <to>/view/cam/left</to>
         <protocol>tcp</protocol>
     </connection>
 
     <!-- RC: SKELETON -->
     <connection>
-        <from>/icub/camcalib/left/out</from>
+        <from>/icub/camcalib/left</from>
         <to>/iCubProprioception/SkeletonSuperimposer/cam/left:i</to>
         <protocol>tcp</protocol>
     </connection>
 
     <connection>
         <from>/iCubProprioception/SkeletonSuperimposer/cam/left:o</from>
-        <to>/view/cam_left/skeleton</to>
+        <to>/view/cam/left/skeleton</to>
         <protocol>tcp</protocol>
     </connection>
 
     <!-- RC: iKin CAD -->
     <connection>
-        <from>/icubSim/cam/left</from>
+        <from>/icub/camcalibg/left</from>
         <to>/iCubProprioception/iKinCADSuperimposer/cam/left:i</to>
         <protocol>tcp</protocol>
     </connection>
 
     <connection>
         <from>/iCubProprioception/iKinCADSuperimposer/cam/left:o</from>
-        <to>/view/cam_left/ikin_cad</to>
+        <to>/view/cam/left/ikin</to>
         <protocol>tcp</protocol>
     </connection>
 
     <!-- RC: Ext CAD -->
     <connection>
-        <from>/hand-tracking/left/result/estimates:o</from>
-        <to>/iCubProprioception/ExtCADSuperimposer/estimates/mean:i</to>
+        <from>/icub/camcalib/left</from>
+        <to>/iCubProprioception/ExtCADSuperimposer/cam/left:i</to>
         <protocol>tcp</protocol>
     </connection>
 
-    <!--connection>
-        <from>/hand-tracking/left/result/estimates:o</from>
-        <to>/iCubProprioception/ExtCADSuperimposer/estimates/mode:i</to>
+    <connection>
+        <from>/icub/camcalib/right</from>
+        <to>/iCubProprioception/ExtCADSuperimposer/cam/right:i</to>
         <protocol>tcp</protocol>
-    </connection-->
+    </connection>
 
     <connection>
         <from>/iCubProprioception/ExtCADSuperimposer/cam/left:o</from>
-        <to>/view/cam_left/ext_cad</to>
+        <to>/view/cam/left/ext</to>
+        <protocol>tcp</protocol>
+    </connection>
+
+    <connection>
+        <from>/iCubProprioception/ExtCADSuperimposer/cam/right:o</from>
+        <to>/view/cam/right/ext</to>
+        <protocol>tcp</protocol>
+    </connection>
+
+    <connection>
+        <from>/hand-tracking/left/result/estimates:o</from>
+        <to>/iCubProprioception/ExtCADSuperimposer/cam/left/hand/right_pose:i</to>
+        <protocol>tcp</protocol>
+    </connection>
+
+    <connection>
+        <from>/hand-tracking/right/result/estimates:o</from>
+        <to>/iCubProprioception/ExtCADSuperimposer/cam/right/hand/right_pose:i</to>
         <protocol>tcp</protocol>
     </connection>
 

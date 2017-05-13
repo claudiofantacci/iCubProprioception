@@ -11,7 +11,7 @@
     <!-- GENERIC INFORMATION -->
     <name>iCubProprioception-BATCH</name>
     <description>Superimpose the hand skeleton and/or 3D CAD model on the camera images stored from iCub</description>
-    <version>1.0.0</version>
+    <version>2.0.0</version>
 
     <authors>
         <author email="claudio.fantacci@iit.it">Claudio Fantacci</author>
@@ -37,7 +37,19 @@
 
     <module>
         <name>yarpview</name>
+        <parameters>--name /view/cam/right --x 20 --y 370 --RefreshTime 30</parameters>
+        <node>yarprun</node>
+    </module>
+
+    <module>
+        <name>yarpview</name>
         <parameters>--name /view/cam/left/batch --x 340 --y 0 --RefreshTime 30</parameters>
+        <node>yarprun</node>
+    </module>
+
+    <module>
+        <name>yarpview</name>
+        <parameters>--name /view/cam/left/batch --x 340 --y 370 --RefreshTime 30</parameters>
         <node>yarprun</node>
     </module>
 
@@ -49,10 +61,22 @@
         <protocol>tcp</protocol>
     </connection>
 
+    <connection>
+        <from>/icub/camcalib/right</from>
+        <to>/view/cam/right</to>
+        <protocol>tcp</protocol>
+    </connection>
+
     <!-- RC: Batch CAD -->
     <connection>
         <from>/icub/camcalib/left</from>
         <to>/iCubProprioception/BatchCADSuperimposer/cam/left:i</to>
+        <protocol>tcp</protocol>
+    </connection>
+
+    <connection>
+        <from>/icub/camcalib/right</from>
+        <to>/iCubProprioception/BatchCADSuperimposer/cam/right:i</to>
         <protocol>tcp</protocol>
     </connection>
 
@@ -63,8 +87,20 @@
     </connection>
 
     <connection>
+        <from>/iCubProprioception/BatchCADSuperimposer/cam/right:o</from>
+        <to>/view/cam/right/batch</to>
+        <protocol>tcp</protocol>
+    </connection>
+
+    <connection>
         <from>/hand-tracking/left/result/estimates:o</from>
         <to>/iCubProprioception/BatchCADSuperimposer/left/hand/right_pose:i</to>
+        <protocol>tcp</protocol>
+    </connection>
+
+    <connection>
+        <from>/hand-tracking/right/result/estimates:o</from>
+        <to>/iCubProprioception/BatchCADSuperimposer/right/hand/right_pose:i</to>
         <protocol>tcp</protocol>
     </connection>
 
@@ -75,8 +111,20 @@
     </connection>
 
     <connection>
+        <from>/icub/head/state:o</from>
+        <to>/iCubProprioception/BatchCADSuperimposer/right/torso:i</to>
+        <protocol>tcp</protocol>
+    </connection>
+
+    <connection>
         <from>/icub/right_arm/state:o</from>
         <to>/iCubProprioception/BatchCADSuperimposer/left/right_arm:i</to>
+        <protocol>tcp</protocol>
+    </connection>
+
+    <connection>
+        <from>/icub/right_arm/state:o</from>
+        <to>/iCubProprioception/BatchCADSuperimposer/right/right_arm:i</to>
         <protocol>tcp</protocol>
     </connection>
 
@@ -86,9 +134,21 @@
         <protocol>tcp</protocol>
     </connection>
 
+    <connection>
+        <from>/icub/torso/state:o</from>
+        <to>/iCubProprioception/BatchCADSuperimposer/right/torso:i</to>
+        <protocol>tcp</protocol>
+    </connection>
+
     <!--connection>
         <from>/icub/right_arm/analogs/state:o</from>
         <to>/iCubProprioception/BatchCADSuperimposer/left/right_analogs:i</to>
+        <protocol>tcp</protocol>
+    </connection-->
+
+    <!--connection>
+        <from>/icub/right_arm/analogs/state:o</from>
+        <to>/iCubProprioception/BatchCADSuperimposer/right/right_analogs:i</to>
         <protocol>tcp</protocol>
     </connection-->
 
