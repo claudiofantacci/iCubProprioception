@@ -308,7 +308,7 @@ bool CADSuperimposer::openGazeController()
 {
     Property opt_gaze;
     opt_gaze.put("device", "gazecontrollerclient");
-    opt_gaze.put("local",  "/" + ID_ + "/gaze");
+    opt_gaze.put("local",  "/" + ID_ + "/cam/" + camera_ + "/gaze");
     opt_gaze.put("remote", "/iKinGazeCtrl");
 
     if (drv_gaze_.open(opt_gaze))
@@ -334,7 +334,7 @@ bool CADSuperimposer::openGazeController()
 bool CADSuperimposer::setCommandPort()
 {
     yInfo() << log_ID_ << "Opening command port.";
-    if (!port_command_.open("/" + ID_ + "/render/cmd:i"))
+    if (!port_command_.open("/" + ID_ + "/cam/" + camera_ + "/render/cmd:i"))
     {
         yError() << log_ID_ << "Cannot open /" + ID_ + "/render/cmd:i port.";
         return false;

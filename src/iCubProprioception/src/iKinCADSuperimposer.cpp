@@ -178,7 +178,7 @@ bool iKinCADSuperimposer::setHeadRemoteControlboard()
 {
     Property head_remote_options;
     head_remote_options.put("device", "remote_controlboard");
-    head_remote_options.put("local", "/" + ID_ + "/control_head");
+    head_remote_options.put("local", "/" + ID_ + "/cam/" + camera_ + "/control_head");
     head_remote_options.put("remote", "/" + robot_ + "/head");
 
     drv_head_remote_.open(head_remote_options);
@@ -207,7 +207,7 @@ bool iKinCADSuperimposer::setTorsoRemoteControlboard()
 {
     Property torso_remote_options;
     torso_remote_options.put("device", "remote_controlboard");
-    torso_remote_options.put("local", "/" + ID_ + "/control_torso");
+    torso_remote_options.put("local", "/" + ID_ + "/cam/" + camera_ + "/control_torso");
     torso_remote_options.put("remote", "/" + robot_ + "/torso");
 
     drv_torso_remote_.open(torso_remote_options);
@@ -236,7 +236,7 @@ bool iKinCADSuperimposer::setArmRemoteControlboard()
 {
     Property rightarm_remote_options;
     rightarm_remote_options.put("device", "remote_controlboard");
-    rightarm_remote_options.put("local", "/" + ID_ + "/control_right_arm");
+    rightarm_remote_options.put("local", "/" + ID_ + "/cam/" + camera_ + "/control_right_arm");
     rightarm_remote_options.put("remote", "/" + robot_ + "/right_arm");
 
     drv_right_arm_remote_.open(rightarm_remote_options);
@@ -260,7 +260,7 @@ bool iKinCADSuperimposer::setArmRemoteControlboard()
 #if ICP_USE_ANALOGS == 1
     Property righthand_remote_analog;
     righthand_remote_analog.put("device", "analogsensorclient");
-    righthand_remote_analog.put("local",  "/" + ID_ + "/right_hand");
+    righthand_remote_analog.put("local",  "/" + ID_ + "/cam/" + camera_ + "/right_hand");
     righthand_remote_analog.put("remote", "/" + robot_ + "/right_hand/analog:o");
 
     drv_right_hand_analog_.open(righthand_remote_analog);
@@ -289,7 +289,7 @@ bool iKinCADSuperimposer::setArmCartesianController()
 {
     Property rightarm_cartesian_options;
     rightarm_cartesian_options.put("device", "cartesiancontrollerclient");
-    rightarm_cartesian_options.put("local", "/" + ID_ + "/cart_right_arm");
+    rightarm_cartesian_options.put("local", "/" + ID_ + "/cam/" + camera_ + "/cart_right_arm");
     rightarm_cartesian_options.put("remote", "/" + robot_ + "/cartesianController/right_arm");
 
     drv_right_arm_cartesian_.open(rightarm_cartesian_options);
