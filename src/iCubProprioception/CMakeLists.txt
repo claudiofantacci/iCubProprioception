@@ -74,6 +74,7 @@ set(${EXE_TARGET_NAME}_CONFIG
         ${PROJECT_SOURCE_DIR}/config/parameters.ini)
 
 set(${EXE_TARGET_NAME}_APP_SIM
+        ${PROJECT_SOURCE_DIR}/app/iCubProprioception-BATCH.xml
         ${PROJECT_SOURCE_DIR}/app/iCubProprioception-SIM.xml
         ${PROJECT_SOURCE_DIR}/app/BackgroundApps-SIM.xml)
 
