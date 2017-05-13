@@ -225,7 +225,7 @@ bool SuperimposerHandler::close()
     delete trd_left_cam_ikin_cad_;
     delete trd_left_cam_ext_cad_;
 
-    itf_rightarm_cart_->removeTipFrame();
+    if (itf_rightarm_cart_) itf_rightarm_cart_->removeTipFrame();
 
     if (rightarm_cartesian_driver_.isValid()) rightarm_cartesian_driver_.close();
     if (rightarm_remote_driver_.isValid())    rightarm_remote_driver_.close();
