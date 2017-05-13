@@ -62,9 +62,8 @@ private:
     const SuperImpose::ObjFileMap & cad_hand_;
     const yarp::os::ConstString     shader_path_;
 
-    static std::mutex               mtx_gaze_;
-    static yarp::dev::PolyDriver    drv_gaze_;
-    static yarp::dev::IGazeControl* itf_gaze_;
+    yarp::dev::PolyDriver           drv_gaze_;
+    yarp::dev::IGazeControl*        itf_gaze_;
 
     unsigned int                    cam_width_;
     unsigned int                    cam_height_;

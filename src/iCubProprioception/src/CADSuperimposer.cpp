@@ -17,11 +17,6 @@ using namespace iCub::ctrl;
 using namespace iCub::iKin;
 
 
-std::mutex    CADSuperimposer::mtx_gaze_;
-PolyDriver    CADSuperimposer::drv_gaze_;
-IGazeControl* CADSuperimposer::itf_gaze_ = YARP_NULLPTR;
-
-
 CADSuperimposer::CADSuperimposer(const ConstString& port_prefix, const ConstString& robot, const ConstString& camera,
                                  const SuperImpose::ObjFileMap& cad_hand, const ConstString& shader_path) :
     ID_(port_prefix), log_ID_("[" + ID_ + "]"),
@@ -50,8 +45,6 @@ CADSuperimposer::CADSuperimposer(const ConstString& port_prefix, const ConstStri
     /* Setting up common gaze controller and camera parameters */
     if (openGazeController())
     {
-        std::lock_guard<std::mutex> lock(mtx_gaze_);
-
         Bottle cam_info;
         itf_gaze_->getInfo(cam_info);
         yInfo() << log_ID_ << "[CAM PARAMS]" << cam_info.toString();
@@ -178,9 +171,7 @@ void CADSuperimposer::run()
                 ee_pose.push_back(ang);
             }
 
-
             cam_pose = left_eye_.EndEffPose();
-
 
             encs_arm = getRightArmEncoders();
 //            encs_arm(7) = 32.0;
@@ -311,35 +302,28 @@ bool CADSuperimposer::mesh_wireframe(const bool status)
 
 bool CADSuperimposer::openGazeController()
 {
-    std::lock_guard<std::mutex> lock(mtx_gaze_);
+    Property opt_gaze;
+    opt_gaze.put("device", "gazecontrollerclient");
+    opt_gaze.put("local",  "/" + ID_ + "/gaze");
+    opt_gaze.put("remote", "/iKinGazeCtrl");
 
-    if (itf_gaze_)
-        return true;
-    else
+    if (drv_gaze_.open(opt_gaze))
     {
-        Property opt_gaze;
-        opt_gaze.put("device", "gazecontrollerclient");
-        opt_gaze.put("local",  "/" + ID_ + "/gaze");
-        opt_gaze.put("remote", "/iKinGazeCtrl");
-
-        if (drv_gaze_.open(opt_gaze))
+        drv_gaze_.view(itf_gaze_);
+        if (!itf_gaze_)
         {
-            drv_gaze_.view(itf_gaze_);
-            if (!itf_gaze_)
-            {
-                yError() << log_ID_ << "Cannot get head gazecontrollerclient interface!";
-                drv_gaze_.close();
-                return false;
-            }
-        }
-        else
-        {
-            yError() << log_ID_ << "Cannot open head gazecontrollerclient!";
+            yError() << log_ID_ << "Cannot get head gazecontrollerclient interface!";
+            drv_gaze_.close();
             return false;
         }
-
-        return true;
     }
+    else
+    {
+        yError() << log_ID_ << "Cannot open head gazecontrollerclient!";
+        return false;
+    }
+
+    return true;
 }
 
 
