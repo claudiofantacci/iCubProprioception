@@ -79,6 +79,10 @@ private:
     const yarp::os::ConstString   log_ID_;
 
     yarp::os::ConstString         robot_;
+    bool                          skeleton_;
+    bool                          ikin_;
+    bool                          ext_;
+    bool                          batch_;
 
     yarp::dev::PolyDriver         torso_remote_driver_;
 

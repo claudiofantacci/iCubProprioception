@@ -34,9 +34,21 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
     /* Setting default parameters. */
     ConstString context = rf.getContext();
 
-    /* Parsing parameters from config file. */
+
+    /* Parsing parameters from CLI. */
     /* Robot name */
-    robot_ = rf.check("robot", Value("icubSim")).asString();
+    robot_    = rf.check("robot", Value("icubSim")).asString();
+    skeleton_ = ((rf.findGroup("ske").size() == 1 ? true : (rf.findGroup("ske").size() == 2 ? rf.find("ske").asBool() : false)));
+    ikin_     = ((rf.findGroup("ikin").size() == 1 ? true : (rf.findGroup("ikin").size() == 2 ? rf.find("ikin").asBool() : false)));
+    ext_      = ((rf.findGroup("ext").size() == 1 ? true : (rf.findGroup("ext").size() == 2 ? rf.find("ext").asBool() : false)));
+    batch_    = ((rf.findGroup("batch").size() == 1 ? true : (rf.findGroup("batch").size() == 2 ? rf.find("batch").asBool() : false)));
+
+    yInfo() << log_ID_ << "Running with:";
+    yInfo() << log_ID_ << " - robot name:"              << robot_;
+    yInfo() << log_ID_ << " - draw skeleton:"           << (skeleton_ ? "true" : "false");
+    yInfo() << log_ID_ << " - render using ikin:"       << (ikin_     ? "true" : "false");
+    yInfo() << log_ID_ << " - render using ext source:" << (ext_      ? "true" : "false");
+    yInfo() << log_ID_ << " - render batch data:"       << (batch_    ? "true" : "false");
 
 
     /* Search mesh files in /mesh context folder */
@@ -138,63 +150,91 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
 
 
     /* Launching skeleton superimposer thread */
-    try { trd_left_cam_skeleton_ = new SkeletonSuperimposer(ID_ + "/SkeletonSuperimposer", robot_, "left"); }
-    catch (const std::runtime_error& e) { yError() << e.what(); }
-
-    if (trd_left_cam_skeleton_ != YARP_NULLPTR)
+    if (skeleton_)
     {
-        yInfo() << log_ID_ << "Starting skeleton superimposing thread for the right hand on the left camera images...";
+        try { trd_left_cam_skeleton_ = new SkeletonSuperimposer(ID_ + "/SkeletonSuperimposer", robot_, "left"); }
+        catch (const std::runtime_error& e) { yError() << e.what(); }
 
-        if (!trd_left_cam_skeleton_->start()) yError() << log_ID_ << "...thread could not be started!";
-        else                                  yInfo()  << log_ID_ << "...done.";
+        if (trd_left_cam_skeleton_ != YARP_NULLPTR)
+        {
+            yInfo() << log_ID_ << "Starting skeleton superimposing thread for the right hand on the left camera images...";
+
+            if (!trd_left_cam_skeleton_->start()) yError() << log_ID_ << "...thread could not be started!";
+            else                                  yInfo()  << log_ID_ << "...done.";
+        }
+        else
+            yError() << log_ID_ << "Could not initialize hand skeleton superimposition!";
     }
-    else
-        yError() << log_ID_ << "Could not initialize hand skeleton superimposition!";
 
 
     /* Lunching iKin CAD superimposer thread */
-    try { trd_left_cam_ikin_cad_ = new iKinCADSuperimposer(ID_ + "/iKinCADSuperimposer", robot_, "left", cad_hand_, shader_path_); }
-    catch (const std::runtime_error& e) { yError() << e.what(); }
-
-    if (trd_left_cam_ikin_cad_ != YARP_NULLPTR)
+    if (ikin_)
     {
-        yInfo() << log_ID_ << "Starting iKinFwd mesh superimposing thread for the right hand on the left camera images...";
+        try { trd_left_cam_ikin_cad_ = new iKinCADSuperimposer(ID_ + "/iKinCADSuperimposer", robot_, "left", cad_hand_, shader_path_); }
+        catch (const std::runtime_error& e) { yError() << e.what(); }
 
-        if (!trd_left_cam_ikin_cad_->start()) yError() << log_ID_ << "...thread could not be started!";
-        else                                  yInfo()  << log_ID_ << "...done.";
+        if (trd_left_cam_ikin_cad_ != YARP_NULLPTR)
+        {
+            yInfo() << log_ID_ << "Starting iKinFwd mesh superimposing thread for the right hand on the left camera images...";
+
+            if (!trd_left_cam_ikin_cad_->start()) yError() << log_ID_ << "...thread could not be started!";
+            else                                  yInfo()  << log_ID_ << "...done.";
+        }
+        else
+            yError() << log_ID_ << "Could not initialize iKinFwd hand mesh superimposition!";
     }
-    else
-        yError() << log_ID_ << "Could not initialize iKinFwd hand mesh superimposition!";
 
 
     /* Lunching External (pose) CAD superimposer thread */
-    try { trd_left_cam_ext_cad_ = new ExtCADSuperimposer(ID_ + "/ExtCADSuperimposer", robot_, "left", cad_hand_, shader_path_); }
-    catch (const std::runtime_error& e) { yError() << e.what(); }
-
-    if (trd_left_cam_ext_cad_ != YARP_NULLPTR)
+    if (ext_)
     {
-        yInfo() << log_ID_ << "Starting iKinFwd external (pose) mesh superimposing thread for the right hand on the left camera images...";
+        /* Left camera */
+        try { trd_left_cam_ext_cad_ = new ExtCADSuperimposer(ID_ + "/ExtCADSuperimposer", robot_, "left", cad_hand_, shader_path_); }
+        catch (const std::runtime_error& e) { yError() << e.what(); }
 
-        if (!trd_left_cam_ext_cad_->start()) yError() << log_ID_ << "...thread could not be started!";
-        else                                 yInfo()  << log_ID_ << "...done.";
+        if (trd_left_cam_ext_cad_ != YARP_NULLPTR)
+        {
+            yInfo() << log_ID_ << "Starting iKinFwd external (pose) mesh superimposing thread for the right hand on the left camera images...";
+
+            if (!trd_left_cam_ext_cad_->start()) yError() << log_ID_ << "...thread could not be started!";
+            else                                 yInfo()  << log_ID_ << "...done.";
+        }
+        else
+            yError() << log_ID_ << "Could not initialize iKinFwd external (pose) hand mesh superimposition for the left camera!";
+
+
+        /* Right camera */
+        try { trd_left_cam_ext_cad_ = new ExtCADSuperimposer(ID_ + "/ExtCADSuperimposer", robot_, "right", cad_hand_, shader_path_); }
+        catch (const std::runtime_error& e) { yError() << e.what(); }
+
+        if (trd_left_cam_ext_cad_ != YARP_NULLPTR)
+        {
+            yInfo() << log_ID_ << "Starting iKinFwd external (pose) mesh superimposing thread for the right hand on the right camera images...";
+
+            if (!trd_left_cam_ext_cad_->start()) yError() << log_ID_ << "...thread could not be started!";
+            else                                 yInfo()  << log_ID_ << "...done.";
+        }
+        else
+            yError() << log_ID_ << "Could not initialize iKinFwd external (pose) hand mesh superimposition for the right camera!";
     }
-    else
-        yError() << log_ID_ << "Could not initialize iKinFwd external (pose) hand mesh superimposition!";
 
 
     /* Lunching Batch (pose and ecnoders) CAD superimposer thread */
-    try { trd_left_cam_batch_cad_ = new BatchCADSuperimposer(ID_ + "/BatchCADSuperimposer", robot_, "left", cad_hand_, shader_path_); }
-    catch (const std::runtime_error& e) { yError() << e.what(); }
-
-    if (trd_left_cam_batch_cad_ != YARP_NULLPTR)
+    if (batch_)
     {
-        yInfo() << log_ID_ << "Starting Batch mesh superimposing thread for the right hand on the left camera images...";
+        try { trd_left_cam_batch_cad_ = new BatchCADSuperimposer(ID_ + "/BatchCADSuperimposer", robot_, "left", cad_hand_, shader_path_); }
+        catch (const std::runtime_error& e) { yError() << e.what(); }
 
-        if (!trd_left_cam_batch_cad_->start()) yError() << log_ID_ << "...thread could not be started!";
-        else                                   yInfo()  << log_ID_ << "...done.";
+        if (trd_left_cam_batch_cad_ != YARP_NULLPTR)
+        {
+            yInfo() << log_ID_ << "Starting Batch mesh superimposing thread for the right hand on the left camera images...";
+
+            if (!trd_left_cam_batch_cad_->start()) yError() << log_ID_ << "...thread could not be started!";
+            else                                   yInfo()  << log_ID_ << "...done.";
+        }
+        else
+            yError() << log_ID_ << "Could not initialize Batch hand mesh superimposition!";
     }
-    else
-        yError() << log_ID_ << "Could not initialize Batch hand mesh superimposition!";
 
 
     /* Open a remote command port and allow the program be started */
