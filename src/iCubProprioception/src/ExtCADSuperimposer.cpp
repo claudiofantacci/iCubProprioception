@@ -45,6 +45,14 @@ ExtCADSuperimposer::ExtCADSuperimposer(const ConstString& port_prefix, const Con
 ExtCADSuperimposer::~ExtCADSuperimposer() noexcept { }
 
 
+void ExtCADSuperimposer::onStop()
+{
+    if (!inport_pose_ext_.isClosed()) inport_pose_ext_.interrupt();
+
+    iKinCADSuperimposer::onStop();
+}
+
+
 void ExtCADSuperimposer::threadRelease()
 {
     if (!inport_pose_ext_.isClosed()) inport_pose_ext_.close();
@@ -58,7 +66,8 @@ yarp::sig::Vector ExtCADSuperimposer::getEndEffectorPose()
     Vector* estimates_mean = inport_pose_ext_.read(synch_);
 
     if (estimates_mean        != YARP_NULLPTR) ext_pose_copy_ = *estimates_mean;
-    if (ext_pose_copy_.size() == 0)            ext_pose_copy_ = *(inport_pose_ext_.read(true));
+    if (ext_pose_copy_.size() == 0 &&
+        !inport_pose_ext_.isClosed())          ext_pose_copy_ = *(inport_pose_ext_.read(true));
 
     return ext_pose_copy_;
 }

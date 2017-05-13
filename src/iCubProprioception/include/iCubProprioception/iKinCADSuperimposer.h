@@ -21,6 +21,8 @@ public:
 
     ~iKinCADSuperimposer() noexcept;
 
+    void onStop() override;
+
     void threadRelease() override;
 
 protected:

@@ -160,8 +160,8 @@ void CADSuperimposer::run()
         {
             left_eye_.setAng(CTRL_DEG2RAD * readRootToLeftEye());
 
-
             ee_pose = getEndEffectorPose();
+            if (ee_pose.size() == 0) continue;
             if (ee_pose.size() == 6)
             {
                 double ang =  norm(ee_pose.subVector(3, 5));

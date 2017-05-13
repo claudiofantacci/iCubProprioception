@@ -21,6 +21,8 @@ public:
 
     ~ExtCADSuperimposer() noexcept;
 
+    void onStop() override;
+
     void threadRelease() override;
 
 protected:

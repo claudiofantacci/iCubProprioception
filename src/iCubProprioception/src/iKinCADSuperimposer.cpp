@@ -72,6 +72,12 @@ iKinCADSuperimposer::iKinCADSuperimposer(const ConstString& port_prefix, const C
 iKinCADSuperimposer::~iKinCADSuperimposer() noexcept { }
 
 
+void iKinCADSuperimposer::onStop()
+{
+    CADSuperimposer::onStop();
+}
+
+
 void iKinCADSuperimposer::threadRelease()
 {
     CADSuperimposer::threadRelease();
