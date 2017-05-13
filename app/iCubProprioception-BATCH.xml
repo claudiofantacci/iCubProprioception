@@ -31,13 +31,13 @@
 
     <module>
         <name>yarpview</name>
-        <parameters>--name /view/cam_left --x 20 --y 0 --RefreshTime 30</parameters>
+        <parameters>--name /view/cam/left --x 20 --y 0 --RefreshTime 30</parameters>
         <node>yarprun</node>
     </module>
 
     <module>
         <name>yarpview</name>
-        <parameters>--name /view/cam_left/batch --x 340 --y 0 --RefreshTime 30</parameters>
+        <parameters>--name /view/cam/left/batch --x 340 --y 0 --RefreshTime 30</parameters>
         <node>yarprun</node>
     </module>
 
@@ -45,7 +45,7 @@
     <!-- REQUIRED CONNECTIONS -->
     <connection>
         <from>/icub/camcalib/left</from>
-        <to>/view/cam_left</to>
+        <to>/view/cam/left</to>
         <protocol>tcp</protocol>
     </connection>
 
@@ -58,7 +58,7 @@
 
     <connection>
         <from>/iCubProprioception/BatchCADSuperimposer/cam/left:o</from>
-        <to>/view/cam_left/batch</to>
+        <to>/view/cam/left/batch</to>
         <protocol>tcp</protocol>
     </connection>
 

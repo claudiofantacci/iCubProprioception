@@ -5,7 +5,7 @@
     <!-- GENERIC INFORMATION -->
     <name>iCubProprioception-DataDump</name>
     <description>Collect data for iCubProprioception module</description>
-    <version>4.1.0</version>
+    <version>4.2.0</version>
 
     <authors>
         <author email="claudio.fantacci@iit.it">Claudio Fantacci</author>
@@ -51,6 +51,12 @@
         <name>yarpdatadumper</name>
         <node>localhost</node>
         <parameters>--name /datadumper/ext_cad/left --txTime --rxTime --type image</parameters>
+    </module>
+
+    <module>
+        <name>yarpdatadumper</name>
+        <node>localhost</node>
+        <parameters>--name /datadumper/ext_cad/right --txTime --rxTime --type image</parameters>
     </module>
 
     <module>
@@ -107,8 +113,14 @@
     </connection>
 
     <connection>
-        <from>/icub/camcalib/left/out</from>
-        <to>/iCubProprioception/ExtCADSuperimposer/hand/right_pose:i</to>
+        <from>/hand-tracking/left/result/estimates:o</from>
+        <to>/iCubProprioception/ExtCADSuperimposer/cam/left/hand/right_pose:i</to>
+        <protocol>tcp</protocol>
+    </connection>
+
+    <connection>
+        <from>/hand-tracking/right/result/estimates:o</from>
+        <to>/iCubProprioception/ExtCADSuperimposer/cam/right/hand/right_pose:i</to>
         <protocol>tcp</protocol>
     </connection>
 
@@ -146,6 +158,12 @@
     <connection>
         <from>/iCubProprioception/ExtCADSuperimposer/cam/left:o</from>
         <to>/datadumper/ext_cad/left</to>
+        <protocol>tcp</protocol>
+    </connection>
+
+    <connection>
+        <from>/iCubProprioception/ExtCADSuperimposer/cam/right:o</from>
+        <to>/datadumper/ext_cad/right</to>
         <protocol>tcp</protocol>
     </connection>
 
