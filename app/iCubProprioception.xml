@@ -5,7 +5,7 @@
     <!-- GENERIC INFORMATION -->
     <name>iCubProprioception</name>
     <description>Superimpose the hand skeleton and/or 3D CAD model on the camera images of iCub</description>
-    <version>6.0.0</version>
+    <version>6.0.1</version>
 
     <authors>
         <author email="claudio.fantacci@iit.it">Claudio Fantacci</author>
@@ -15,38 +15,38 @@
     <!-- RQUIRED MODULES -->
     <module>
         <name>iCubProprioception</name>
-        <node>yarprun</node>
+        <node>localhost</node>
         <parameters>--robot icub --ikin --ext --from parameters.ini</parameters>
     </module>
 
     <module>
         <name>yarpview</name>
         <parameters>--name /view/cam/left --x 20 --y 0 --RefreshTime 30</parameters>
-        <node>yarprun</node>
+        <node>localhost</node>
     </module>
 
     <module>
         <name>yarpview</name>
         <parameters>--name /view/cam/left/skeleton --x 340 --y 0 --RefreshTime 30</parameters>
-        <node>yarprun</node>
+        <node>localhost</node>
     </module>
 
     <module>
         <name>yarpview</name>
         <parameters>--name /view/cam/left/ikin --x 660 --y 0 --RefreshTime 30</parameters>
-        <node>yarprun</node>
+        <node>localhost</node>
     </module>
 
     <module>
         <name>yarpview</name>
         <parameters>--name /view/cam/left/ext --x 980 --y 0 --RefreshTime 30</parameters>
-        <node>yarprun</node>
+        <node>localhost</node>
     </module>
 
     <module>
         <name>yarpview</name>
         <parameters>--name /view/cam/right/ext --x 1300 --y 0 --RefreshTime 30</parameters>
-        <node>yarprun</node>
+        <node>localhost</node>
     </module>
 
 

@@ -67,14 +67,14 @@ install(TARGETS ${EXE_TARGET_NAME} DESTINATION bin)
 # Custom commands
 # EXTRA files
 set(${EXE_TARGET_NAME}_APP
-        ${PROJECT_SOURCE_DIR}/app/iCubProprioception.xml.template
-        ${PROJECT_SOURCE_DIR}/app/iCubProprioception-DataDump.xml.template)
+        ${PROJECT_SOURCE_DIR}/app/iCubProprioception.xml
+        ${PROJECT_SOURCE_DIR}/app/iCubProprioception-DataDump.xml
+        ${PROJECT_SOURCE_DIR}/app/iCubProprioception-BATCH.xml)
 
 set(${EXE_TARGET_NAME}_CONFIG
         ${PROJECT_SOURCE_DIR}/config/parameters.ini)
 
 set(${EXE_TARGET_NAME}_APP_SIM
-        ${PROJECT_SOURCE_DIR}/app/iCubProprioception-BATCH.xml
         ${PROJECT_SOURCE_DIR}/app/iCubProprioception-SIM.xml
         ${PROJECT_SOURCE_DIR}/app/BackgroundApps-SIM.xml)
 

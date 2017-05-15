@@ -5,7 +5,7 @@
     <!-- GENERIC INFORMATION -->
     <name>iCubProprioception-DataDump</name>
     <description>Collect data for iCubProprioception module</description>
-    <version>4.2.1</version>
+    <version>4.2.2</version>
 
     <authors>
         <author email="claudio.fantacci@iit.it">Claudio Fantacci</author>
