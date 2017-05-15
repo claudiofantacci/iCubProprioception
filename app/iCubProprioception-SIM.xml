@@ -11,7 +11,7 @@
     <!-- GENERIC INFORMATION -->
     <name>iCubProprioception-SIM</name>
     <description>Superimpose the hand skeleton and/or 3D CAD model on the camera images of icubSim</description>
-    <version>4.1.1</version>
+    <version>4.1.2</version>
 
     <authors>
         <author email="claudio.fantacci@iit.it">Claudio Fantacci</author>
