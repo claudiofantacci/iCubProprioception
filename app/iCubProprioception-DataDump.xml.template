@@ -16,11 +16,7 @@
     <module>
         <name>iCubProprioception</name>
         <node>localhost</node>
-        <parameters>--robot icub --from parameters.ini</parameters>
-        <dependencies>
-            <port>/icub/camcalib/left/out</port>
-            <port>/icub/camcalib/right/out</port>
-        </dependencies>
+        <parameters>--robot icub --ikin --from parameters.ini</parameters>
     </module>
 
     <module>

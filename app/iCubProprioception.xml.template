@@ -16,11 +16,7 @@
     <module>
         <name>iCubProprioception</name>
         <node>yarprun</node>
-        <parameters>--robot icub --from parameters.ini</parameters>
-        <dependencies>
-            <port>/icub/camcalib/left</port>
-            <port>/icub/camcalibg/right</port>
-        </dependencies>
+        <parameters>--robot icub --ikin --ext --from parameters.ini</parameters>
     </module>
 
     <module>
@@ -56,14 +52,14 @@
 
     <!-- REQUIRED CONNECTIONS -->
     <connection>
-        <from>/icub/camcalib/left</from>
+        <from>/icub/camcalib/left/out</from>
         <to>/view/cam/left</to>
         <protocol>tcp</protocol>
     </connection>
 
     <!-- RC: SKELETON -->
     <connection>
-        <from>/icub/camcalib/left</from>
+        <from>/icub/camcalib/left/out</from>
         <to>/iCubProprioception/SkeletonSuperimposer/cam/left:i</to>
         <protocol>tcp</protocol>
     </connection>
@@ -76,7 +72,7 @@
 
     <!-- RC: iKin CAD -->
     <connection>
-        <from>/icub/camcalibg/left</from>
+        <from>/icub/camcalibg/left/out</from>
         <to>/iCubProprioception/iKinCADSuperimposer/cam/left:i</to>
         <protocol>tcp</protocol>
     </connection>
@@ -89,13 +85,13 @@
 
     <!-- RC: Ext CAD -->
     <connection>
-        <from>/icub/camcalib/left</from>
+        <from>/icub/camcalib/left/out</from>
         <to>/iCubProprioception/ExtCADSuperimposer/cam/left:i</to>
         <protocol>tcp</protocol>
     </connection>
 
     <connection>
-        <from>/icub/camcalib/right</from>
+        <from>/icub/camcalib/right/out</from>
         <to>/iCubProprioception/ExtCADSuperimposer/cam/right:i</to>
         <protocol>tcp</protocol>
     </connection>

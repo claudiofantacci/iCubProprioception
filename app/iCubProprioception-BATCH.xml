@@ -2,12 +2,6 @@
 <?xml-stylesheet type="text/xsl" href="yarpmanifest.xsl"?>
 <application>
 
-    <!-- REQUIRED -->
-    <dependencies>
-        <port>/yarprun</port>
-    </dependencies>
-
-
     <!-- GENERIC INFORMATION -->
     <name>iCubProprioception-BATCH</name>
     <description>Superimpose the hand skeleton and/or 3D CAD model on the camera images stored from iCub</description>
@@ -21,61 +15,57 @@
     <!-- RQUIRED MODULES -->
     <module>
         <name>iCubProprioception</name>
-        <node>yarprun</node>
-        <parameters>--robot icub --from parameters.ini</parameters>
-        <dependencies>
-            <port>/icubSim/cam/left</port>
-            <port>/icubSim/cam/right</port>
-        </dependencies>
+        <node>localhost</node>
+        <parameters>--robot icub --batch --from parameters.ini</parameters>
     </module>
 
     <module>
         <name>yarpview</name>
         <parameters>--name /view/cam/left --x 20 --y 0 --RefreshTime 30</parameters>
-        <node>yarprun</node>
+        <node>localhost</node>
     </module>
 
     <module>
         <name>yarpview</name>
         <parameters>--name /view/cam/right --x 20 --y 370 --RefreshTime 30</parameters>
-        <node>yarprun</node>
+        <node>localhost</node>
     </module>
 
     <module>
         <name>yarpview</name>
         <parameters>--name /view/cam/left/batch --x 340 --y 0 --RefreshTime 30</parameters>
-        <node>yarprun</node>
+        <node>localhost</node>
     </module>
 
     <module>
         <name>yarpview</name>
-        <parameters>--name /view/cam/left/batch --x 340 --y 370 --RefreshTime 30</parameters>
-        <node>yarprun</node>
+        <parameters>--name /view/cam/right/batch --x 340 --y 370 --RefreshTime 30</parameters>
+        <node>localhost</node>
     </module>
 
 
     <!-- REQUIRED CONNECTIONS -->
     <connection>
-        <from>/icub/camcalib/left</from>
+        <from>/icub/camcalib/left/out</from>
         <to>/view/cam/left</to>
         <protocol>tcp</protocol>
     </connection>
 
     <connection>
-        <from>/icub/camcalib/right</from>
+        <from>/icub/camcalib/right/out</from>
         <to>/view/cam/right</to>
         <protocol>tcp</protocol>
     </connection>
 
     <!-- RC: Batch CAD -->
     <connection>
-        <from>/icub/camcalib/left</from>
+        <from>/icub/camcalib/left/out</from>
         <to>/iCubProprioception/BatchCADSuperimposer/cam/left:i</to>
         <protocol>tcp</protocol>
     </connection>
 
     <connection>
-        <from>/icub/camcalib/right</from>
+        <from>/icub/camcalib/right/out</from>
         <to>/iCubProprioception/BatchCADSuperimposer/cam/right:i</to>
         <protocol>tcp</protocol>
     </connection>
@@ -106,13 +96,13 @@
 
     <connection>
         <from>/icub/head/state:o</from>
-        <to>/iCubProprioception/BatchCADSuperimposer/cam/left/torso:i</to>
+        <to>/iCubProprioception/BatchCADSuperimposer/cam/left/head:i</to>
         <protocol>tcp</protocol>
     </connection>
 
     <connection>
         <from>/icub/head/state:o</from>
-        <to>/iCubProprioception/BatchCADSuperimposer/cam/right/torso:i</to>
+        <to>/iCubProprioception/BatchCADSuperimposer/cam/right/head:i</to>
         <protocol>tcp</protocol>
     </connection>
 
