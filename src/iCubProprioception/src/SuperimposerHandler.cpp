@@ -1,6 +1,7 @@
 #include "iCubProprioception/SuperimposerHandler.h"
 #include "iCubProprioception/common.h"
 
+#include <exception>
 #include <list>
 
 #include <GL/glew.h>
@@ -18,10 +19,12 @@ using namespace yarp::sig;
 using namespace yarp::math;
 
 
-SuperimposerHandler::SuperimposerHandler(const yarp::os::ConstString& project_name) : ID_(project_name), log_ID_("[" + project_name + "]") { }
+SuperimposerHandler::SuperimposerHandler(const yarp::os::ConstString& project_name) :
+    ID_(project_name), log_ID_("[" + project_name + "]") { }
 
 
-SuperimposerHandler::SuperimposerHandler() : SuperimposerHandler("SuperimposerModule") { }
+SuperimposerHandler::SuperimposerHandler() :
+    SuperimposerHandler("SuperimposerModule") { }
 
 
 bool SuperimposerHandler::configure(ResourceFinder &rf)
@@ -29,32 +32,23 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
     this->setName(ID_.c_str());
 
     /* Setting default parameters. */
-    init_position_ = false;
     ConstString context = rf.getContext();
 
-    /* Parsing parameters from config file. */
+
+    /* Parsing parameters from CLI. */
     /* Robot name */
-    robot_ = rf.findGroup("PARAMETER").check("robot", Value("icubSim")).asString();
+    robot_    = rf.check("robot", Value("icubSim")).asString();
+    skeleton_ = ((rf.findGroup("ske").size()   == 1 ? true : (rf.findGroup("ske").size()   == 2 ? rf.find("ske").asBool()   : false)));
+    ikin_     = ((rf.findGroup("ikin").size()  == 1 ? true : (rf.findGroup("ikin").size()  == 2 ? rf.find("ikin").asBool()  : false)));
+    ext_      = ((rf.findGroup("ext").size()   == 1 ? true : (rf.findGroup("ext").size()   == 2 ? rf.find("ext").asBool()   : false)));
+    batch_    = ((rf.findGroup("batch").size() == 1 ? true : (rf.findGroup("batch").size() == 2 ? rf.find("batch").asBool() : false)));
 
-    /* Joint velocities/accelerations */
-    if (!rf.findGroup("ARMJOINT").findGroup("vel").isNull() && rf.findGroup("ARMJOINT").findGroup("vel").tail().size() == 16)
-    {
-        Vector arm_vel(16);
-        for (int i = 0; i < rf.findGroup("ARMJOINT").findGroup("vel").tail().size(); ++i)
-        {
-            arm_vel[i] = rf.findGroup("ARMJOINT").findGroup("vel").tail().get(i).asDouble();
-        }
-        yWarning() << log_ID_ << "Unused config velocities!";
-        yInfo()    << log_ID_ << arm_vel.toString();
-
-        Vector arm_acc(16);
-        for (int i = 0; i < rf.findGroup("ARMJOINT").findGroup("acc").tail().size(); ++i)
-        {
-            arm_acc[i] = rf.findGroup("ARMJOINT").findGroup("acc").tail().get(i).asDouble();
-        }
-        yWarning() << log_ID_ << "Unused config accelerations!";
-        yInfo()    << log_ID_ << arm_acc.toString();
-    }
+    yInfo() << log_ID_ << "Running with:";
+    yInfo() << log_ID_ << " - robot name:"              << robot_;
+    yInfo() << log_ID_ << " - draw skeleton:"           << (skeleton_ ? "true" : "false");
+    yInfo() << log_ID_ << " - render using ikin:"       << (ikin_     ? "true" : "false");
+    yInfo() << log_ID_ << " - render using ext source:" << (ext_      ? "true" : "false");
+    yInfo() << log_ID_ << " - render batch data:"       << (batch_    ? "true" : "false");
 
 
     /* Search mesh files in /mesh context folder */
@@ -138,55 +132,131 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
     closed_hand_joints_[5] = 80;
 
 
+    // FIXME: Spostare i movimenti del robot in un'altro thread. L'RFM module serve solo da handler.
     /* Torso control board. */
-    if (!setTorsoRemoteControlboard()) return false;
+    setTorsoRemoteControlboard();
 
     /* Right arm control board. */
-    if (!setRightArmRemoteControlboard()) return false;
+    setRightArmRemoteControlboard();
 
     /* Right arm cartesian controler. */
-    if (!setRightArmCartesianController()) return false;
+    if (setRightArmCartesianController()) setTorsoDOF();
 
     /* Head control board. */
-    if (!setHeadRemoteControlboard()) return false;
+    setHeadRemoteControlboard();
 
     /* Gaze control. */
-    if (!setGazeController()) return false;
-
-    /* Enable torso DOF. */
-    if (!setTorsoDOF()) return false;
+    setGazeController();
 
 
     /* Launching skeleton superimposer thread */
-    trd_left_cam_skeleton_ = new SkeletonSuperimposer(ID_, robot_, "left");
-
-    if (trd_left_cam_skeleton_ != YARP_NULLPTR)
+    if (skeleton_)
     {
-        yInfo() << log_ID_ << "Starting skeleton superimposing thread for the right hand on the left camera images...";
+        try { trd_left_cam_skeleton_ = new SkeletonSuperimposer(ID_ + "/SkeletonSuperimposer", robot_, "left"); }
+        catch (const std::runtime_error& e) { yError() << e.what(); }
 
-        if (!trd_left_cam_skeleton_->start()) yWarning() << log_ID_ << "...thread could not be started!";
-        else                                  yInfo()    << log_ID_ << "...done.";
+        if (trd_left_cam_skeleton_ != YARP_NULLPTR)
+        {
+            yInfo() << log_ID_ << "Starting skeleton superimposing thread for the right hand on the left camera images...";
+
+            if (!trd_left_cam_skeleton_->start()) yError() << log_ID_ << "...thread could not be started!";
+            else                                  yInfo()  << log_ID_ << "...done.";
+        }
+        else
+            yError() << log_ID_ << "Could not initialize hand skeleton superimposition!";
     }
-    else
-        yWarning() << log_ID_ << "Could not initialize hand skeleton superimposition!";
 
 
-    /* Lunching CAD superimposer thread */
-    trd_left_cam_cad_ = new CADSuperimposer(ID_, robot_, "left",
-                                            cad_hand_, shader_path_);
-    if (trd_left_cam_cad_ != YARP_NULLPTR)
+    /* Lunching iKin CAD superimposer thread */
+    if (ikin_)
     {
-        yInfo() << log_ID_ << "Starting mesh superimposing thread for the right hand on the left camera images...";
+        try { trd_left_cam_ikin_cad_ = new iKinCADSuperimposer(ID_ + "/iKinCADSuperimposer", robot_, "left", cad_hand_, shader_path_); }
+        catch (const std::runtime_error& e) { yError() << e.what(); }
 
-        if (!trd_left_cam_cad_->start()) yWarning() << log_ID_ << "...thread could not be started!";
-        else                             yInfo()    << log_ID_ << "...done.";
+        if (trd_left_cam_ikin_cad_ != YARP_NULLPTR)
+        {
+            yInfo() << log_ID_ << "Starting iKinFwd mesh superimposing thread for the right hand on the left camera images...";
+
+            if (!trd_left_cam_ikin_cad_->start()) yError() << log_ID_ << "...thread could not be started!";
+            else                                  yInfo()  << log_ID_ << "...done.";
+        }
+        else
+            yError() << log_ID_ << "Could not initialize iKinFwd hand mesh superimposition!";
     }
-    else
-        yWarning() << log_ID_ << "Could not initialize hand mesh superimposition!";
+
+
+    /* Lunching External (pose) CAD superimposer thread */
+    if (ext_)
+    {
+        /* Left camera */
+        try { trd_left_cam_ext_cad_ = new ExtCADSuperimposer(ID_ + "/ExtCADSuperimposer", robot_, "left", cad_hand_, shader_path_); }
+        catch (const std::runtime_error& e) { yError() << e.what(); }
+
+        if (trd_left_cam_ext_cad_ != YARP_NULLPTR)
+        {
+            yInfo() << log_ID_ << "Starting iKinFwd external (pose) mesh superimposing thread for the right hand on the left camera images...";
+
+            if (!trd_left_cam_ext_cad_->start()) yError() << log_ID_ << "...thread could not be started!";
+            else                                 yInfo()  << log_ID_ << "...done.";
+        }
+        else
+            yError() << log_ID_ << "Could not initialize iKinFwd external (pose) hand mesh superimposition for the left camera!";
+
+
+        /* Right camera */
+        try { trd_left_cam_ext_cad_ = new ExtCADSuperimposer(ID_ + "/ExtCADSuperimposer", robot_, "right", cad_hand_, shader_path_); }
+        catch (const std::runtime_error& e) { yError() << e.what(); }
+
+        if (trd_left_cam_ext_cad_ != YARP_NULLPTR)
+        {
+            yInfo() << log_ID_ << "Starting iKinFwd external (pose) mesh superimposing thread for the right hand on the right camera images...";
+
+            if (!trd_left_cam_ext_cad_->start()) yError() << log_ID_ << "...thread could not be started!";
+            else                                 yInfo()  << log_ID_ << "...done.";
+        }
+        else
+            yError() << log_ID_ << "Could not initialize iKinFwd external (pose) hand mesh superimposition for the right camera!";
+    }
+
+
+    /* Lunching Batch (pose and ecnoders) CAD superimposer thread */
+    if (batch_)
+    {
+        /* Left camera */
+        try { trd_left_cam_batch_cad_ = new BatchCADSuperimposer(ID_ + "/BatchCADSuperimposer", robot_, "left", cad_hand_, shader_path_); }
+        catch (const std::runtime_error& e) { yError() << e.what(); }
+
+        if (trd_left_cam_batch_cad_ != YARP_NULLPTR)
+        {
+            yInfo() << log_ID_ << "Starting Batch mesh superimposing thread for the right hand on the left camera images...";
+
+            if (!trd_left_cam_batch_cad_->start()) yError() << log_ID_ << "...thread could not be started!";
+            else                                   yInfo()  << log_ID_ << "...done.";
+        }
+        else
+            yError() << log_ID_ << "Could not initialize Batch hand mesh superimposition for the left camera!";
+
+        /* Right camera */
+        try { trd_left_cam_batch_cad_ = new BatchCADSuperimposer(ID_ + "/BatchCADSuperimposer", robot_, "right", cad_hand_, shader_path_); }
+        catch (const std::runtime_error& e) { yError() << e.what(); }
+
+        if (trd_left_cam_batch_cad_ != YARP_NULLPTR)
+        {
+            yInfo() << log_ID_ << "Starting Batch mesh superimposing thread for the right hand on the right camera images...";
+
+            if (!trd_left_cam_batch_cad_->start()) yError() << log_ID_ << "...thread could not be started!";
+            else                                   yInfo()  << log_ID_ << "...done.";
+        }
+        else
+            yError() << log_ID_ << "Could not initialize Batch hand mesh superimposition for the right camera!";
+    }
 
 
     /* Open a remote command port and allow the program be started */
-    return setCommandPort();
+    if (!setCommandPort()) return false;
+
+
+    return true;
 }
 
 
@@ -203,12 +273,14 @@ bool SuperimposerHandler::close()
     yInfo() << log_ID_ << "Calling close functions...";
 
     if (trd_left_cam_skeleton_ != YARP_NULLPTR) trd_left_cam_skeleton_->stop();
-    if (trd_left_cam_cad_      != YARP_NULLPTR) trd_left_cam_cad_->stop();
+    if (trd_left_cam_ikin_cad_ != YARP_NULLPTR) trd_left_cam_ikin_cad_->stop();
+    if (trd_left_cam_ext_cad_  != YARP_NULLPTR) trd_left_cam_ext_cad_->stop();
 
     delete trd_left_cam_skeleton_;
-    delete trd_left_cam_cad_;
+    delete trd_left_cam_ikin_cad_;
+    delete trd_left_cam_ext_cad_;
 
-    itf_rightarm_cart_->removeTipFrame();
+    if (itf_rightarm_cart_) itf_rightarm_cart_->removeTipFrame();
 
     if (rightarm_cartesian_driver_.isValid()) rightarm_cartesian_driver_.close();
     if (rightarm_remote_driver_.isValid())    rightarm_remote_driver_.close();
@@ -226,22 +298,14 @@ bool SuperimposerHandler::close()
 
 bool SuperimposerHandler::initial_position()
 {
-    if (!init_position_)
-    {
-        yWarning() << log_ID_ << "Already in initial position settings!";
+    yInfo() << log_ID_ << "Reaching initial position...";
 
-        return false;
-    }
-    else
-    {
-        yInfo() << log_ID_ << "Reaching initial position...";
+    bool motion_done = moveHand(table_view_R_, table_view_x_);
 
-        init_position_ = !moveHand(table_view_R_, table_view_x_);
-        if (!init_position_) yInfo() << log_ID_ << "...done. iCub can move the hand in this settings.";
-        else yWarning() << log_ID_ << "...could not reach initial position!";
+    if (motion_done) yInfo()    << log_ID_ << "...done!";
+    else             yWarning() << log_ID_ << "...could not reach initial position!";
 
-        return init_position_;
-    }
+    return motion_done;
 }
 
 
@@ -249,12 +313,12 @@ bool SuperimposerHandler::view_hand()
 {
     yInfo() << log_ID_ << "Reaching a position close to iCub left camera with the right hand...";
 
-    init_position_ = moveHand(frontal_view_R_, frontal_view_x_);
+    bool motion_done = moveHand(frontal_view_R_, frontal_view_x_);
 
-    if (!init_position_) yWarning() << log_ID_ << "...could not reach the desired position!";
-    else                 yInfo() << log_ID_ << "...done. iCub can't move the hand in this settings.";
+    if (motion_done) yInfo()    << log_ID_ << "...done!";
+    else             yWarning() << log_ID_ << "...could not reach the desired position!";
 
-    return init_position_;
+    return motion_done;
 }
 
 
@@ -263,8 +327,9 @@ bool SuperimposerHandler::open_fingers()
     yInfo() << log_ID_ << "Opening fingers...";
 
     bool motion_done = moveFingers(open_hand_joints_);
-    if (!motion_done) yWarning() << log_ID_ << "...fingers could not be opened!";
-    else yInfo() << log_ID_ << "...done.";
+
+    if (motion_done) yInfo()    << log_ID_ << "...done!";
+    else             yWarning() << log_ID_ << "...fingers could not be opened!";
 
     return motion_done;
 }
@@ -275,8 +340,9 @@ bool SuperimposerHandler::close_fingers()
     yInfo() << log_ID_ << "Closing fingers...";
 
     bool motion_done = moveFingers(closed_hand_joints_);
-    if (!motion_done) yWarning() << log_ID_ << "...fingers could not be closed!";
-    else yInfo() << log_ID_ << "...done.";
+
+    if (motion_done) yInfo()    << log_ID_ << "...done!";
+    else             yWarning() << log_ID_ << "...fingers could not be closed!";
 
     return motion_done;
 }
@@ -413,7 +479,7 @@ bool SuperimposerHandler::setRightArmCartesianController()
     }
     yInfo() << log_ID_ << "Succesfully set ICartesianControl trajectory time!";
 
-    if(!itf_rightarm_cart_->setInTargetTol(0.01))
+    if (!itf_rightarm_cart_->setInTargetTol(0.01))
     {
         yError() << log_ID_ << "Error setting ICartesianControl target tolerance.";
         return false;
@@ -506,7 +572,7 @@ bool SuperimposerHandler::setTorsoDOF()
 bool SuperimposerHandler::setCommandPort()
 {
     yInfo() << log_ID_ << "Opening command port.";
-    if (!port_command_.open("/"+ID_+"/rpc"))
+    if (!port_command_.open("/"+ID_+"/cmd:i"))
     {
         yError() << log_ID_ << "Cannot open the command port.";
         return false;

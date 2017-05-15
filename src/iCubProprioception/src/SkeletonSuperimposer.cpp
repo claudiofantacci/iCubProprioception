@@ -18,8 +18,8 @@ using namespace iCub::ctrl;
 using namespace iCub::iKin;
 
 
-SkeletonSuperimposer::SkeletonSuperimposer(const ConstString& project_name, const ConstString& robot, const ConstString& camera) :
-    ID_(project_name + "/SkeletonSuperimposer"), log_ID_("[" + ID_ + "]"),
+SkeletonSuperimposer::SkeletonSuperimposer(const ConstString& port_prefix, const ConstString& robot, const ConstString& camera) :
+    ID_(port_prefix), log_ID_("[" + ID_ + "]"),
     robot_(robot), camera_(camera)
 {
     yInfo() << log_ID_ << "Initializing skeleton superimposer thread.";
@@ -116,60 +116,61 @@ void SkeletonSuperimposer::run()
     {
         ImageOf<PixelRgb>* imgin = inport_skeleton_img_.read(true);
 
-        itf_right_arm_cart_->getPose(ee_x, ee_o);
-
-        itf_head_gaze_->getLeftEyePose(cam_x, cam_o);
-
-        Matrix Ha = axis2dcm(ee_o);
-        ee_x.push_back(1.0);
-        Ha.setCol(3, ee_x);
-
-        Vector encs(static_cast<size_t>(num_right_arm_enc_));
-        Vector chainjoints;
-        itf_right_arm_encoders_->getEncoders(encs.data());
-        for (unsigned int i = 0; i < 3; ++i)
+        if (imgin != YARP_NULLPTR)
         {
-            right_finger_[i].getChainJoints(encs, chainjoints);
-            right_finger_[i].setAng(CTRL_DEG2RAD * chainjoints);
-        }
+            itf_right_arm_cart_->getPose(ee_x, ee_o);
 
-        SuperImpose::ObjPoseMap hand_pose;
-        SuperImpose::ObjPose    pose;
-        pose.assign(ee_x.data(), ee_x.data()+3);
-        hand_pose.emplace("palm", pose);
-        for (unsigned int fng = 0; fng < 3; ++fng)
-        {
-            std::string finger_s;
-            pose.clear();
-            if (fng != 0)
+            itf_head_gaze_->getLeftEyePose(cam_x, cam_o);
+
+            Matrix Ha = axis2dcm(ee_o);
+            ee_x.push_back(1.0);
+            Ha.setCol(3, ee_x);
+
+            Vector encs(static_cast<size_t>(num_right_arm_enc_));
+            Vector chainjoints;
+            itf_right_arm_encoders_->getEncoders(encs.data());
+            for (unsigned int i = 0; i < 3; ++i)
             {
-                Vector j_x = (Ha * (right_finger_[fng].getH0().getCol(3))).subVector(0, 2);
-
-                if      (fng == 1) { finger_s = "index"; }
-                else if (fng == 2) { finger_s = "medium"; }
-
-                pose.assign(j_x.data(), j_x.data()+3);
-                hand_pose.emplace(finger_s, pose);
+                right_finger_[i].getChainJoints(encs, chainjoints);
+                right_finger_[i].setAng(CTRL_DEG2RAD * chainjoints);
             }
 
-            for (unsigned int i = 0; i < right_finger_[fng].getN(); ++i)
+            SuperImpose::ObjPoseMap hand_pose;
+            SuperImpose::ObjPose    pose;
+            pose.assign(ee_x.data(), ee_x.data()+3);
+            hand_pose.emplace("palm", pose);
+            for (unsigned int fng = 0; fng < 3; ++fng)
             {
-                Vector j_x = (Ha * (right_finger_[fng].getH(i, true).getCol(3))).subVector(0, 2);
+                std::string finger_s;
+                pose.clear();
+                if (fng != 0)
+                {
+                    Vector j_x = (Ha * (right_finger_[fng].getH0().getCol(3))).subVector(0, 2);
 
-                if      (fng == 0) { finger_s = "thumb"; }
-                else if (fng == 1) { finger_s = "index"; }
-                else if (fng == 2) { finger_s = "medium"; }
+                    if      (fng == 1) { finger_s = "index"; }
+                    else if (fng == 2) { finger_s = "medium"; }
 
-                pose.assign(j_x.data(), j_x.data()+3);
-                hand_pose.emplace(finger_s, pose);
+                    pose.assign(j_x.data(), j_x.data()+3);
+                    hand_pose.emplace(finger_s, pose);
+                }
+
+                for (unsigned int i = 0; i < right_finger_[fng].getN(); ++i)
+                {
+                    Vector j_x = (Ha * (right_finger_[fng].getH(i, true).getCol(3))).subVector(0, 2);
+
+                    if      (fng == 0) { finger_s = "thumb"; }
+                    else if (fng == 1) { finger_s = "index"; }
+                    else if (fng == 2) { finger_s = "medium"; }
+
+                    pose.assign(j_x.data(), j_x.data()+3);
+                    hand_pose.emplace(finger_s, pose);
+                }
             }
-        }
 
-        if (imgin != NULL) {
             ImageOf<PixelRgb>& imgout = outport_skeleton_img_.prepare();
             imgout = *imgin;
-            cv::Mat img = cv::cvarrToMat(imgout.getIplImage());
 
+            cv::Mat img = cv::cvarrToMat(imgout.getIplImage());
             drawer_->superimpose(hand_pose, cam_x.data(), cam_o.data(), img);
             
             outport_skeleton_img_.write();

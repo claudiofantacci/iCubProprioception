@@ -23,18 +23,8 @@ icubcontrib_set_default_prefix()
 icubcontrib_add_uninstall_target()
 
 ### Options
-# Is Apple Retina monitor?
-if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    add_definitions(-D GLFW_MAC)
-    option(IS_APPLE_RETINA
-           "Select this option if the Apple machine has a Retina display" ON)
-    if(IS_APPLE_RETINA)
-        add_definitions(-D GLFW_RETINA)
-    endif()
-endif()
-
-# Shared/Dynamic or Static library?
-option(BUILD_SHARED_LIBS "Build libraries as shared as opposed to static" ON)
+# Install SIM applications?
+option(INSTALL_SIM_APP "Install yarpmanager applications for the iCub_SIM" OFF)
 
 # Build test related commands?
 option(BUILD_TESTING "Create tests using CMake" OFF)

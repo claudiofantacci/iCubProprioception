@@ -17,7 +17,9 @@
 #include <SuperImpose/SuperImpose.h>
 
 #include "iCubProprioception/SkeletonSuperimposer.h"
-#include "iCubProprioception/CADSuperimposer.h"
+#include "iCubProprioception/ExtCADSuperimposer.h"
+#include "iCubProprioception/iKinCADSuperimposer.h"
+#include "iCubProprioception/BatchCADSuperimposer.h"
 #include "thrift/iCubProprioceptionIDL.h"
 
 
@@ -77,8 +79,10 @@ private:
     const yarp::os::ConstString   log_ID_;
 
     yarp::os::ConstString         robot_;
-
-    bool                          init_position_;
+    bool                          skeleton_;
+    bool                          ikin_;
+    bool                          ext_;
+    bool                          batch_;
 
     yarp::dev::PolyDriver         torso_remote_driver_;
 
@@ -98,9 +102,11 @@ private:
 
     yarp::dev::PolyDriver         drv_right_hand_analog_;
 
-    SkeletonSuperimposer        * trd_left_cam_skeleton_ = YARP_NULLPTR;
+    SkeletonSuperimposer        * trd_left_cam_skeleton_  = YARP_NULLPTR;
 
-    CADSuperimposer             * trd_left_cam_cad_ = YARP_NULLPTR;
+    iKinCADSuperimposer         * trd_left_cam_ikin_cad_  = YARP_NULLPTR;
+    ExtCADSuperimposer          * trd_left_cam_ext_cad_   = YARP_NULLPTR;
+    BatchCADSuperimposer        * trd_left_cam_batch_cad_ = YARP_NULLPTR;
     SuperImpose::ObjFileMap       cad_hand_;
     yarp::os::ConstString         shader_path_;
 

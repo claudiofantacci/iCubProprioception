@@ -5,7 +5,9 @@
 
 #include <iCub/ctrl/math.h>
 #include <yarp/math/Math.h>
+#include <yarp/os/Bottle.h>
 #include <yarp/os/LogStream.h>
+#include <yarp/os/ResourceFinder.h>
 
 using namespace yarp::dev;
 using namespace yarp::math;
@@ -15,45 +17,18 @@ using namespace iCub::ctrl;
 using namespace iCub::iKin;
 
 
-CADSuperimposer::CADSuperimposer(const ConstString& project_name, const ConstString& robot, const ConstString& camera,
+CADSuperimposer::CADSuperimposer(const ConstString& port_prefix, const ConstString& robot, const ConstString& camera,
                                  const SuperImpose::ObjFileMap& cad_hand, const ConstString& shader_path) :
-    ID_(project_name + "/CADSuperimposer"), log_ID_("[" + ID_ + "]"),
-    robot_(robot), camera_(camera), camsel_((camera == "left")? 0:1),
+    ID_(port_prefix), log_ID_("[" + ID_ + "]"),
+    robot_(robot), camera_(camera),
     cad_hand_(cad_hand), shader_path_(shader_path)
 {
-    yInfo() << log_ID_ << "Initializing hand CAD drawing thread...";
+    yInfo() << log_ID_ << "Invoked CADSuperimposer (base class) ctor...";
 
 
-    /* Get arm interfaces */
-    if(!setTorsoRemoteControlboard())
-    {
-        yError() << log_ID_ << "Torso remote_controlboard errored!";
-        throw std::runtime_error("remote_controlboard errored!");
-    }
+    /* Port for the CAD superimposer to work */
+    yInfo() << log_ID_ << "Opening ports for CAD images.";
 
-    /* Get arm interfaces */
-    if (!setArmRemoteControlboard())
-    {
-        yError() << log_ID_ << "Arm remote_controlboard errored!";
-        throw std::runtime_error("remote_controlboard errored!");
-    }
-
-    /* Get arm Cartesian interfaces */
-    if (!setArmCartesianController())
-    {
-        yError() << log_ID_ << "Arm cartesiancontrollerclient errored!";
-        throw std::runtime_error("cartesiancontrollerclient errored!");
-    }
-
-    /* Get gaze interface */
-    if (!setGazeController())
-    {
-        yError() << log_ID_ << "Head gazecontrollerclient errored!";
-        throw std::runtime_error("gazecontrollerclient errored!");
-    }
-
-
-    yInfo() << log_ID_ << "Opening ports for CAD images...";
     if (!inport_renderer_img_.open("/" + ID_ + "/cam/" + camera_ + ":i"))
     {
         yError() << log_ID_ << "Cannot open input image port for " + camera_ + " camera!";
@@ -65,60 +40,101 @@ CADSuperimposer::CADSuperimposer(const ConstString& project_name, const ConstStr
         yError() << log_ID_ << "Cannot open output image port for " + camera_ + " camera!";
         throw std::runtime_error("Cannot open output image port for " + camera_ + " camera!");
     }
-    yInfo() << log_ID_ << "CAD image ports succesfully opened!";
 
 
-    Bottle btl_cam_left_info;
-    itf_head_gaze_->getInfo(btl_cam_left_info);
-    yInfo() << log_ID_ << "[CAM INFO]" << btl_cam_left_info.toString();
-    Bottle* cam_left_info = btl_cam_left_info.findGroup("camera_intrinsics_left").get(1).asList();
-    cam_width_  = btl_cam_left_info.findGroup("camera_width_" + camera_).get(1).asInt();
-    cam_height_ = btl_cam_left_info.findGroup("camera_height_" + camera_).get(1).asInt();
-    cam_fx_     = static_cast<float>(cam_left_info->get(0).asDouble());
-    cam_cx_     = static_cast<float>(cam_left_info->get(2).asDouble());
-    cam_fy_     = static_cast<float>(cam_left_info->get(5).asDouble());
-    cam_cy_     = static_cast<float>(cam_left_info->get(6).asDouble());
+    /* Setting up common gaze controller and camera parameters */
+    if (openGazeController())
+    {
+        Bottle cam_info;
+        itf_gaze_->getInfo(cam_info);
+        yInfo() << log_ID_ << "[CAM PARAMS]" << cam_info.toString();
+        Bottle* cam_sel_intrinsic  = cam_info.findGroup("camera_intrinsics_" + camera_).get(1).asList();
+        cam_width_  = cam_info.findGroup("camera_width_" + camera_).get(1).asInt();
+        cam_height_ = cam_info.findGroup("camera_height_" + camera_).get(1).asInt();
+        cam_fx_     = static_cast<float>(cam_sel_intrinsic->get(0).asDouble());
+        cam_cx_     = static_cast<float>(cam_sel_intrinsic->get(2).asDouble());
+        cam_fy_     = static_cast<float>(cam_sel_intrinsic->get(5).asDouble());
+        cam_cy_     = static_cast<float>(cam_sel_intrinsic->get(6).asDouble());
+    }
+    else
+    {
+        yWarning() << log_ID_ << "[CAM PARAMS]" << "No intrinisc camera information could be found by the ctor. Looking for fallback values in parameters.ini.";
+
+        ResourceFinder rf;
+        rf.setVerbose(true);
+        rf.setDefaultConfigFile("parameters.ini");
+        rf.setDefaultContext("iCubProprioception");
+        rf.configure(0, YARP_NULLPTR);
+
+        Bottle* fallback_intrinsic = rf.findGroup("FALLBACK").find("intrinsic_" + camera_).asList();
+        if (fallback_intrinsic)
+        {
+            yInfo() << log_ID_ << "[FALLBACK][CAM PARAMS]" << fallback_intrinsic->toString();
+
+            cam_width_  = fallback_intrinsic->get(0).asDouble();
+            cam_height_ = fallback_intrinsic->get(1).asDouble();
+            cam_fx_     = fallback_intrinsic->get(2).asDouble();
+            cam_cx_     = fallback_intrinsic->get(3).asDouble();
+            cam_fy_     = fallback_intrinsic->get(4).asDouble();
+            cam_cy_     = fallback_intrinsic->get(5).asDouble();
+        }
+        else
+        {
+            yWarning() << log_ID_ << "[CAM PARAMS]" << "No fallback values could be found in parameters.ini by the ctor for the intrinisc camera parameters. Falling (even more) back to iCub_SIM values.";
+            cam_width_  = 320;
+            cam_height_ = 240;
+            cam_fx_     = 257.34;
+            cam_cx_     = 160;
+            cam_fy_     = 120;
+            cam_cy_     = 257.34;
+        }
+    }
+    yInfo() << log_ID_ << "[CAM]" << "Running with:";
+    yInfo() << log_ID_ << "[CAM]" << " - width:"  << cam_width_;
+    yInfo() << log_ID_ << "[CAM]" << " - height:" << cam_height_;
+    yInfo() << log_ID_ << "[CAM]" << " - fx:"     << cam_fx_;
+    yInfo() << log_ID_ << "[CAM]" << " - fy:"     << cam_fy_;
+    yInfo() << log_ID_ << "[CAM]" << " - cx:"     << cam_cx_;
+    yInfo() << log_ID_ << "[CAM]" << " - cy:"     << cam_cy_;
 
 
-    yInfo() << log_ID_ << "Setting fingers...";
+    /* Initiliaze left eye interface */
+    yInfo() << log_ID_ << "Setting left eye.";
+
+    left_eye_ = iCubEye(camera_ + "_v2");
+    left_eye_.setAllConstraints(false);
+    left_eye_.releaseLink(0);
+    left_eye_.releaseLink(1);
+    left_eye_.releaseLink(2);
+
+
+    /* Initialize right hand finger interfaces */
+    yInfo() << log_ID_ << "Setting right hand fingers.";
+
     right_finger_[0] = iCubFinger("right_thumb");
     right_finger_[1] = iCubFinger("right_index");
     right_finger_[2] = iCubFinger("right_middle");
 
-    std::deque<IControlLimits*> temp_lim;
-    temp_lim.push_front(itf_right_fingers_limits_);
-    for (int i = 0; i < 3; ++i)
-    {
-        if (!right_finger_[i].alignJointsBounds(temp_lim))
-        {
-            yError() << log_ID_ << "Cannot set joint bound for finger " + std::to_string(i) + ".";
-            throw std::runtime_error("Cannot set joint bound for finger " + std::to_string(i) + ".");
-        }
-    }
-
-    yInfo() << log_ID_ << "Finger succesfully set!";
+    right_finger_[0].setAllConstraints(false);
+    right_finger_[1].setAllConstraints(false);
+    right_finger_[2].setAllConstraints(false);
 
 
-    yInfo() << log_ID_ << "Setting arms...";
-    right_arm_ = iCubArm("right");
-    right_arm_.setAllConstraints(false);
-    right_arm_.releaseLink(0);
-    right_arm_.releaseLink(1);
-    right_arm_.releaseLink(2);
-    yInfo() << log_ID_ << "Arm set!";
+    /* Initialize CAD superimposer */
+    yInfo() << log_ID_ << "Setting up OpenGL drawer.";
 
-
-    yInfo() << log_ID_ << "Setting up OpenGL drawer...";
     drawer_ = new SICAD(cad_hand_, cam_width_, cam_height_, 1, shader_path_,
                         cam_fx_, cam_fy_, cam_cx_, cam_cy_);
+
     drawer_->setBackgroundOpt(true);
     drawer_->setWireframeOpt(true);
-    
-    
+
+
+    /* Open command port */
     if (!setCommandPort()) throw std::runtime_error("Cannot attach the command port.");
 
-    
-    yInfo() << log_ID_ << "Initialization completed!";
+
+    yInfo() << log_ID_ << "...CADSuperimposer ctor completed!";
 }
 
 
@@ -130,29 +146,34 @@ CADSuperimposer::~CADSuperimposer() noexcept
 
 void CADSuperimposer::run()
 {
-    Vector ee_x (3);
-    Vector ee_o (4);
-    Vector cam_x(3);
-    Vector cam_o(4);
+    Vector ee_pose(7);
+    Vector cam_pose(7);
+    Vector encs_arm(16);
+    Vector encs_torso(3);
+    Vector encs_rot_ee(10);
 
     while (!isStopping())
     {
-        ImageOf<PixelRgb> * imgin = inport_renderer_img_.read(true);
+        ImageOf<PixelRgb>* imgin  = inport_renderer_img_.read(true);
 
         if (imgin != NULL)
         {
-            itf_right_arm_cart_->getPose(ee_x, ee_o);
+            left_eye_.setAng(CTRL_DEG2RAD * readRootToLeftEye());
 
-            itf_head_gaze_->getLeftEyePose(cam_x, cam_o);
+            ee_pose = getEndEffectorPose();
+            if (ee_pose.size() == 0) continue;
+            if (ee_pose.size() == 6)
+            {
+                double ang =  norm(ee_pose.subVector(3, 5));
+                ee_pose(3) /= ang;
+                ee_pose(4) /= ang;
+                ee_pose(5) /= ang;
+                ee_pose.push_back(ang);
+            }
 
-            Matrix Ha = axis2dcm(ee_o);
-            ee_x.push_back(1.0);
-            Ha.setCol(3, ee_x);
+            cam_pose = left_eye_.EndEffPose();
 
-            Vector encs_arm(static_cast<size_t>(num_right_arm_enc_));
-            itf_right_arm_encoders_->getEncoders(encs_arm.data());
-            yAssert(encs_arm.size() == 16);
-
+            encs_arm = getRightArmEncoders();
 //            encs_arm(7) = 32.0;
 //            encs_arm(8) = 30.0;
 //            encs_arm(9) = 0.0;
@@ -179,62 +200,13 @@ void CADSuperimposer::run()
 
                 right_finger_[i].setAng(CTRL_DEG2RAD * chainjoints);
             }
-            Vector encs_torso(3);
-            itf_torso_encoders_->getEncoders(encs_torso.data());
-            yAssert(encs_torso.size() == 3);
-            Vector encs_tot(10);
-            encs_tot(0) = encs_torso(2);
-            encs_tot(1) = encs_torso(1);
-            encs_tot(2) = encs_torso(0);
-            encs_tot.setSubvector(3, encs_arm.subVector(0, 6));
-            right_arm_.setAng(CTRL_DEG2RAD * encs_tot);
 
             SuperImpose::ObjPoseMap hand_pose;
-            SuperImpose::ObjPose    pose;
-            pose.assign(ee_x.data(), ee_x.data()+3);
-            pose.insert(pose.end(), ee_o.data(), ee_o.data()+4);
-            hand_pose.emplace("palm", pose);
-            for (unsigned int fng = 0; fng < 3; ++fng)
-            {
-                std::string finger_s;
-                pose.clear();
-                if (fng != 0)
-                {
-                    Vector j_x = (Ha * (right_finger_[fng].getH0().getCol(3))).subVector(0, 2);
-                    Vector j_o = dcm2axis(Ha * right_finger_[fng].getH0());
-
-                    if      (fng == 1) { finger_s = "index0"; }
-                    else if (fng == 2) { finger_s = "medium0"; }
-
-                    pose.assign(j_x.data(), j_x.data()+3);
-                    pose.insert(pose.end(), j_o.data(), j_o.data()+4);
-                    hand_pose.emplace(finger_s, pose);
-                }
-
-                for (unsigned int i = 0; i < right_finger_[fng].getN(); ++i)
-                {
-                    Vector j_x = (Ha * (right_finger_[fng].getH(i, true).getCol(3))).subVector(0, 2);
-                    Vector j_o = dcm2axis(Ha * right_finger_[fng].getH(i, true));
-
-                    if      (fng == 0) { finger_s = "thumb"+std::to_string(i+1); }
-                    else if (fng == 1) { finger_s = "index"+std::to_string(i+1); }
-                    else if (fng == 2) { finger_s = "medium"+std::to_string(i+1); }
-
-                    pose.assign(j_x.data(), j_x.data()+3);
-                    pose.insert(pose.end(), j_o.data(), j_o.data()+4);
-                    hand_pose.emplace(finger_s, pose);
-                }
-            }
-            Matrix H_forearm = right_arm_.getH(7, true);
-            Vector j_x = H_forearm.getCol(3).subVector(0, 2);
-            Vector j_o = dcm2axis(H_forearm);
-            pose.clear();
-            pose.assign(j_x.data(), j_x.data()+3);
-            pose.insert(pose.end(), j_o.data(), j_o.data()+4);
-            hand_pose.emplace("forearm", pose);
+            getRightHandObjPoseMap(ee_pose, hand_pose);
+            getExtraObjPoseMap(hand_pose);
 
             cv::Mat img = cv::cvarrToMat(imgin->getIplImage(), true);
-            drawer_->superimpose(hand_pose, cam_x.data(), cam_o.data(), img);
+            drawer_->superimpose(hand_pose, cam_pose.data(), cam_pose.data()+3, img);
 
             ImageOf<PixelRgb>& imgout = outport_renderer_img_.prepare();
             imgout.setExternal(img.data, img.cols, img.rows);
@@ -255,6 +227,7 @@ void CADSuperimposer::threadRelease()
 {
     yInfo() << log_ID_ << "Deallocating resource...";
 
+
     outport_renderer_img_.interrupt();
 
     if (!inport_renderer_img_.isClosed())  inport_renderer_img_.close();
@@ -262,182 +235,61 @@ void CADSuperimposer::threadRelease()
 
     if (port_command_.isOpen()) port_command_.close();
 
-    yInfo() << log_ID_ << "Deallocation completed!";
+
+    yInfo() << log_ID_ << "...deallocation completed!";
 }
 
 
-bool CADSuperimposer::setCommandPort()
+void CADSuperimposer::getRightHandObjPoseMap(const Vector& ee_pose, SuperImpose::ObjPoseMap& hand_pose)
 {
-    yInfo() << log_ID_ << "Opening command port.";
-    if (!port_command_.open("/" + ID_ + "/render/rpc"))
+    SuperImpose::ObjPose pose;
+
+    Matrix Ha = axis2dcm(ee_pose.subVector(3, 6));
+    Ha.setSubcol(ee_pose.subVector(0, 2), 0, 3);
+    Ha(3, 3) = 1.0;
+
+    pose.assign(ee_pose.data(), ee_pose.data()+7);
+    hand_pose.emplace("palm", pose);
+    for (size_t fng = 0; fng < 3; ++fng)
     {
-        yError() << log_ID_ << "Cannot open /" + ID_ + "/render/rpc port.";
-        return false;
-    }
-    if (!this->yarp().attachAsServer(port_command_))
-    {
-        yError() << log_ID_ << "Cannot attach the renderer RPC port.";
-        return false;
-    }
-    yInfo() << log_ID_ << "Renderer RPC port succesfully opened and attached. Ready to recieve commands.";
-    
-    return true;
-}
-
-
-bool CADSuperimposer::setTorsoRemoteControlboard()
-{
-    Property torso_remote_options;
-    torso_remote_options.put("device", "remote_controlboard");
-    torso_remote_options.put("local", "/" + ID_ + "/control_torso");
-    torso_remote_options.put("remote", "/" + robot_ + "/torso");
-
-    drv_torso_remote_.open(torso_remote_options);
-    if (drv_torso_remote_.isValid())
-    {
-        yInfo() << log_ID_ << "Torso remote_controlboard succefully opened.";
-
-        drv_torso_remote_.view(itf_torso_encoders_);
-        if (!itf_torso_encoders_)
+        std::string finger_s;
+        pose.clear();
+        if (fng != 0)
         {
-            yError() << log_ID_ << "Error getting torso IEncoders interface in thread.";
-            throw std::runtime_error("Error getting torso IEncoders interface in thread.");
+            Vector j_x = (Ha * (right_finger_[fng].getH0().getCol(3))).subVector(0, 2);
+            Vector j_o = dcm2axis(Ha * right_finger_[fng].getH0());
+
+            if      (fng == 1) { finger_s = "index0";  }
+            else if (fng == 2) { finger_s = "medium0"; }
+
+            pose.assign(j_x.data(), j_x.data()+3);
+            pose.insert(pose.end(), j_o.data(), j_o.data()+4);
+            hand_pose.emplace(finger_s, pose);
         }
 
-        return true;
-    }
-    else
-    {
-        yError() << log_ID_ << "Error opening Torso remote_controlboard device.";
-        return false;
-    }
-}
-
-
-bool CADSuperimposer::setArmRemoteControlboard()
-{
-    Property rightarm_remote_options;
-    rightarm_remote_options.put("device", "remote_controlboard");
-    rightarm_remote_options.put("local", "/" + ID_ + "/control_right_arm");
-    rightarm_remote_options.put("remote", "/" + robot_ + "/right_arm");
-
-    drv_right_arm_remote_.open(rightarm_remote_options);
-    if (drv_right_arm_remote_.isValid())
-    {
-        yInfo() << log_ID_ << "Right arm remote_controlboard succefully opened.";
-
-        drv_right_arm_remote_.view(itf_right_arm_encoders_);
-        if (!itf_right_arm_encoders_)
+        for (size_t i = 0; i < right_finger_[fng].getN(); ++i)
         {
-            yError() << log_ID_ << "Error getting right arm IEncoders interface.";
-            return false;
-        }
+            Vector j_x = (Ha * (right_finger_[fng].getH(i, true).getCol(3))).subVector(0, 2);
+            Vector j_o = dcm2axis(Ha * right_finger_[fng].getH(i, true));
 
-        itf_right_arm_encoders_->getAxes(&num_right_arm_enc_);
-        yInfo() << log_ID_ << "Right arm encorders succefully read.";
+            if      (fng == 0) { finger_s = "thumb"  + std::to_string(i+1); }
+            else if (fng == 1) { finger_s = "index"  + std::to_string(i+1); }
+            else if (fng == 2) { finger_s = "medium" + std::to_string(i+1); }
 
-        drv_right_arm_remote_.view(itf_right_fingers_limits_);
-        if (!itf_right_fingers_limits_)
-        {
-            yError() << log_ID_ << "Error getting fingers IControlLimits interface in thread!";
-            throw std::runtime_error("Error getting fingers IControlLimits interface in thread!");
+            pose.assign(j_x.data(), j_x.data()+3);
+            pose.insert(pose.end(), j_o.data(), j_o.data()+4);
+            hand_pose.emplace(finger_s, pose);
         }
     }
-    else
-    {
-        yError() << log_ID_ << "Error opening right arm remote_controlboard device.";
-        return false;
-    }
-
-#if ICP_USE_ANALOGS == 1
-    Property righthand_remote_analog;
-    righthand_remote_analog.put("device", "analogsensorclient");
-    righthand_remote_analog.put("local",  "/" + ID_ + "/right_hand");
-    righthand_remote_analog.put("remote", "/" + robot_ + "/right_hand/analog:o");
-
-    drv_right_hand_analog_.open(righthand_remote_analog);
-    if (drv_right_hand_analog_.isValid())
-    {
-        yInfo() << log_ID_ << "Right arm analogsensorclient succefully opened.";
-
-        if (!drv_right_hand_analog_.view(itf_right_hand_analog_))
-        {
-            yError() << log_ID_ << "Error getting right hand IAnalogSensor interface!";
-            throw std::runtime_error("Error getting right hand IAnalogSensor interface!");
-        }
-    }
-    else
-    {
-        yError() << log_ID_ << "Error opening right arm analogsensorclient device.";
-        return false;
-    }
-#endif
-
-    return true;
-}
-
-
-bool CADSuperimposer::setArmCartesianController()
-{
-    Property rightarm_cartesian_options;
-    rightarm_cartesian_options.put("device", "cartesiancontrollerclient");
-    rightarm_cartesian_options.put("local", "/" + ID_ + "/cart_right_arm");
-    rightarm_cartesian_options.put("remote", "/" + robot_ + "/cartesianController/right_arm");
-
-    drv_right_arm_cartesian_.open(rightarm_cartesian_options);
-    if (drv_right_arm_cartesian_.isValid())
-    {
-        drv_right_arm_cartesian_.view(itf_right_arm_cart_);
-        if (!itf_right_arm_cart_)
-        {
-            yError() << log_ID_ << "Error getting ICartesianControl interface.";
-            return false;
-        }
-        yInfo() << log_ID_ << "cartesiancontrollerclient succefully opened.";
-    }
-    else
-    {
-        yError() << log_ID_ << "Error opening cartesiancontrollerclient device.";
-        return false;
-    }
-
-    return true;
-}
-
-
-bool CADSuperimposer::setGazeController()
-{
-    Property gaze_option;
-    gaze_option.put("device", "gazecontrollerclient");
-    gaze_option.put("local", "/" + ID_ + "/gaze");
-    gaze_option.put("remote", "/iKinGazeCtrl");
-
-    drv_gaze_.open(gaze_option);
-    if (drv_gaze_.isValid())
-    {
-        drv_gaze_.view(itf_head_gaze_);
-        if (!itf_head_gaze_)
-        {
-            yError() << log_ID_ << "Error getting IGazeControl interface.";
-            return false;
-        }
-    }
-    else
-    {
-        yError() << log_ID_ << "Gaze control device not available.";
-        return false;
-    }
-
-    return true;
 }
 
 
 bool CADSuperimposer::mesh_background(const bool status)
 {
     yInfo() << log_ID_ << ConstString((status ? "Enable" : "Disable")) + " background of the mesh window.";
-
+    
     drawer_->setBackgroundOpt(status);
-
+    
     return true;
 }
 
@@ -447,7 +299,71 @@ bool CADSuperimposer::mesh_wireframe(const bool status)
     yInfo() << log_ID_ << ConstString((status ? "Enable" : "Disable")) + " wireframe rendering.";
 
     drawer_->setWireframeOpt(status);
+    
+    return true;
+}
+
+
+bool CADSuperimposer::openGazeController()
+{
+    Property opt_gaze;
+    opt_gaze.put("device", "gazecontrollerclient");
+    opt_gaze.put("local",  "/" + ID_ + "/cam/" + camera_ + "/gaze");
+    opt_gaze.put("remote", "/iKinGazeCtrl");
+
+    if (drv_gaze_.open(opt_gaze))
+    {
+        drv_gaze_.view(itf_gaze_);
+        if (!itf_gaze_)
+        {
+            yError() << log_ID_ << "Cannot get head gazecontrollerclient interface!";
+            drv_gaze_.close();
+            return false;
+        }
+    }
+    else
+    {
+        yError() << log_ID_ << "Cannot open head gazecontrollerclient!";
+        return false;
+    }
 
     return true;
 }
 
+
+bool CADSuperimposer::setCommandPort()
+{
+    yInfo() << log_ID_ << "Opening command port.";
+    if (!port_command_.open("/" + ID_ + "/cam/" + camera_ + "/render/cmd:i"))
+    {
+        yError() << log_ID_ << "Cannot open /" + ID_ + "/render/cmd:i port.";
+        return false;
+    }
+    if (!this->yarp().attachAsServer(port_command_))
+    {
+        yError() << log_ID_ << "Cannot attach the renderer RPC port.";
+        return false;
+    }
+    yInfo() << log_ID_ << "Renderer RPC port succesfully opened and attached. Ready to recieve commands.";
+
+    return true;
+}
+
+
+Vector CADSuperimposer::readRootToLeftEye()
+{
+    Vector enc_head = getHeadEncoders();
+
+    Vector root_eye_enc(8);
+
+    root_eye_enc.setSubvector(0, getTorsoEncoders());
+
+    for (size_t i = 0; i < 4; ++i)
+        root_eye_enc(3+i) = enc_head(i);
+
+    root_eye_enc(7) = enc_head(4) + enc_head(5) / 2.0;
+
+    /* if (cam == "right") root_eye_enc(7) = enc_head(4) - enc_head(5) / 2.0; */
+
+    return root_eye_enc;
+}

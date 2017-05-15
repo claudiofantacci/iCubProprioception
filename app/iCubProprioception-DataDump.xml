@@ -5,7 +5,7 @@
     <!-- GENERIC INFORMATION -->
     <name>iCubProprioception-DataDump</name>
     <description>Collect data for iCubProprioception module</description>
-    <version>3.2.0</version>
+    <version>4.2.2</version>
 
     <authors>
         <author email="claudio.fantacci@iit.it">Claudio Fantacci</author>
@@ -16,11 +16,7 @@
     <module>
         <name>iCubProprioception</name>
         <node>localhost</node>
-        <parameters>--from iCubProprioception-Config.ini</parameters>
-        <dependencies>
-            <port>/icub/camcalib/left/out</port>
-            <port>/icub/camcalib/right/out</port>
-        </dependencies>
+        <parameters>--robot icub --ikin --from parameters.ini</parameters>
     </module>
 
     <module>
@@ -44,7 +40,19 @@
     <module>
         <name>yarpdatadumper</name>
         <node>localhost</node>
-        <parameters>--name /datadumper/cad/left --txTime --rxTime --type image</parameters>
+        <parameters>--name /datadumper/ikin_cad/left --txTime --rxTime --type image</parameters>
+    </module>
+
+    <module>
+        <name>yarpdatadumper</name>
+        <node>localhost</node>
+        <parameters>--name /datadumper/ext_cad/left --txTime --rxTime --type image</parameters>
+    </module>
+
+    <module>
+        <name>yarpdatadumper</name>
+        <node>localhost</node>
+        <parameters>--name /datadumper/ext_cad/right --txTime --rxTime --type image</parameters>
     </module>
 
     <module>
@@ -86,10 +94,35 @@
         <protocol>tcp</protocol>
     </connection>
 
-    <!-- RC: CAD -->
+    <!-- RC: iKin CAD -->
     <connection>
         <from>/icub/camcalib/left/out</from>
-        <to>/iCubProprioception/CADSuperimposer/cam/left:i</to>
+        <to>/iCubProprioception/iKinCADSuperimposer/cam/left:i</to>
+        <protocol>tcp</protocol>
+    </connection>
+
+    <!-- RC: Ext CAD -->
+    <connection>
+        <from>/icub/camcalib/left/out</from>
+        <to>/iCubProprioception/ExtCADSuperimposer/cam/left:i</to>
+        <protocol>tcp</protocol>
+    </connection>
+
+    <connection>
+        <from>/icub/camcalib/right/out</from>
+        <to>/iCubProprioception/ExtCADSuperimposer/cam/right:i</to>
+        <protocol>tcp</protocol>
+    </connection>
+
+    <connection>
+        <from>/hand-tracking/left/result/estimates:o</from>
+        <to>/iCubProprioception/ExtCADSuperimposer/cam/left/hand/right_pose:i</to>
+        <protocol>tcp</protocol>
+    </connection>
+
+    <connection>
+        <from>/hand-tracking/right/result/estimates:o</from>
+        <to>/iCubProprioception/ExtCADSuperimposer/cam/right/hand/right_pose:i</to>
         <protocol>tcp</protocol>
     </connection>
 
@@ -119,8 +152,20 @@
     </connection>
 
     <connection>
-        <from>/iCubProprioception/CADSuperimposer/cam/left:o</from>
-        <to>/datadumper/cad/left</to>
+        <from>/iCubProprioception/iKinCADSuperimposer/cam/left:o</from>
+        <to>/datadumper/ikin_cad/left</to>
+        <protocol>tcp</protocol>
+    </connection>
+
+    <connection>
+        <from>/iCubProprioception/ExtCADSuperimposer/cam/left:o</from>
+        <to>/datadumper/ext_cad/left</to>
+        <protocol>tcp</protocol>
+    </connection>
+
+    <connection>
+        <from>/iCubProprioception/ExtCADSuperimposer/cam/right:o</from>
+        <to>/datadumper/ext_cad/right</to>
         <protocol>tcp</protocol>
     </connection>
 
