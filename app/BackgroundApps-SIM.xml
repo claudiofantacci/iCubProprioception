@@ -8,14 +8,16 @@
         <port>/vmdeb</port>
     </dependencies>
 
+
     <!-- GENERIC INFORMATION-->
     <name>BackgroundApps-SIM</name>
     <description>Background applications for iCubSim-based simulations</description>
-    <version>2.0.0</version>
+    <version>2.0.1</version>
 
     <authors>
         <author email="claudio.fantacci@iit.it">Claudio Fantacci</author>
     </authors>
+
 
     <!-- REQUIRED MODULES -->
     <module>

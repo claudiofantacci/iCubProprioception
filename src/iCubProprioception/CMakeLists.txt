@@ -2,13 +2,19 @@ set(EXE_TARGET_NAME iCubProprioception)
 
 set(${EXE_TARGET_NAME}_SRC
         src/main.cpp
+        src/BatchCADSuperimposer.cpp
         src/CADSuperimposer.cpp
+        src/ExtCADSuperimposer.cpp
+        src/iKinCADSuperimposer.cpp
         src/SkeletonSuperimposer.cpp
         src/SuperimposerHandler.cpp)
 
 set(${EXE_TARGET_NAME}_HDR
         include/iCubProprioception/common.h
+        include/iCubProprioception/BatchCADSuperimposer.h
         include/iCubProprioception/CADSuperimposer.h
+        include/iCubProprioception/ExtCADSuperimposer.h
+        include/iCubProprioception/iKinCADSuperimposer.h
         include/iCubProprioception/SkeletonSuperimposer.h
         include/iCubProprioception/SuperimposerHandler.h)
 
@@ -61,18 +67,16 @@ install(TARGETS ${EXE_TARGET_NAME} DESTINATION bin)
 # Custom commands
 # EXTRA files
 set(${EXE_TARGET_NAME}_APP
-        ${PROJECT_SOURCE_DIR}/app/iCubProprioception.xml.template
-        ${PROJECT_SOURCE_DIR}/app/iCubProprioception-DataDump.xml.template)
+        ${PROJECT_SOURCE_DIR}/app/iCubProprioception.xml
+        ${PROJECT_SOURCE_DIR}/app/iCubProprioception-DataDump.xml
+        ${PROJECT_SOURCE_DIR}/app/iCubProprioception-BATCH.xml)
 
 set(${EXE_TARGET_NAME}_CONFIG
-        ${PROJECT_SOURCE_DIR}/config/iCubProprioception-Config.ini)
+        ${PROJECT_SOURCE_DIR}/config/parameters.ini)
 
 set(${EXE_TARGET_NAME}_APP_SIM
         ${PROJECT_SOURCE_DIR}/app/iCubProprioception-SIM.xml
         ${PROJECT_SOURCE_DIR}/app/BackgroundApps-SIM.xml)
-
-set(${EXE_TARGET_NAME}_CONFIG_SIM
-        ${PROJECT_SOURCE_DIR}/config/iCubProprioception-Config-SIM.ini)
 
 set(${EXE_TARGET_NAME}_SHADERS_VERT
         ${PROJECT_SOURCE_DIR}/shader/shader_model.vert
@@ -111,9 +115,10 @@ if(${CMAKE_GENERATOR} MATCHES "Xcode")
                        COMMAND ${CMAKE_COMMAND} -E copy ${${EXE_TARGET_NAME}_SHADERS_FRAG} $<TARGET_FILE_DIR:${EXE_TARGET_NAME}>)
 endif()
 
-install(FILES ${${EXE_TARGET_NAME}_APP_SIM}      DESTINATION ${ICUBCONTRIB_APPLICATIONS_INSTALL_DIR})
-install(FILES ${${EXE_TARGET_NAME}_CONFIG_SIM}   DESTINATION ${ICUBCONTRIB_CONTEXTS_INSTALL_DIR}/${EXE_TARGET_NAME})
-install(FILES ${${EXE_TARGET_NAME}_APP}          DESTINATION ${ICUBCONTRIB_APPLICATIONS_TEMPLATES_INSTALL_DIR})
+install(FILES ${${EXE_TARGET_NAME}_APP}          DESTINATION ${ICUBCONTRIB_APPLICATIONS_INSTALL_DIR})
+if(INSTALL_SIM_APP)
+    install(FILES ${${EXE_TARGET_NAME}_APP_SIM}      DESTINATION ${ICUBCONTRIB_APPLICATIONS_INSTALL_DIR})
+endif()
 install(FILES ${${EXE_TARGET_NAME}_CONFIG}       DESTINATION ${ICUBCONTRIB_CONTEXTS_INSTALL_DIR}/${EXE_TARGET_NAME})
 install(FILES ${${EXE_TARGET_NAME}_SHADERS_VERT} DESTINATION ${ICUBCONTRIB_CONTEXTS_INSTALL_DIR}/${EXE_TARGET_NAME}/shader)
 install(FILES ${${EXE_TARGET_NAME}_SHADERS_FRAG} DESTINATION ${ICUBCONTRIB_CONTEXTS_INSTALL_DIR}/${EXE_TARGET_NAME}/shader)

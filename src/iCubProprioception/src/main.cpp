@@ -29,7 +29,7 @@ int main(int argc, char* argv[])
 
     ResourceFinder rf;
     rf.setVerbose(true);
-    rf.setDefaultConfigFile("iCubProprioception-Config-SIM.ini");
+    rf.setDefaultConfigFile("parameters.ini");
     rf.setDefaultContext("iCubProprioception");
     rf.configure(argc, argv);
 
