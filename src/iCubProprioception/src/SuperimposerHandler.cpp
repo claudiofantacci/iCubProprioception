@@ -222,6 +222,7 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
     /* Lunching Batch (pose and ecnoders) CAD superimposer thread */
     if (batch_)
     {
+        /* Left camera */
         try { trd_left_cam_batch_cad_ = new BatchCADSuperimposer(ID_ + "/BatchCADSuperimposer", robot_, "left", cad_hand_, shader_path_); }
         catch (const std::runtime_error& e) { yError() << e.what(); }
 
@@ -233,7 +234,21 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
             else                                   yInfo()  << log_ID_ << "...done.";
         }
         else
-            yError() << log_ID_ << "Could not initialize Batch hand mesh superimposition!";
+            yError() << log_ID_ << "Could not initialize Batch hand mesh superimposition for the left camera!";
+
+        /* Right camera */
+        try { trd_left_cam_batch_cad_ = new BatchCADSuperimposer(ID_ + "/BatchCADSuperimposer", robot_, "right", cad_hand_, shader_path_); }
+        catch (const std::runtime_error& e) { yError() << e.what(); }
+
+        if (trd_left_cam_batch_cad_ != YARP_NULLPTR)
+        {
+            yInfo() << log_ID_ << "Starting Batch mesh superimposing thread for the right hand on the right camera images...";
+
+            if (!trd_left_cam_batch_cad_->start()) yError() << log_ID_ << "...thread could not be started!";
+            else                                   yInfo()  << log_ID_ << "...done.";
+        }
+        else
+            yError() << log_ID_ << "Could not initialize Batch hand mesh superimposition for the right camera!";
     }
 
 
