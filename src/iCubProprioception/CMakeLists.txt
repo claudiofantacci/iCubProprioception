@@ -99,7 +99,6 @@ set(${EXE_TARGET_NAME}_MESH
         ${PROJECT_SOURCE_DIR}/mesh/icub_right_hand/r_ml1.obj
         ${PROJECT_SOURCE_DIR}/mesh/icub_right_hand/r_ml2.obj
         ${PROJECT_SOURCE_DIR}/mesh/icub_right_hand/r_ml3.obj
-        ${PROJECT_SOURCE_DIR}/mesh/icub_right_hand/r_palm.obj
         ${PROJECT_SOURCE_DIR}/mesh/icub_right_hand/r_tl0.obj
         ${PROJECT_SOURCE_DIR}/mesh/icub_right_hand/r_tl1.obj
         ${PROJECT_SOURCE_DIR}/mesh/icub_right_hand/r_tl2.obj
