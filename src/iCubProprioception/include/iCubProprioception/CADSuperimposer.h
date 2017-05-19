@@ -72,7 +72,7 @@ private:
     float                           cam_cx_;
     float                           cam_cy_;
 
-    iCub::iKin::iCubEye             left_eye_;
+    iCub::iKin::iCubEye             eye_;
     iCub::iKin::iCubFinger          right_finger_[3];
 
     SICAD                         * drawer_;

@@ -99,13 +99,13 @@ CADSuperimposer::CADSuperimposer(const ConstString& port_prefix, const ConstStri
 
 
     /* Initiliaze left eye interface */
-    yInfo() << log_ID_ << "Setting left eye.";
+    yInfo() << log_ID_ << "Setting" + camera_ + "eye.";
 
-    left_eye_ = iCubEye(camera_ + "_v2");
-    left_eye_.setAllConstraints(false);
-    left_eye_.releaseLink(0);
-    left_eye_.releaseLink(1);
-    left_eye_.releaseLink(2);
+    eye_ = iCubEye(camera_ + "_v2");
+    eye_.setAllConstraints(false);
+    eye_.releaseLink(0);
+    eye_.releaseLink(1);
+    eye_.releaseLink(2);
 
 
     /* Initialize right hand finger interfaces */
@@ -158,7 +158,7 @@ void CADSuperimposer::run()
 
         if (imgin != NULL)
         {
-            left_eye_.setAng(CTRL_DEG2RAD * readRootToLeftEye());
+            eye_.setAng(CTRL_DEG2RAD * readRootToLeftEye(camera_));
 
             ee_pose = getEndEffectorPose();
             if (ee_pose.size() == 0) continue;
@@ -171,7 +171,7 @@ void CADSuperimposer::run()
                 ee_pose.push_back(ang);
             }
 
-            cam_pose = left_eye_.EndEffPose();
+            cam_pose = eye_.EndEffPose();
 
             encs_arm = getRightArmEncoders();
 //            encs_arm(7) = 32.0;
