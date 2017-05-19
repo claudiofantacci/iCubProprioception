@@ -72,7 +72,7 @@
 
     <!-- RC: iKin CAD -->
     <connection>
-        <from>/icub/camcalibg/left/out</from>
+        <from>/icub/camcalib/left/out</from>
         <to>/iCubProprioception/iKinCADSuperimposer/cam/left:i</to>
         <protocol>tcp</protocol>
     </connection>

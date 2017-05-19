@@ -99,13 +99,13 @@ CADSuperimposer::CADSuperimposer(const ConstString& port_prefix, const ConstStri
 
 
     /* Initiliaze left eye interface */
-    yInfo() << log_ID_ << "Setting left eye.";
+    yInfo() << log_ID_ << "Setting" + camera_ + "eye.";
 
-    left_eye_ = iCubEye(camera_ + "_v2");
-    left_eye_.setAllConstraints(false);
-    left_eye_.releaseLink(0);
-    left_eye_.releaseLink(1);
-    left_eye_.releaseLink(2);
+    eye_ = iCubEye(camera_ + "_v2");
+    eye_.setAllConstraints(false);
+    eye_.releaseLink(0);
+    eye_.releaseLink(1);
+    eye_.releaseLink(2);
 
 
     /* Initialize right hand finger interfaces */
@@ -158,7 +158,7 @@ void CADSuperimposer::run()
 
         if (imgin != NULL)
         {
-            left_eye_.setAng(CTRL_DEG2RAD * readRootToLeftEye());
+            eye_.setAng(CTRL_DEG2RAD * readRootToEye(camera_));
 
             ee_pose = getEndEffectorPose();
             if (ee_pose.size() == 0) continue;
@@ -171,7 +171,7 @@ void CADSuperimposer::run()
                 ee_pose.push_back(ang);
             }
 
-            cam_pose = left_eye_.EndEffPose();
+            cam_pose = eye_.EndEffPose();
 
             encs_arm = getRightArmEncoders();
 //            encs_arm(7) = 32.0;
@@ -350,7 +350,7 @@ bool CADSuperimposer::setCommandPort()
 }
 
 
-Vector CADSuperimposer::readRootToLeftEye()
+Vector CADSuperimposer::readRootToEye(const ConstString& camera)
 {
     Vector enc_head = getHeadEncoders();
 
@@ -361,9 +361,12 @@ Vector CADSuperimposer::readRootToLeftEye()
     for (size_t i = 0; i < 4; ++i)
         root_eye_enc(3+i) = enc_head(i);
 
-    root_eye_enc(7) = enc_head(4) + enc_head(5) / 2.0;
-
-    /* if (cam == "right") root_eye_enc(7) = enc_head(4) - enc_head(5) / 2.0; */
+    if      (camera == "left")
+        root_eye_enc(7) = enc_head(4) + enc_head(5) / 2.0;
+    else if (camera == "right")
+        root_eye_enc(7) = enc_head(4) - enc_head(5) / 2.0;
+    else
+        yError() << "Wrong 'camera' argument for CADSuperimposer::readRootToEye(). Shall be 'left' or 'right'.";
 
     return root_eye_enc;
 }
