@@ -88,7 +88,7 @@ private:
 
     yarp::sig::Vector readRootToEE();
 
-    yarp::sig::Vector readRootToLeftEye(const yarp::os::ConstString& camera);
+    yarp::sig::Vector readRootToEye(const yarp::os::ConstString& camera);
 
     bool setCommandPort();
 };

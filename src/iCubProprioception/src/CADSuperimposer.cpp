@@ -158,7 +158,7 @@ void CADSuperimposer::run()
 
         if (imgin != NULL)
         {
-            eye_.setAng(CTRL_DEG2RAD * readRootToLeftEye(camera_));
+            eye_.setAng(CTRL_DEG2RAD * readRootToEye(camera_));
 
             ee_pose = getEndEffectorPose();
             if (ee_pose.size() == 0) continue;
@@ -350,7 +350,7 @@ bool CADSuperimposer::setCommandPort()
 }
 
 
-Vector CADSuperimposer::readRootToLeftEye(const ConstString& camera)
+Vector CADSuperimposer::readRootToEye(const ConstString& camera)
 {
     Vector enc_head = getHeadEncoders();
 
@@ -366,7 +366,7 @@ Vector CADSuperimposer::readRootToLeftEye(const ConstString& camera)
     else if (camera == "right")
         root_eye_enc(7) = enc_head(4) - enc_head(5) / 2.0;
     else
-        yError() << "Wrong 'camera' argument for CADSuperimposer::readRootToLeftEye(). Shall be 'left' or 'right'.";
+        yError() << "Wrong 'camera' argument for CADSuperimposer::readRootToEye(). Shall be 'left' or 'right'.";
 
     return root_eye_enc;
 }
