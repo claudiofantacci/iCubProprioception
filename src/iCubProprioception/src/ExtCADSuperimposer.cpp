@@ -21,15 +21,6 @@ ExtCADSuperimposer::ExtCADSuperimposer(const ConstString& port_prefix, const Con
 {
     yInfo() << log_ID_ << "Invoked ExtCADSuperimposer (derived class) ctor...";
 
-
-    /* Get arm interfaces */
-    if (!setArmRemoteControlboard())
-    {
-        yError() << log_ID_ << "Arm remote_controlboard errored!";
-        throw std::runtime_error("remote_controlboard errored!");
-    }
-
-
     /* Port for the external input (6D pose) */
     yInfo() << log_ID_ << "Opening ports for external end effector pose.";
     if (!inport_pose_ext_.open("/" + ID_ + "/cam/" + camera_ + "/hand/right_pose:i"))

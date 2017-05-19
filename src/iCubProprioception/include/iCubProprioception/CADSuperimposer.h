@@ -72,7 +72,7 @@ private:
     float                           cam_cx_;
     float                           cam_cy_;
 
-    iCub::iKin::iCubEye             left_eye_;
+    iCub::iKin::iCubEye             eye_;
     iCub::iKin::iCubFinger          right_finger_[3];
 
     SICAD                         * drawer_;
@@ -88,7 +88,7 @@ private:
 
     yarp::sig::Vector readRootToEE();
 
-    yarp::sig::Vector readRootToLeftEye();
+    yarp::sig::Vector readRootToEye(const yarp::os::ConstString& camera);
 
     bool setCommandPort();
 };
