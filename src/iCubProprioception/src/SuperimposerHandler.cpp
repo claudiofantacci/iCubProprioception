@@ -152,6 +152,7 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
     /* Launching skeleton superimposer thread */
     if (skeleton_)
     {
+        /* Left camera */
         try { trd_left_cam_skeleton_ = new SkeletonSuperimposer(ID_ + "/SkeletonSuperimposer", robot_, "left"); }
         catch (const std::runtime_error& e) { yError() << e.what(); }
 
@@ -164,18 +165,47 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
         }
         else
             yError() << log_ID_ << "Could not initialize hand skeleton superimposition!";
+
+        /* Right camera */
+        try { trd_left_cam_skeleton_ = new SkeletonSuperimposer(ID_ + "/SkeletonSuperimposer", robot_, "right"); }
+        catch (const std::runtime_error& e) { yError() << e.what(); }
+
+        if (trd_left_cam_skeleton_ != YARP_NULLPTR)
+        {
+            yInfo() << log_ID_ << "Starting skeleton superimposing thread for the right hand on the right camera images...";
+
+            if (!trd_left_cam_skeleton_->start()) yError() << log_ID_ << "...thread could not be started!";
+            else                                  yInfo()  << log_ID_ << "...done.";
+        }
+        else
+            yError() << log_ID_ << "Could not initialize hand skeleton superimposition!";
     }
 
 
     /* Lunching iKin CAD superimposer thread */
     if (ikin_)
     {
+        /* Left camera */
         try { trd_left_cam_ikin_cad_ = new iKinCADSuperimposer(ID_ + "/iKinCADSuperimposer", robot_, "left", cad_hand_, shader_path_); }
         catch (const std::runtime_error& e) { yError() << e.what(); }
 
         if (trd_left_cam_ikin_cad_ != YARP_NULLPTR)
         {
             yInfo() << log_ID_ << "Starting iKinFwd mesh superimposing thread for the right hand on the left camera images...";
+
+            if (!trd_left_cam_ikin_cad_->start()) yError() << log_ID_ << "...thread could not be started!";
+            else                                  yInfo()  << log_ID_ << "...done.";
+        }
+        else
+            yError() << log_ID_ << "Could not initialize iKinFwd hand mesh superimposition!";
+
+        /* Right camera */
+        try { trd_left_cam_ikin_cad_ = new iKinCADSuperimposer(ID_ + "/iKinCADSuperimposer", robot_, "right", cad_hand_, shader_path_); }
+        catch (const std::runtime_error& e) { yError() << e.what(); }
+
+        if (trd_left_cam_ikin_cad_ != YARP_NULLPTR)
+        {
+            yInfo() << log_ID_ << "Starting iKinFwd mesh superimposing thread for the right hand on the right camera images...";
 
             if (!trd_left_cam_ikin_cad_->start()) yError() << log_ID_ << "...thread could not be started!";
             else                                  yInfo()  << log_ID_ << "...done.";
