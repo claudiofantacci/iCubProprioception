@@ -167,15 +167,15 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
             yError() << log_ID_ << "Could not initialize hand skeleton superimposition!";
 
         /* Right camera */
-        try { trd_left_cam_skeleton_ = new SkeletonSuperimposer(ID_ + "/SkeletonSuperimposer", robot_, "right"); }
+        try { trd_right_cam_skeleton_ = new SkeletonSuperimposer(ID_ + "/SkeletonSuperimposer", robot_, "right"); }
         catch (const std::runtime_error& e) { yError() << e.what(); }
 
-        if (trd_left_cam_skeleton_ != YARP_NULLPTR)
+        if (trd_right_cam_skeleton_ != YARP_NULLPTR)
         {
             yInfo() << log_ID_ << "Starting skeleton superimposing thread for the right hand on the right camera images...";
 
-            if (!trd_left_cam_skeleton_->start()) yError() << log_ID_ << "...thread could not be started!";
-            else                                  yInfo()  << log_ID_ << "...done.";
+            if (!trd_right_cam_skeleton_->start()) yError() << log_ID_ << "...thread could not be started!";
+            else                                   yInfo()  << log_ID_ << "...done.";
         }
         else
             yError() << log_ID_ << "Could not initialize hand skeleton superimposition!";
@@ -200,15 +200,15 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
             yError() << log_ID_ << "Could not initialize iKinFwd hand mesh superimposition!";
 
         /* Right camera */
-        try { trd_left_cam_ikin_cad_ = new iKinCADSuperimposer(ID_ + "/iKinCADSuperimposer", robot_, "right", cad_hand_, shader_path_); }
+        try { trd_right_cam_ikin_cad_ = new iKinCADSuperimposer(ID_ + "/iKinCADSuperimposer", robot_, "right", cad_hand_, shader_path_); }
         catch (const std::runtime_error& e) { yError() << e.what(); }
 
-        if (trd_left_cam_ikin_cad_ != YARP_NULLPTR)
+        if (trd_right_cam_ikin_cad_ != YARP_NULLPTR)
         {
             yInfo() << log_ID_ << "Starting iKinFwd mesh superimposing thread for the right hand on the right camera images...";
 
-            if (!trd_left_cam_ikin_cad_->start()) yError() << log_ID_ << "...thread could not be started!";
-            else                                  yInfo()  << log_ID_ << "...done.";
+            if (!trd_right_cam_ikin_cad_->start()) yError() << log_ID_ << "...thread could not be started!";
+            else                                   yInfo()  << log_ID_ << "...done.";
         }
         else
             yError() << log_ID_ << "Could not initialize iKinFwd hand mesh superimposition!";
@@ -234,15 +234,15 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
 
 
         /* Right camera */
-        try { trd_left_cam_ext_cad_ = new ExtCADSuperimposer(ID_ + "/ExtCADSuperimposer", robot_, "right", cad_hand_, shader_path_); }
+        try { trd_right_cam_ext_cad_ = new ExtCADSuperimposer(ID_ + "/ExtCADSuperimposer", robot_, "right", cad_hand_, shader_path_); }
         catch (const std::runtime_error& e) { yError() << e.what(); }
 
-        if (trd_left_cam_ext_cad_ != YARP_NULLPTR)
+        if (trd_right_cam_ext_cad_ != YARP_NULLPTR)
         {
             yInfo() << log_ID_ << "Starting iKinFwd external (pose) mesh superimposing thread for the right hand on the right camera images...";
 
-            if (!trd_left_cam_ext_cad_->start()) yError() << log_ID_ << "...thread could not be started!";
-            else                                 yInfo()  << log_ID_ << "...done.";
+            if (!trd_right_cam_ext_cad_->start()) yError() << log_ID_ << "...thread could not be started!";
+            else                                  yInfo()  << log_ID_ << "...done.";
         }
         else
             yError() << log_ID_ << "Could not initialize iKinFwd external (pose) hand mesh superimposition for the right camera!";
@@ -267,14 +267,14 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
             yError() << log_ID_ << "Could not initialize Batch hand mesh superimposition for the left camera!";
 
         /* Right camera */
-        try { trd_left_cam_batch_cad_ = new BatchCADSuperimposer(ID_ + "/BatchCADSuperimposer", robot_, "right", cad_hand_, shader_path_); }
+        try { trd_right_cam_batch_cad_ = new BatchCADSuperimposer(ID_ + "/BatchCADSuperimposer", robot_, "right", cad_hand_, shader_path_); }
         catch (const std::runtime_error& e) { yError() << e.what(); }
 
-        if (trd_left_cam_batch_cad_ != YARP_NULLPTR)
+        if (trd_right_cam_batch_cad_ != YARP_NULLPTR)
         {
             yInfo() << log_ID_ << "Starting Batch mesh superimposing thread for the right hand on the right camera images...";
 
-            if (!trd_left_cam_batch_cad_->start()) yError() << log_ID_ << "...thread could not be started!";
+            if (!trd_right_cam_batch_cad_->start()) yError() << log_ID_ << "...thread could not be started!";
             else                                   yInfo()  << log_ID_ << "...done.";
         }
         else
@@ -302,13 +302,77 @@ bool SuperimposerHandler::close()
 {
     yInfo() << log_ID_ << "Calling close functions...";
 
-    if (trd_left_cam_skeleton_ != YARP_NULLPTR) trd_left_cam_skeleton_->stop();
-    if (trd_left_cam_ikin_cad_ != YARP_NULLPTR) trd_left_cam_ikin_cad_->stop();
-    if (trd_left_cam_ext_cad_  != YARP_NULLPTR) trd_left_cam_ext_cad_->stop();
+    if (trd_left_cam_skeleton_ != YARP_NULLPTR)
+    {
+        trd_left_cam_skeleton_->stop();
+        trd_left_cam_skeleton_->join();
 
-    delete trd_left_cam_skeleton_;
-    delete trd_left_cam_ikin_cad_;
-    delete trd_left_cam_ext_cad_;
+        delete trd_left_cam_skeleton_;
+        trd_left_cam_skeleton_ = YARP_NULLPTR;
+    }
+
+    if (trd_right_cam_skeleton_ != YARP_NULLPTR)
+    {
+        trd_right_cam_skeleton_->stop();
+        trd_right_cam_skeleton_->join();
+
+        delete trd_right_cam_skeleton_;
+        trd_right_cam_skeleton_ = YARP_NULLPTR;
+    }
+
+    if (trd_left_cam_ikin_cad_ != YARP_NULLPTR)
+    {
+        trd_left_cam_ikin_cad_->stop();
+        trd_left_cam_ikin_cad_->join();
+
+        delete trd_left_cam_ikin_cad_;
+        trd_left_cam_ikin_cad_ = YARP_NULLPTR;
+    }
+
+    if (trd_right_cam_ikin_cad_ != YARP_NULLPTR)
+    {
+        trd_right_cam_ikin_cad_->stop();
+        trd_right_cam_ikin_cad_->join();
+
+        delete trd_right_cam_ikin_cad_;
+        trd_right_cam_ikin_cad_ = YARP_NULLPTR;
+    }
+
+    if (trd_left_cam_ext_cad_ != YARP_NULLPTR)
+    {
+        trd_left_cam_ext_cad_->stop();
+        trd_left_cam_ext_cad_->join();
+
+        delete trd_left_cam_ext_cad_;
+        trd_left_cam_ext_cad_ = YARP_NULLPTR;
+    }
+
+    if (trd_right_cam_ext_cad_ != YARP_NULLPTR)
+    {
+        trd_right_cam_ext_cad_->stop();
+        trd_right_cam_ext_cad_->join();
+
+        delete trd_right_cam_ext_cad_;
+        trd_right_cam_ext_cad_ = YARP_NULLPTR;
+    }
+
+    if (trd_left_cam_batch_cad_ != YARP_NULLPTR)
+    {
+        trd_left_cam_batch_cad_->stop();
+        trd_left_cam_batch_cad_->join();
+
+        delete trd_left_cam_batch_cad_;
+        trd_left_cam_batch_cad_ = YARP_NULLPTR;
+    }
+
+    if (trd_right_cam_batch_cad_ != YARP_NULLPTR)
+    {
+        trd_right_cam_batch_cad_->stop();
+        trd_right_cam_batch_cad_->join();
+
+        delete trd_right_cam_batch_cad_;
+        trd_right_cam_batch_cad_ = YARP_NULLPTR;
+    }
 
     if (itf_rightarm_cart_) itf_rightarm_cart_->removeTipFrame();
 
