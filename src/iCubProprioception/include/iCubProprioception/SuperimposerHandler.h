@@ -31,28 +31,25 @@ public:
 
     SuperimposerHandler(const yarp::os::ConstString& project_name);
 
-    double getPeriod() { return 0.033; }
+    double getPeriod() override { return 0.033; }
 
-    bool   configure(yarp::os::ResourceFinder& rf);
+    bool   configure(yarp::os::ResourceFinder& rf) override;
     
-    bool   updateModule();
+    bool   updateModule() override;
 
-    bool   close();
+    bool   close() override;
 
 protected:
-    bool initial_position ();
+    bool initial_position () override;
 
-    bool view_hand();
+    bool view_hand() override;
 
-    bool open_fingers();
+    bool open_fingers() override;
 
-    bool close_fingers();
+    bool close_fingers() override;
 
-    bool view_skeleton(const bool status);
+    std::string quit() override;
 
-    bool view_mesh(const bool status);
-
-    std::string quit();
 
     bool fileFound(const yarp::os::ConstString& file);
 

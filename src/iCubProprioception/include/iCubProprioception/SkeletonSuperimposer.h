@@ -23,11 +23,11 @@ public:
 
     ~SkeletonSuperimposer() noexcept;
 
-    void run();
+    void run() override;
 
-    void onStop();
+    void onStop() override;
 
-    void threadRelease();
+    void threadRelease() override;
 
 protected:
     bool setArmRemoteControlboard();
