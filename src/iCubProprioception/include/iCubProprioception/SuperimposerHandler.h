@@ -1,8 +1,15 @@
 #ifndef SUPERIMPOSEFACTORY_H
 #define SUPERIMPOSEFACTORY_H
 
+#include "thrift/iCubProprioceptionIDL.h"
+#include "iCubProprioception/SkeletonSuperimposer.h"
+#include "iCubProprioception/ExtCADSuperimposer.h"
+#include "iCubProprioception/iKinCADSuperimposer.h"
+#include "iCubProprioception/BatchCADSuperimposer.h"
+
 #include <unordered_map>
 
+#include <SuperImpose/SuperImpose.h>
 #include <yarp/dev/CartesianControl.h>
 #include <yarp/dev/GazeControl.h>
 #include <yarp/dev/IEncoders.h>
@@ -13,14 +20,6 @@
 #include <yarp/os/RFModule.h>
 #include <yarp/sig/Matrix.h>
 #include <yarp/sig/Vector.h>
-
-#include <SuperImpose/SuperImpose.h>
-
-#include "iCubProprioception/SkeletonSuperimposer.h"
-#include "iCubProprioception/ExtCADSuperimposer.h"
-#include "iCubProprioception/iKinCADSuperimposer.h"
-#include "iCubProprioception/BatchCADSuperimposer.h"
-#include "thrift/iCubProprioceptionIDL.h"
 
 
 class SuperimposerHandler : public yarp::os::RFModule,
