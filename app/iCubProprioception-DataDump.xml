@@ -5,7 +5,7 @@
     <!-- GENERIC INFORMATION -->
     <name>iCubProprioception-DataDump</name>
     <description>Collect data for iCubProprioception module</description>
-    <version>4.2.2</version>
+    <version>5.0.0</version>
 
     <authors>
         <author email="claudio.fantacci@iit.it">Claudio Fantacci</author>
@@ -16,7 +16,7 @@
     <module>
         <name>iCubProprioception</name>
         <node>localhost</node>
-        <parameters>--robot icub --ikin --from parameters.ini</parameters>
+        <parameters>--robot icub --skel --ikin --ext --from parameters.ini</parameters>
     </module>
 
     <module>
@@ -46,6 +46,12 @@
     <module>
         <name>yarpdatadumper</name>
         <node>localhost</node>
+        <parameters>--name /datadumper/ikin_cad/right --txTime --rxTime --type image</parameters>
+    </module>
+
+    <module>
+        <name>yarpdatadumper</name>
+        <node>localhost</node>
         <parameters>--name /datadumper/ext_cad/left --txTime --rxTime --type image</parameters>
     </module>
 
@@ -59,6 +65,12 @@
         <name>yarpdatadumper</name>
         <node>localhost</node>
         <parameters>--name /datadumper/skeleton/left --txTime --rxTime --type image</parameters>
+    </module>
+
+    <module>
+        <name>yarpdatadumper</name>
+        <node>localhost</node>
+        <parameters>--name /datadumper/skeleton/right --txTime --rxTime --type image</parameters>
     </module>
 
     <module>
@@ -94,10 +106,46 @@
         <protocol>tcp</protocol>
     </connection>
 
+    <connection>
+        <from>/icub/camcalib/right/out</from>
+        <to>/iCubProprioception/SkeletonSuperimposer/cam/right:i</to>
+        <protocol>tcp</protocol>
+    </connection>
+
+    <connection>
+        <from>/iCubProprioception/SkeletonSuperimposer/cam/left:o</from>
+        <to>/view/cam/left/skeleton</to>
+        <protocol>tcp</protocol>
+    </connection>
+
+    <connection>
+        <from>/iCubProprioception/SkeletonSuperimposer/cam/right:o</from>
+        <to>/view/cam/right/skeleton</to>
+        <protocol>tcp</protocol>
+    </connection>
+
     <!-- RC: iKin CAD -->
     <connection>
         <from>/icub/camcalib/left/out</from>
         <to>/iCubProprioception/iKinCADSuperimposer/cam/left:i</to>
+        <protocol>tcp</protocol>
+    </connection>
+
+    <connection>
+        <from>/icub/camcalib/right/out</from>
+        <to>/iCubProprioception/iKinCADSuperimposer/cam/right:i</to>
+        <protocol>tcp</protocol>
+    </connection>
+
+    <connection>
+        <from>/iCubProprioception/iKinCADSuperimposer/cam/left:o</from>
+        <to>/view/cam/left/ikin</to>
+        <protocol>tcp</protocol>
+    </connection>
+
+    <connection>
+        <from>/iCubProprioception/iKinCADSuperimposer/cam/right:o</from>
+        <to>/view/cam/right/ikin</to>
         <protocol>tcp</protocol>
     </connection>
 
@@ -123,6 +171,18 @@
     <connection>
         <from>/hand-tracking/right/result/estimates:o</from>
         <to>/iCubProprioception/ExtCADSuperimposer/cam/right/hand/right_pose:i</to>
+        <protocol>tcp</protocol>
+    </connection>
+
+    <connection>
+        <from>/iCubProprioception/ExtCADSuperimposer/cam/left:o</from>
+        <to>/view/cam/left/ext</to>
+        <protocol>tcp</protocol>
+    </connection>
+
+    <connection>
+        <from>/iCubProprioception/ExtCADSuperimposer/cam/right:o</from>
+        <to>/view/cam/right/ext</to>
         <protocol>tcp</protocol>
     </connection>
 
@@ -152,8 +212,20 @@
     </connection>
 
     <connection>
+        <from>/iCubProprioception/SkeletonSuperimposer/cam/right:o</from>
+        <to>/datadumper/skeleton/right</to>
+        <protocol>tcp</protocol>
+    </connection>
+
+    <connection>
         <from>/iCubProprioception/iKinCADSuperimposer/cam/left:o</from>
         <to>/datadumper/ikin_cad/left</to>
+        <protocol>tcp</protocol>
+    </connection>
+
+    <connection>
+        <from>/iCubProprioception/iKinCADSuperimposer/cam/right:o</from>
+        <to>/datadumper/ikin_cad/right</to>
         <protocol>tcp</protocol>
     </connection>
 
