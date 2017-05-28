@@ -17,7 +17,7 @@ class BatchCADSuperimposer : public CADSuperimposer
 {
 public:
     BatchCADSuperimposer(const yarp::os::ConstString& port_prefix, const yarp::os::ConstString& robot, const yarp::os::ConstString& camera,
-                         const SuperImpose::ObjFileMap& cad_hand, const yarp::os::ConstString& shader_path);
+                         const Superimpose::ObjFileMap& cad_hand, const yarp::os::ConstString& shader_path);
 
     ~BatchCADSuperimposer() noexcept;
 
@@ -36,7 +36,7 @@ protected:
 
     yarp::sig::Vector getTorsoEncoders() override;
 
-    void getExtraObjPoseMap(SuperImpose::ObjPoseMap& hand_pose) override;
+    void getExtraObjPoseMap(Superimpose::ObjPoseMap& hand_pose) override;
 
 
     bool sync_input(const bool status) override;

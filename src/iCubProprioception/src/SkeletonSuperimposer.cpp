@@ -49,7 +49,7 @@ SkeletonSuperimposer::SkeletonSuperimposer(const ConstString& port_prefix, const
 
     Bottle btl_cam_left_info;
     itf_head_gaze_->getInfo(btl_cam_left_info);
-    Bottle * cam_left_info = btl_cam_left_info.findGroup("camera_intrinsics_left").get(1).asList();
+    Bottle * cam_left_info = btl_cam_left_info.findGroup("camera_intrinsics_" + camera_).get(1).asList();
     yInfo() << log_ID_ << "Camera Info: [" + cam_left_info->toString() + "].";
     eye_fx_ = static_cast<float>(cam_left_info->get(0).asDouble());
     eye_cx_ = static_cast<float>(cam_left_info->get(2).asDouble());
@@ -120,7 +120,10 @@ void SkeletonSuperimposer::run()
         {
             itf_right_arm_cart_->getPose(ee_x, ee_o);
 
-            itf_head_gaze_->getLeftEyePose(cam_x, cam_o);
+            if (camera_ == "left")
+                itf_head_gaze_->getLeftEyePose(cam_x, cam_o);
+            else
+                itf_head_gaze_->getRightEyePose(cam_x, cam_o);
 
             Matrix Ha = axis2dcm(ee_o);
             ee_x.push_back(1.0);
@@ -135,8 +138,8 @@ void SkeletonSuperimposer::run()
                 right_finger_[i].setAng(CTRL_DEG2RAD * chainjoints);
             }
 
-            SuperImpose::ObjPoseMap hand_pose;
-            SuperImpose::ObjPose    pose;
+            Superimpose::ObjPoseMap hand_pose;
+            Superimpose::ObjPose    pose;
             pose.assign(ee_x.data(), ee_x.data()+3);
             hand_pose.emplace("palm", pose);
             for (unsigned int fng = 0; fng < 3; ++fng)
@@ -200,7 +203,7 @@ bool SkeletonSuperimposer::setArmRemoteControlboard()
 {
     Property rightarm_remote_options;
     rightarm_remote_options.put("device", "remote_controlboard");
-    rightarm_remote_options.put("local", "/" + ID_ + "/control_right_arm");
+    rightarm_remote_options.put("local", "/" + ID_ + "/cam/" + camera_ + "/control_right_arm");
     rightarm_remote_options.put("remote", "/" + robot_ + "/right_arm");
 
     drv_right_arm_remote_.open(rightarm_remote_options);
@@ -235,7 +238,7 @@ bool SkeletonSuperimposer::setArmRemoteControlboard()
 #if ICP_USE_ANALOGS == 1
     Property righthand_remote_analog;
     righthand_remote_analog.put("device", "analogsensorclient");
-    righthand_remote_analog.put("local",  "/" + ID_ + "/right_hand");
+    righthand_remote_analog.put("local",  "/" + ID_ + "/cam/" + camera_ + "/right_hand");
     righthand_remote_analog.put("remote", "/" + robot_ + "/right_hand/analog:o");
 
     drv_right_hand_analog_.open(righthand_remote_analog);
@@ -264,7 +267,7 @@ bool SkeletonSuperimposer::setArmCartesianController()
 {
     Property rightarm_cartesian_options;
     rightarm_cartesian_options.put("device", "cartesiancontrollerclient");
-    rightarm_cartesian_options.put("local", "/" + ID_ + "/cart_right_arm");
+    rightarm_cartesian_options.put("local", "/" + ID_ + "/cam/" + camera_ + "/cart_right_arm");
     rightarm_cartesian_options.put("remote", "/" + robot_ + "/cartesianController/right_arm");
 
     drv_right_arm_cartesian_.open(rightarm_cartesian_options);
@@ -292,7 +295,7 @@ bool SkeletonSuperimposer::setGazeController()
 {
     Property gaze_option;
     gaze_option.put("device", "gazecontrollerclient");
-    gaze_option.put("local", "/" + ID_ + "/gaze");
+    gaze_option.put("local", "/" + ID_ + "/cam/" + camera_ + "/gaze");
     gaze_option.put("remote", "/iKinGazeCtrl");
 
     drv_gaze_.open(gaze_option);

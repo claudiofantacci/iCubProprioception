@@ -23,13 +23,13 @@ set(${EXE_TARGET_NAME}_THRIFT_HDR
         thrift/idl_mesh.thrift)
 
 # Dependencies
-find_package(GLEW        REQUIRED)
-find_package(GLFW3       REQUIRED)
-find_package(ICUB        REQUIRED)
-find_package(OpenCV      REQUIRED)
-find_package(OpenGL      REQUIRED)
-find_package(SuperImpose REQUIRED)
-find_package(YARP        REQUIRED)
+find_package(GLEW            REQUIRED)
+find_package(GLFW3           REQUIRED)
+find_package(ICUB            REQUIRED)
+find_package(OpenCV          REQUIRED)
+find_package(OpenGL          REQUIRED)
+find_package(SuperimposeMesh REQUIRED)
+find_package(YARP            REQUIRED)
 
 list(APPEND CMAKE_MODULE_PATH   ${YARP_MODULE_PATH}
                                 ${ICUB_MODULE_PATH}
@@ -50,7 +50,7 @@ target_include_directories(${EXE_TARGET_NAME} PRIVATE "$<BUILD_INTERFACE:${CMAKE
                                                       ${OPENGL_INCLUDE_DIR}
                                                       ${ASSIMP_INCLUDE_DIRS})
 
-target_link_libraries(${EXE_TARGET_NAME} PRIVATE SuperImpose::SuperImpose
+target_link_libraries(${EXE_TARGET_NAME} PRIVATE SuperimposeMesh::SuperimposeMesh
                                                  ${YARP_LIBRARIES}
                                                  ${ICUB_LIBRARIES}
                                                  ctrlLib

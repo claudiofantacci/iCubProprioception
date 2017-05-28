@@ -4,6 +4,7 @@
 #include "iCubProprioception/common.h"
 
 #include <iCub/iKin/iKinFwd.h>
+#include <SuperimposeMesh/SISkeleton.h>
 #include <yarp/dev/CartesianControl.h>
 #include <yarp/dev/GazeControl.h>
 #include <yarp/dev/IEncoders.h>
@@ -13,7 +14,6 @@
 #include <yarp/os/ConstString.h>
 #include <yarp/os/Thread.h>
 #include <yarp/sig/Image.h>
-#include <SuperImpose/SISkeleton.h>
 
 
 class SkeletonSuperimposer : public yarp::os::Thread
@@ -23,11 +23,11 @@ public:
 
     ~SkeletonSuperimposer() noexcept;
 
-    void run();
+    void run() override;
 
-    void onStop();
+    void onStop() override;
 
-    void threadRelease();
+    void threadRelease() override;
 
 protected:
     bool setArmRemoteControlboard();

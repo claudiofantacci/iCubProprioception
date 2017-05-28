@@ -1,8 +1,15 @@
 #ifndef SUPERIMPOSEFACTORY_H
 #define SUPERIMPOSEFACTORY_H
 
+#include "thrift/iCubProprioceptionIDL.h"
+#include "iCubProprioception/SkeletonSuperimposer.h"
+#include "iCubProprioception/ExtCADSuperimposer.h"
+#include "iCubProprioception/iKinCADSuperimposer.h"
+#include "iCubProprioception/BatchCADSuperimposer.h"
+
 #include <unordered_map>
 
+#include <SuperimposeMesh/Superimpose.h>
 #include <yarp/dev/CartesianControl.h>
 #include <yarp/dev/GazeControl.h>
 #include <yarp/dev/IEncoders.h>
@@ -14,14 +21,6 @@
 #include <yarp/sig/Matrix.h>
 #include <yarp/sig/Vector.h>
 
-#include <SuperImpose/SuperImpose.h>
-
-#include "iCubProprioception/SkeletonSuperimposer.h"
-#include "iCubProprioception/ExtCADSuperimposer.h"
-#include "iCubProprioception/iKinCADSuperimposer.h"
-#include "iCubProprioception/BatchCADSuperimposer.h"
-#include "thrift/iCubProprioceptionIDL.h"
-
 
 class SuperimposerHandler : public yarp::os::RFModule,
                             public iCubProprioceptionIDL
@@ -31,28 +30,25 @@ public:
 
     SuperimposerHandler(const yarp::os::ConstString& project_name);
 
-    double getPeriod() { return 0.033; }
+    double getPeriod() override { return 0.033; }
 
-    bool   configure(yarp::os::ResourceFinder& rf);
+    bool   configure(yarp::os::ResourceFinder& rf) override;
     
-    bool   updateModule();
+    bool   updateModule() override;
 
-    bool   close();
+    bool   close() override;
 
 protected:
-    bool initial_position ();
+    bool initial_position () override;
 
-    bool view_hand();
+    bool view_hand() override;
 
-    bool open_fingers();
+    bool open_fingers() override;
 
-    bool close_fingers();
+    bool close_fingers() override;
 
-    bool view_skeleton(const bool status);
+    std::string quit() override;
 
-    bool view_mesh(const bool status);
-
-    std::string quit();
 
     bool fileFound(const yarp::os::ConstString& file);
 
@@ -102,12 +98,19 @@ private:
 
     yarp::dev::PolyDriver         drv_right_hand_analog_;
 
-    SkeletonSuperimposer        * trd_left_cam_skeleton_  = YARP_NULLPTR;
+    SkeletonSuperimposer        * trd_left_cam_skeleton_   = YARP_NULLPTR;
+    SkeletonSuperimposer        * trd_right_cam_skeleton_  = YARP_NULLPTR;
 
-    iKinCADSuperimposer         * trd_left_cam_ikin_cad_  = YARP_NULLPTR;
-    ExtCADSuperimposer          * trd_left_cam_ext_cad_   = YARP_NULLPTR;
-    BatchCADSuperimposer        * trd_left_cam_batch_cad_ = YARP_NULLPTR;
-    SuperImpose::ObjFileMap       cad_hand_;
+    iKinCADSuperimposer         * trd_left_cam_ikin_cad_   = YARP_NULLPTR;
+    iKinCADSuperimposer         * trd_right_cam_ikin_cad_  = YARP_NULLPTR;
+
+    ExtCADSuperimposer          * trd_left_cam_ext_cad_    = YARP_NULLPTR;
+    ExtCADSuperimposer          * trd_right_cam_ext_cad_   = YARP_NULLPTR;
+
+    BatchCADSuperimposer        * trd_left_cam_batch_cad_  = YARP_NULLPTR;
+    BatchCADSuperimposer        * trd_right_cam_batch_cad_ = YARP_NULLPTR;
+
+    Superimpose::ObjFileMap       cad_hand_;
     yarp::os::ConstString         shader_path_;
 
     yarp::os::Port                port_command_;
