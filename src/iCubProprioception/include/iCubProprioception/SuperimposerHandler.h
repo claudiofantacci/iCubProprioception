@@ -9,7 +9,7 @@
 
 #include <unordered_map>
 
-#include <SuperImpose/SuperImpose.h>
+#include <SuperimposeMesh/Superimpose.h>
 #include <yarp/dev/CartesianControl.h>
 #include <yarp/dev/GazeControl.h>
 #include <yarp/dev/IEncoders.h>
@@ -110,7 +110,7 @@ private:
     BatchCADSuperimposer        * trd_left_cam_batch_cad_  = YARP_NULLPTR;
     BatchCADSuperimposer        * trd_right_cam_batch_cad_ = YARP_NULLPTR;
 
-    SuperImpose::ObjFileMap       cad_hand_;
+    Superimpose::ObjFileMap       cad_hand_;
     yarp::os::ConstString         shader_path_;
 
     yarp::os::Port                port_command_;

@@ -16,7 +16,7 @@ using namespace iCub::iKin;
 
 
 iKinCADSuperimposer::iKinCADSuperimposer(const ConstString& port_prefix, const ConstString& robot, const ConstString& camera,
-                                         const SuperImpose::ObjFileMap& cad_hand, const ConstString& shader_path) :
+                                         const Superimpose::ObjFileMap& cad_hand, const ConstString& shader_path) :
     CADSuperimposer(port_prefix, robot, camera, cad_hand, shader_path)
 {
     yInfo() << log_ID_ << "Invoked iKinCADSuperimposer (derived class) ctor...";
@@ -156,9 +156,9 @@ Vector iKinCADSuperimposer::getTorsoEncoders()
 }
 
 
-void iKinCADSuperimposer::getExtraObjPoseMap(SuperImpose::ObjPoseMap& hand_pose)
+void iKinCADSuperimposer::getExtraObjPoseMap(Superimpose::ObjPoseMap& hand_pose)
 {
-    SuperImpose::ObjPose pose;
+    Superimpose::ObjPose pose;
 
     right_arm_.setAng(CTRL_DEG2RAD * readRootToEE());
 

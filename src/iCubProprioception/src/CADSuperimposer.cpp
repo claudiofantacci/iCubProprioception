@@ -18,7 +18,7 @@ using namespace iCub::iKin;
 
 
 CADSuperimposer::CADSuperimposer(const ConstString& port_prefix, const ConstString& robot, const ConstString& camera,
-                                 const SuperImpose::ObjFileMap& cad_hand, const ConstString& shader_path) :
+                                 const Superimpose::ObjFileMap& cad_hand, const ConstString& shader_path) :
     ID_(port_prefix), log_ID_("[" + ID_ + "]"),
     robot_(robot), camera_(camera),
     cad_hand_(cad_hand), shader_path_(shader_path)
@@ -201,7 +201,7 @@ void CADSuperimposer::run()
                 right_finger_[i].setAng(CTRL_DEG2RAD * chainjoints);
             }
 
-            SuperImpose::ObjPoseMap hand_pose;
+            Superimpose::ObjPoseMap hand_pose;
             getRightHandObjPoseMap(ee_pose, hand_pose);
             getExtraObjPoseMap(hand_pose);
 
@@ -240,9 +240,9 @@ void CADSuperimposer::threadRelease()
 }
 
 
-void CADSuperimposer::getRightHandObjPoseMap(const Vector& ee_pose, SuperImpose::ObjPoseMap& hand_pose)
+void CADSuperimposer::getRightHandObjPoseMap(const Vector& ee_pose, Superimpose::ObjPoseMap& hand_pose)
 {
-    SuperImpose::ObjPose pose;
+    Superimpose::ObjPose pose;
 
     Matrix Ha = axis2dcm(ee_pose.subVector(3, 6));
     Ha.setSubcol(ee_pose.subVector(0, 2), 0, 3);

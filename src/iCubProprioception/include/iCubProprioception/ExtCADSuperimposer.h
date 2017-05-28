@@ -17,7 +17,7 @@ class ExtCADSuperimposer : public iKinCADSuperimposer
 {
 public:
     ExtCADSuperimposer(const yarp::os::ConstString& port_prefix, const yarp::os::ConstString& robot, const yarp::os::ConstString& camera,
-                       const SuperImpose::ObjFileMap& cad_hand, const yarp::os::ConstString& shader_path);
+                       const Superimpose::ObjFileMap& cad_hand, const yarp::os::ConstString& shader_path);
 
     ~ExtCADSuperimposer() noexcept;
 
@@ -28,7 +28,7 @@ public:
 protected:
     yarp::sig::Vector getEndEffectorPose() override;
 
-    void getExtraObjPoseMap(SuperImpose::ObjPoseMap& hand_pose) override;
+    void getExtraObjPoseMap(Superimpose::ObjPoseMap& hand_pose) override;
 
     bool sync_input(const bool status) override;
 

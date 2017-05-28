@@ -4,7 +4,7 @@
 #include "iCubProprioception/common.h"
 
 #include <iCub/iKin/iKinFwd.h>
-#include <SuperImpose/SISkeleton.h>
+#include <SuperimposeMesh/SISkeleton.h>
 #include <yarp/dev/CartesianControl.h>
 #include <yarp/dev/GazeControl.h>
 #include <yarp/dev/IEncoders.h>

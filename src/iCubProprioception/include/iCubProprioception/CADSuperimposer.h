@@ -7,7 +7,7 @@
 #include <vector>
 
 #include <iCub/iKin/iKinFwd.h>
-#include <SuperImpose/SICAD.h>
+#include <SuperimposeMesh/SICAD.h>
 #include <yarp/dev/GazeControl.h>
 #include <yarp/dev/PolyDriver.h>
 #include <yarp/sig/Image.h>
@@ -22,7 +22,7 @@ class CADSuperimposer : public yarp::os::Thread,
 {
 public:
     CADSuperimposer(const yarp::os::ConstString& port_prefix, const yarp::os::ConstString& robot, const yarp::os::ConstString& camera,
-                    const SuperImpose::ObjFileMap& cad_hand, const yarp::os::ConstString& shader_path);
+                    const Superimpose::ObjFileMap& cad_hand, const yarp::os::ConstString& shader_path);
 
     ~CADSuperimposer() noexcept;
 
@@ -51,7 +51,7 @@ protected:
 
     virtual yarp::sig::Vector getTorsoEncoders() = 0;
 
-    virtual void getExtraObjPoseMap(SuperImpose::ObjPoseMap& hand_pose) = 0;
+    virtual void getExtraObjPoseMap(Superimpose::ObjPoseMap& hand_pose) = 0;
 
 
     bool mesh_background(const bool status) override;
@@ -59,7 +59,7 @@ protected:
     bool mesh_wireframe(const bool status) override;
 
 private:
-    const SuperImpose::ObjFileMap & cad_hand_;
+    const Superimpose::ObjFileMap & cad_hand_;
     const yarp::os::ConstString     shader_path_;
 
     yarp::dev::PolyDriver           drv_gaze_;
@@ -82,7 +82,7 @@ private:
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb>> outport_renderer_img_;
 
 
-    void getRightHandObjPoseMap(const yarp::sig::Vector& ee_pose, SuperImpose::ObjPoseMap& hand_pose);
+    void getRightHandObjPoseMap(const yarp::sig::Vector& ee_pose, Superimpose::ObjPoseMap& hand_pose);
 
     bool openGazeController();
 

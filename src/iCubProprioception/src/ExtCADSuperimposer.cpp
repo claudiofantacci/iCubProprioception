@@ -16,7 +16,7 @@ using namespace iCub::iKin;
 
 
 ExtCADSuperimposer::ExtCADSuperimposer(const ConstString& port_prefix, const ConstString& robot, const ConstString& camera,
-                                       const SuperImpose::ObjFileMap& cad_hand, const ConstString& shader_path) :
+                                       const Superimpose::ObjFileMap& cad_hand, const ConstString& shader_path) :
     iKinCADSuperimposer(port_prefix, robot, camera, cad_hand, shader_path)
 {
     yInfo() << log_ID_ << "Invoked ExtCADSuperimposer (derived class) ctor...";
@@ -64,7 +64,7 @@ yarp::sig::Vector ExtCADSuperimposer::getEndEffectorPose()
 }
 
 
-void ExtCADSuperimposer::getExtraObjPoseMap(SuperImpose::ObjPoseMap& hand_pose)
+void ExtCADSuperimposer::getExtraObjPoseMap(Superimpose::ObjPoseMap& hand_pose)
 {
     if (view_forearm_)
         iKinCADSuperimposer::getExtraObjPoseMap(hand_pose);
