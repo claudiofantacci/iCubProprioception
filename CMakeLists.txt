@@ -6,7 +6,7 @@ endif()
 
 project(iCubProprioception
         LANGUAGES CXX
-        VERSION 0.3.1.0)
+        VERSION 0.4.0.0)
 
 include(GNUInstallDirs)
 
