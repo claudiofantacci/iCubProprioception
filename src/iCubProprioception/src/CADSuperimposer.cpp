@@ -250,7 +250,7 @@ void CADSuperimposer::getRightHandObjPoseMap(const Vector& ee_pose, Superimpose:
 
     pose.assign(ee_pose.data(), ee_pose.data()+7);
     hand_pose.emplace("palm", pose);
-    for (size_t fng = 0; fng < 3; ++fng)
+    for (size_t fng = 1; fng < 3; ++fng)
     {
         std::string finger_s;
         pose.clear();
