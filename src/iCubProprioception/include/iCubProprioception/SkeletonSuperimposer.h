@@ -49,13 +49,13 @@ private:
     yarp::dev::PolyDriver          drv_right_arm_cartesian_;
     yarp::dev::PolyDriver          drv_gaze_;
 
-    yarp::dev::IEncoders        *  itf_right_arm_encoders_;
-    yarp::dev::IControlLimits   *  itf_fingers_limits_;
+    yarp::dev::IEncoders*          itf_right_arm_encoders_;
+    yarp::dev::IControlLimits*     itf_fingers_limits_;
     yarp::dev::ICartesianControl*  itf_right_arm_cart_;
 #if ICP_USE_ANALOGS == 1
-    yarp::dev::IAnalogSensor    *  itf_right_hand_analog_;
+    yarp::dev::IAnalogSensor*      itf_right_hand_analog_;
 #endif
-    yarp::dev::IGazeControl     *  itf_head_gaze_;
+    yarp::dev::IGazeControl*       itf_head_gaze_;
 
     int                            num_right_arm_enc_;
     float                          eye_fx_;
@@ -64,7 +64,7 @@ private:
     float                          eye_cy_;
     iCub::iKin::iCubFinger         right_finger_[3];
 
-    SISkeleton                  *  drawer_;
+    SISkeleton*                    drawer_;
 
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb>> inport_skeleton_img_;
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb>> outport_skeleton_img_;

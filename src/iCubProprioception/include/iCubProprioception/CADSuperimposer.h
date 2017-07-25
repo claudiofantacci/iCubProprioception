@@ -22,7 +22,7 @@ class CADSuperimposer : public yarp::os::Thread,
 {
 public:
     CADSuperimposer(const yarp::os::ConstString& port_prefix, const yarp::os::ConstString& robot, const yarp::os::ConstString& camera,
-                    const Superimpose::ObjFileMap& cad_hand, const yarp::os::ConstString& shader_path);
+                    const SICAD::ModelPathContainer& cad_hand, const yarp::os::ConstString& shader_path);
 
     ~CADSuperimposer() noexcept;
 
@@ -51,7 +51,7 @@ protected:
 
     virtual yarp::sig::Vector getTorsoEncoders() = 0;
 
-    virtual void getExtraObjPoseMap(Superimpose::ObjPoseMap& hand_pose) = 0;
+    virtual void getExtraObjPoseMap(Superimpose::ModelPoseContainer& hand_pose) = 0;
 
 
     bool mesh_background(const bool status) override;
@@ -59,30 +59,30 @@ protected:
     bool mesh_wireframe(const bool status) override;
 
 private:
-    const Superimpose::ObjFileMap & cad_hand_;
-    const yarp::os::ConstString     shader_path_;
+    const SICAD::ModelPathContainer& cad_hand_;
+    const yarp::os::ConstString      shader_path_;
 
-    yarp::dev::PolyDriver           drv_gaze_;
-    yarp::dev::IGazeControl*        itf_gaze_;
+    yarp::dev::PolyDriver            drv_gaze_;
+    yarp::dev::IGazeControl*         itf_gaze_;
 
-    unsigned int                    cam_width_;
-    unsigned int                    cam_height_;
-    float                           cam_fx_;
-    float                           cam_fy_;
-    float                           cam_cx_;
-    float                           cam_cy_;
+    unsigned int                     cam_width_;
+    unsigned int                     cam_height_;
+    float                            cam_fx_;
+    float                            cam_fy_;
+    float                            cam_cx_;
+    float                            cam_cy_;
 
-    iCub::iKin::iCubEye             eye_;
-    iCub::iKin::iCubFinger          right_finger_[3];
+    iCub::iKin::iCubEye              eye_;
+    iCub::iKin::iCubFinger           right_finger_[3];
 
-    SICAD                         * drawer_;
+    SICAD*                           drawer_;
 
     yarp::os::Port                                                  port_command_;
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb>> inport_renderer_img_;
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb>> outport_renderer_img_;
 
 
-    void getRightHandObjPoseMap(const yarp::sig::Vector& ee_pose, Superimpose::ObjPoseMap& hand_pose);
+    void getRightHandObjPoseMap(const yarp::sig::Vector& ee_pose, Superimpose::ModelPoseContainer& hand_pose);
 
     bool openGazeController();
 

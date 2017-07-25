@@ -18,7 +18,7 @@ using namespace iCub::iKin;
 
 
 CADSuperimposer::CADSuperimposer(const ConstString& port_prefix, const ConstString& robot, const ConstString& camera,
-                                 const Superimpose::ObjFileMap& cad_hand, const ConstString& shader_path) :
+                                 const SICAD::ModelPathContainer& cad_hand, const ConstString& shader_path) :
     ID_(port_prefix), log_ID_("[" + ID_ + "]"),
     robot_(robot), camera_(camera),
     cad_hand_(cad_hand), shader_path_(shader_path)
@@ -123,8 +123,9 @@ CADSuperimposer::CADSuperimposer(const ConstString& port_prefix, const ConstStri
     /* Initialize CAD superimposer */
     yInfo() << log_ID_ << "Setting up OpenGL drawer.";
 
-    drawer_ = new SICAD(cad_hand_, cam_width_, cam_height_, 1, shader_path_,
-                        cam_fx_, cam_fy_, cam_cx_, cam_cy_);
+    drawer_ = new SICAD(cad_hand_,
+                        cam_width_, cam_height_, cam_fx_, cam_fy_, cam_cx_, cam_cy_,
+                        1, shader_path_);
 
     drawer_->setBackgroundOpt(true);
     drawer_->setWireframeOpt(true);
@@ -201,7 +202,7 @@ void CADSuperimposer::run()
                 right_finger_[i].setAng(CTRL_DEG2RAD * chainjoints);
             }
 
-            Superimpose::ObjPoseMap hand_pose;
+            Superimpose::ModelPoseContainer hand_pose;
             getRightHandObjPoseMap(ee_pose, hand_pose);
             getExtraObjPoseMap(hand_pose);
 
@@ -240,9 +241,9 @@ void CADSuperimposer::threadRelease()
 }
 
 
-void CADSuperimposer::getRightHandObjPoseMap(const Vector& ee_pose, Superimpose::ObjPoseMap& hand_pose)
+void CADSuperimposer::getRightHandObjPoseMap(const Vector& ee_pose, Superimpose::ModelPoseContainer& hand_pose)
 {
-    Superimpose::ObjPose pose;
+    Superimpose::ModelPose pose;
 
     Matrix Ha = axis2dcm(ee_pose.subVector(3, 6));
     Ha.setSubcol(ee_pose.subVector(0, 2), 0, 3);

@@ -16,7 +16,7 @@ using namespace iCub::iKin;
 
 
 BatchCADSuperimposer::BatchCADSuperimposer(const ConstString& port_prefix, const ConstString& robot, const ConstString& camera,
-                                           const Superimpose::ObjFileMap& cad_hand, const ConstString& shader_path) :
+                                           const SICAD::ModelPathContainer& cad_hand, const ConstString& shader_path) :
     CADSuperimposer(port_prefix, robot, camera, cad_hand, shader_path)
 {
     yInfo() << log_ID_ << "Invoked BatchCADSuperimposer (derived class) ctor...";
@@ -133,11 +133,11 @@ Vector BatchCADSuperimposer::getTorsoEncoders()
 }
 
 
-void BatchCADSuperimposer::getExtraObjPoseMap(Superimpose::ObjPoseMap& hand_pose)
+void BatchCADSuperimposer::getExtraObjPoseMap(Superimpose::ModelPoseContainer& hand_pose)
 {
     if (view_forearm_)
     {
-        Superimpose::ObjPose pose;
+        Superimpose::ModelPose pose;
 
         right_arm_.setAng(CTRL_DEG2RAD * readRootToEE());
 

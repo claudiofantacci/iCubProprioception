@@ -138,8 +138,8 @@ void SkeletonSuperimposer::run()
                 right_finger_[i].setAng(CTRL_DEG2RAD * chainjoints);
             }
 
-            Superimpose::ObjPoseMap hand_pose;
-            Superimpose::ObjPose    pose;
+            Superimpose::ModelPoseContainer hand_pose;
+            Superimpose::ModelPose          pose;
             pose.assign(ee_x.data(), ee_x.data()+3);
             hand_pose.emplace("palm", pose);
             for (unsigned int fng = 0; fng < 3; ++fng)

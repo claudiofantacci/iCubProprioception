@@ -17,7 +17,7 @@ class iKinCADSuperimposer : public CADSuperimposer
 {
 public:
     iKinCADSuperimposer(const yarp::os::ConstString& port_prefix, const yarp::os::ConstString& robot, const yarp::os::ConstString& camera,
-                        const Superimpose::ObjFileMap& cad_hand, const yarp::os::ConstString& shader_path);
+                        const SICAD::ModelPathContainer& cad_hand, const yarp::os::ConstString& shader_path);
 
     ~iKinCADSuperimposer() noexcept;
 
@@ -38,7 +38,7 @@ protected:
 
     yarp::sig::Vector getTorsoEncoders() override;
 
-    void getExtraObjPoseMap(Superimpose::ObjPoseMap& hand_pose) override;
+    void getExtraObjPoseMap(Superimpose::ModelPoseContainer& hand_pose) override;
 
 
     bool setHeadRemoteControlboard();
@@ -58,12 +58,12 @@ private:
     yarp::dev::PolyDriver         drv_right_hand_analog_;
 #endif
 
-    yarp::dev::IEncoders        * itf_head_encoders_;
-    yarp::dev::IEncoders        * itf_torso_encoders_;
-    yarp::dev::IEncoders        * itf_right_arm_encoders_;
+    yarp::dev::IEncoders*         itf_head_encoders_;
+    yarp::dev::IEncoders*         itf_torso_encoders_;
+    yarp::dev::IEncoders*         itf_right_arm_encoders_;
     yarp::dev::ICartesianControl* itf_right_arm_cart_;
 #if ICP_USE_ANALOGS == 1
-    yarp::dev::IAnalogSensor    * itf_right_hand_analog_;
+    yarp::dev::IAnalogSensor*     itf_right_hand_analog_;
 #endif
 
     iCub::iKin::iCubArm           right_arm_;
