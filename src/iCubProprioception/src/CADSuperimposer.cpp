@@ -85,8 +85,8 @@ CADSuperimposer::CADSuperimposer(const ConstString& port_prefix, const ConstStri
             cam_height_ = 240;
             cam_fx_     = 257.34;
             cam_cx_     = 160;
-            cam_fy_     = 120;
-            cam_cy_     = 257.34;
+            cam_fy_     = 257.34;
+            cam_cy_     = 120;
         }
     }
     yInfo() << log_ID_ << "[CAM]" << "Running with:";
