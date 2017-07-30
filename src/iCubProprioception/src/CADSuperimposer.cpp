@@ -125,7 +125,9 @@ CADSuperimposer::CADSuperimposer(const ConstString& port_prefix, const ConstStri
 
     drawer_ = new SICAD(cad_hand_,
                         cam_width_, cam_height_, cam_fx_, cam_fy_, cam_cx_, cam_cy_,
-                        1, shader_path_);
+                        1,
+                        {1.0, 0.0, 0.0, M_PI},
+                        shader_path_);
 
     drawer_->setBackgroundOpt(true);
     drawer_->setWireframeOpt(true);
