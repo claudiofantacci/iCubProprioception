@@ -157,7 +157,7 @@ void CADSuperimposer::run()
 
     while (!isStopping())
     {
-        ImageOf<PixelRgb>* imgin  = inport_renderer_img_.read(true);
+        ImageOf<PixelRgb>* imgin  = inport_renderer_img_.read(false);
 
         if (imgin != NULL)
         {

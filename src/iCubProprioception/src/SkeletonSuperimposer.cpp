@@ -114,7 +114,7 @@ void SkeletonSuperimposer::run()
 
     while (!isStopping())
     {
-        ImageOf<PixelRgb>* imgin = inport_skeleton_img_.read(true);
+        ImageOf<PixelRgb>* imgin = inport_skeleton_img_.read(false);
 
         if (imgin != YARP_NULLPTR)
         {
