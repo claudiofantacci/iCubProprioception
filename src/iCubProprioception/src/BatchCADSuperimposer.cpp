@@ -80,6 +80,18 @@ BatchCADSuperimposer::BatchCADSuperimposer(const ConstString& port_prefix, const
 BatchCADSuperimposer::~BatchCADSuperimposer() noexcept { }
 
 
+void BatchCADSuperimposer::onStop()
+{
+    if (!inport_pose_ext_.isClosed())           inport_pose_ext_.interrupt();
+    if (!inport_head_enc_.isClosed())           inport_head_enc_.interrupt();
+    if (!inport_torso_enc_.isClosed())          inport_torso_enc_.interrupt();
+    if (!inport_right_arm_enc_.isClosed())      inport_right_arm_enc_.interrupt();
+    if (!inport_right_hand_analogs_.isClosed()) inport_right_hand_analogs_.interrupt();
+
+    CADSuperimposer::onStop();
+}
+
+
 void BatchCADSuperimposer::threadRelease()
 {
     if (!inport_pose_ext_.isClosed())           inport_pose_ext_.close();

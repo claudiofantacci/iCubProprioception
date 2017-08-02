@@ -21,6 +21,8 @@ public:
 
     ~BatchCADSuperimposer() noexcept;
 
+    void onStop() override;
+
     void threadRelease() override;
 
 protected:
