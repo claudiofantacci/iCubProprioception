@@ -292,7 +292,7 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
 
 bool SuperimposerHandler::updateModule()
 {
-    glfwPollEvents();
+    glfwWaitEventsTimeout(1.0);
 
     return true;
 }
@@ -444,9 +444,9 @@ bool SuperimposerHandler::close_fingers()
 
 std::string SuperimposerHandler::quit()
 {
-    yInfo() << log_ID_ << "Quitting...";
+    yInfo() << log_ID_ << "Invoked quit.";
 
-    this->stopModule();
+    stopModule();
 
     return "[bye]";
 }

@@ -30,7 +30,7 @@ public:
 
     SuperimposerHandler(const yarp::os::ConstString& project_name);
 
-    double getPeriod() override { return 0.033; }
+    double getPeriod() override { return 0.0; }
 
     bool   configure(yarp::os::ResourceFinder& rf) override;
     
