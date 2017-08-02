@@ -86,12 +86,12 @@ void iKinCADSuperimposer::threadRelease()
 
 Vector iKinCADSuperimposer::getEndEffectorPose()
 {
+    Vector ee_pose = zeros(7);
     Vector ee_x(3);
     Vector ee_o(4);
 
-    itf_right_arm_cart_->getPose(ee_x, ee_o);
-
-    Vector ee_pose(7);
+    if (!itf_right_arm_cart_->getPose(ee_x, ee_o))
+        return ee_pose;
 
     ee_pose.setSubvector(0, ee_x);
     ee_pose.setSubvector(3, ee_o);
@@ -102,12 +102,18 @@ Vector iKinCADSuperimposer::getEndEffectorPose()
 
 Vector iKinCADSuperimposer::getHeadEncoders()
 {
+    Vector enc_head = zeros(1);
+
     int enc_num;
-    itf_head_encoders_->getAxes(&enc_num);
+    if (!itf_head_encoders_->getAxes(&enc_num))
+        return enc_head;
 
-    Vector enc_head(enc_num);
-
-    itf_head_encoders_->getEncoders(enc_head.data());
+    enc_head = zeros(enc_num);
+    if (!itf_head_encoders_->getEncoders(enc_head.data()))
+    {
+        enc_head.zero();
+        return enc_head;
+    }
 
     return enc_head;
 }
@@ -115,12 +121,18 @@ Vector iKinCADSuperimposer::getHeadEncoders()
 
 Vector iKinCADSuperimposer::getRightArmEncoders()
 {
+    Vector enc_arm = zeros(1);
+
     int enc_num;
-    itf_right_arm_encoders_->getAxes(&enc_num);
+    if (!itf_right_arm_encoders_->getAxes(&enc_num))
+        return enc_arm;
 
-    Vector enc_arm(enc_num);
-
-    itf_right_arm_encoders_->getEncoders(enc_arm.data());
+    enc_arm = zeros(enc_num);
+    if (!itf_right_arm_encoders_->getEncoders(enc_arm.data()))
+    {
+        enc_arm.zero();
+        return enc_arm;
+    }
 
     return enc_arm;
 }
@@ -129,26 +141,38 @@ Vector iKinCADSuperimposer::getRightArmEncoders()
 #if ICP_USE_ANALOGS == 1
 Vector iKinCADSuperimposer::getRightHandAnalogs()
 {
+    Vector analog_arm = zeros(1);
+
     int enc_num;
-    itf_right_hand_analog_->getAxes(&enc_num);
+    if (!itf_right_hand_analog_->getAxes(&enc_num))
+        return analog_arm;
 
-    Vector enc_arm(enc_num);
+    analog_arm = zeros(enc_num);
+    if (!itf_right_hand_analog_->getEncoders(analog_arm.data()))
+    {
+        analog_arm.zero();
+        return analog_arm;
+    }
 
-    itf_right_hand_analog_->getEncoders(enc_arm.data());
-
-    return enc_arm;
+    return analog_arm;
 }
 #endif
 
 
 Vector iKinCADSuperimposer::getTorsoEncoders()
 {
+    Vector enc_torso = zeros(1);
+
     int enc_num;
-    itf_torso_encoders_->getAxes(&enc_num);
+    if (!itf_torso_encoders_->getAxes(&enc_num))
+        return enc_torso;
 
-    Vector enc_torso(enc_num);
-
-    itf_torso_encoders_->getEncoders(enc_torso.data());
+    enc_torso = zeros(enc_num);
+    if (!itf_torso_encoders_->getEncoders(enc_torso.data()))
+    {
+        enc_torso.zero();
+        return enc_torso;
+    }
 
     std::swap(enc_torso(0), enc_torso(2));
 
@@ -158,9 +182,13 @@ Vector iKinCADSuperimposer::getTorsoEncoders()
 
 void iKinCADSuperimposer::getExtraObjPoseMap(Superimpose::ModelPoseContainer& hand_pose)
 {
+    Vector root_ee_enc = readRootToEE();
+    if (root_ee_enc == zeros(root_ee_enc.size()))
+        return;
+
     Superimpose::ModelPose pose;
 
-    right_arm_.setAng(CTRL_DEG2RAD * readRootToEE());
+    right_arm_.setAng(CTRL_DEG2RAD * root_ee_enc);
 
     Matrix H_forearm = right_arm_.getH(7, true);
 
@@ -315,11 +343,17 @@ bool iKinCADSuperimposer::setArmCartesianController()
 
 Vector iKinCADSuperimposer::readRootToEE()
 {
+    Vector root_ee_enc = zeros(10);
+
     Vector enc_arm = getRightArmEncoders();
+    if (enc_arm == zeros(enc_arm.size()))
+        return root_ee_enc;
 
-    Vector root_ee_enc(10);
+    Vector enc_torso = getTorsoEncoders();
+    if (enc_torso == zeros(enc_torso.size()))
+        return enc_torso;
 
-    root_ee_enc.setSubvector(0, getTorsoEncoders());
+    root_ee_enc.setSubvector(0, enc_torso);
 
     for (size_t i = 0; i < 7; ++i)
         root_ee_enc(i+3) = enc_arm(i);

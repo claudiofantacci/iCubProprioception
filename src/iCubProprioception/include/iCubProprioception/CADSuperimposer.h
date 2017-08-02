@@ -77,6 +77,13 @@ private:
 
     SICAD*                           drawer_;
 
+
+    yarp::sig::ImageOf<yarp::sig::PixelRgb>* imgin_ = YARP_NULLPTR;
+    yarp::sig::Vector                        root_eye_enc_;
+    yarp::sig::Vector                        ee_pose_;
+    yarp::sig::Vector                        encs_arm_;
+
+
     yarp::os::Port                                                  port_command_;
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb>> inport_renderer_img_;
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb>> outport_renderer_img_;

@@ -54,13 +54,10 @@ void ExtCADSuperimposer::threadRelease()
 
 yarp::sig::Vector ExtCADSuperimposer::getEndEffectorPose()
 {
-    Vector* estimates_mean = inport_pose_ext_.read(synch_);
+    Vector* ext_ee_pose = inport_pose_ext_.read(synch_);
 
-    if (estimates_mean        != YARP_NULLPTR) ext_pose_copy_ = *estimates_mean;
-    if (ext_pose_copy_.size() == 0 &&
-        !inport_pose_ext_.isClosed())          ext_pose_copy_ = *(inport_pose_ext_.read(true));
-
-    return ext_pose_copy_;
+    if   (ext_ee_pose != YARP_NULLPTR) return *ext_ee_pose;
+    else                               return zeros(1);
 }
 
 

@@ -107,31 +107,37 @@ SkeletonSuperimposer::~SkeletonSuperimposer() noexcept
 
 void SkeletonSuperimposer::run()
 {
+    ImageOf<PixelRgb>* tmp_imgin = YARP_NULLPTR;
     Vector ee_x(3);
     Vector ee_o(4);
     Vector cam_x(3);
     Vector cam_o(4);
+    Vector encs(num_right_arm_enc_);
 
     while (!isStopping())
     {
-        ImageOf<PixelRgb>* imgin = inport_skeleton_img_.read(false);
+        bool have_data = true;
 
-        if (imgin != YARP_NULLPTR)
+        tmp_imgin = inport_skeleton_img_.read(false);
+        if (tmp_imgin != YARP_NULLPTR)
+            imgin_ = tmp_imgin;
+
+        have_data     &= itf_right_arm_cart_->getPose(ee_x, ee_o);
+
+        if (camera_ == "left")
+            have_data &= itf_head_gaze_->getLeftEyePose(cam_x, cam_o);
+        else
+            have_data &= itf_head_gaze_->getRightEyePose(cam_x, cam_o);
+
+        have_data     &= itf_right_arm_encoders_->getEncoders(encs.data());
+
+        if (imgin_ != YARP_NULLPTR && have_data)
         {
-            itf_right_arm_cart_->getPose(ee_x, ee_o);
-
-            if (camera_ == "left")
-                itf_head_gaze_->getLeftEyePose(cam_x, cam_o);
-            else
-                itf_head_gaze_->getRightEyePose(cam_x, cam_o);
-
             Matrix Ha = axis2dcm(ee_o);
             ee_x.push_back(1.0);
             Ha.setCol(3, ee_x);
 
-            Vector encs(static_cast<size_t>(num_right_arm_enc_));
             Vector chainjoints;
-            itf_right_arm_encoders_->getEncoders(encs.data());
             for (unsigned int i = 0; i < 3; ++i)
             {
                 right_finger_[i].getChainJoints(encs, chainjoints);
@@ -171,7 +177,7 @@ void SkeletonSuperimposer::run()
             }
 
             ImageOf<PixelRgb>& imgout = outport_skeleton_img_.prepare();
-            imgout = *imgin;
+            imgout = *imgin_;
 
             cv::Mat img = cv::cvarrToMat(imgout.getIplImage());
             drawer_->superimpose(hand_pose, cam_x.data(), cam_o.data(), img);
@@ -190,12 +196,14 @@ void SkeletonSuperimposer::onStop()
 
 void SkeletonSuperimposer::threadRelease()
 {
-    yInfo() << log_ID_ << "Deallocating resource of hand skeleton drawing thread.";
+    yInfo() << log_ID_ << "Deallocating resource...";
 
-    outport_skeleton_img_.interrupt();
 
     if (!inport_skeleton_img_.isClosed())  inport_skeleton_img_.close();
     if (!outport_skeleton_img_.isClosed()) outport_skeleton_img_.close();
+
+
+    yInfo() << log_ID_ << "...deallocation completed!";
 }
 
 
