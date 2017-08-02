@@ -58,7 +58,7 @@ private:
     yarp::sig::Vector   ext_pose_copy_;
 
 
-    bool synch_ = true;
+    bool synch_ = false;
 
     bool view_forearm_ = false;
 

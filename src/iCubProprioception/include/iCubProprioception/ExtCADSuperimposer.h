@@ -36,10 +36,9 @@ protected:
 
 private:
     yarp::sig::Vector                         ext_pose_copy_;
+    bool view_forearm_ = false;
 
-    bool                                      view_forearm_ = false;
-
-    bool                                      synch_ = true;
+    bool synch_ = false;
 
     yarp::os::BufferedPort<yarp::sig::Vector> inport_pose_ext_;
 };
