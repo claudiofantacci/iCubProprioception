@@ -196,10 +196,14 @@ void SkeletonSuperimposer::onStop()
 
 void SkeletonSuperimposer::threadRelease()
 {
-    yInfo() << log_ID_ << "Deallocating resource of hand skeleton drawing thread.";
+    yInfo() << log_ID_ << "Deallocating resource...";
+
 
     if (!inport_skeleton_img_.isClosed())  inport_skeleton_img_.close();
     if (!outport_skeleton_img_.isClosed()) outport_skeleton_img_.close();
+
+
+    yInfo() << log_ID_ << "...deallocation completed!";
 }
 
 
