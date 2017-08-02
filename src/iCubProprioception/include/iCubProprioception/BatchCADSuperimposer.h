@@ -55,8 +55,6 @@ protected:
 private:
     iCub::iKin::iCubArm right_arm_;
 
-    yarp::sig::Vector   ext_pose_copy_;
-
 
     bool synch_ = false;
 
@@ -65,6 +63,7 @@ private:
 
     yarp::sig::Vector readRootToEE();
 
+    yarp::sig::Vector readFromBufferedPort(yarp::os::BufferedPort<yarp::sig::Vector>& bp);
     
     yarp::os::BufferedPort<yarp::sig::Vector> inport_pose_ext_;
     yarp::os::BufferedPort<yarp::sig::Vector> inport_head_enc_;

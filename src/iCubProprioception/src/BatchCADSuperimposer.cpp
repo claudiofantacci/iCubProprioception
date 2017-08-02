@@ -94,38 +94,36 @@ void BatchCADSuperimposer::threadRelease()
 
 Vector BatchCADSuperimposer::getEndEffectorPose()
 {
-    Vector* estimates_mean = inport_pose_ext_.read(synch_);
-
-    if (estimates_mean        != YARP_NULLPTR) ext_pose_copy_ = *estimates_mean;
-    if (ext_pose_copy_.size() == 0)            ext_pose_copy_ = *(inport_pose_ext_.read(true));
-
-    return ext_pose_copy_;
+    return readFromBufferedPort(inport_pose_ext_);
 }
 
 
 Vector BatchCADSuperimposer::getHeadEncoders()
 {
-    return *(inport_head_enc_.read(true));
+    return readFromBufferedPort(inport_head_enc_);
 }
 
 
 Vector BatchCADSuperimposer::getRightArmEncoders()
 {
-    return *(inport_right_arm_enc_.read(true));
+    return readFromBufferedPort(inport_right_arm_enc_);
 }
 
 
 #if ICP_USE_ANALOGS == 1
 Vector BatchCADSuperimposer::getRightHandAnalogs()
 {
-    return *(inport_right_hand_analogs_.read(true));
+    return readFromBufferedPort(inport_right_hand_analogs_);
 }
 #endif
 
 
 Vector BatchCADSuperimposer::getTorsoEncoders()
 {
-    Vector enc_torso = *(inport_torso_enc_.read(true));
+    Vector enc_torso = readFromBufferedPort(inport_torso_enc_);
+
+    if (enc_torso == zeros(enc_torso.size()))
+        return enc_torso;
 
     std::swap(enc_torso(0), enc_torso(2));
 
@@ -137,9 +135,13 @@ void BatchCADSuperimposer::getExtraObjPoseMap(Superimpose::ModelPoseContainer& h
 {
     if (view_forearm_)
     {
+        Vector root_ee_enc = readRootToEE();
+        if (root_ee_enc == zeros(root_ee_enc.size()))
+            return;
+
         Superimpose::ModelPose pose;
 
-        right_arm_.setAng(CTRL_DEG2RAD * readRootToEE());
+        right_arm_.setAng(CTRL_DEG2RAD * root_ee_enc);
 
         Matrix H_forearm = right_arm_.getH(7, true);
 
@@ -148,24 +150,9 @@ void BatchCADSuperimposer::getExtraObjPoseMap(Superimpose::ModelPoseContainer& h
 
         pose.assign(j_x.data(), j_x.data()+3);
         pose.insert(pose.end(), j_o.data(), j_o.data()+4);
-
+        
         hand_pose.emplace("forearm", pose);
     }
-}
-
-
-Vector BatchCADSuperimposer::readRootToEE()
-{
-    Vector enc_arm = getRightArmEncoders();
-    
-    Vector root_ee_enc(10);
-    
-    root_ee_enc.setSubvector(0, getTorsoEncoders());
-    
-    for (size_t i = 0; i < 7; ++i)
-        root_ee_enc(i+3) = enc_arm(i);
-    
-    return root_ee_enc;
 }
 
 
@@ -182,4 +169,34 @@ bool BatchCADSuperimposer::render_extra_mesh(const bool status)
     view_forearm_ = status;
 
     return true;
+}
+
+
+Vector BatchCADSuperimposer::readRootToEE()
+{
+    Vector root_ee_enc = zeros(10);
+
+    Vector enc_arm = getRightArmEncoders();
+    if (enc_arm == zeros(enc_arm.size()))
+        return root_ee_enc;
+
+    Vector enc_torso = getTorsoEncoders();
+    if (enc_torso == zeros(enc_torso.size()))
+        return enc_torso;
+
+    root_ee_enc.setSubvector(0, enc_torso);
+
+    for (size_t i = 0; i < 7; ++i)
+        root_ee_enc(i+3) = enc_arm(i);
+
+    return root_ee_enc;
+}
+
+
+Vector BatchCADSuperimposer::readFromBufferedPort(BufferedPort<Vector>& bp)
+{
+    Vector* data = bp.read(synch_);
+
+    if (data != YARP_NULLPTR) return *data;
+    else                      return zeros(1);
 }
