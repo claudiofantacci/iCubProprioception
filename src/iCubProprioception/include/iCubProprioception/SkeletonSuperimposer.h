@@ -66,6 +66,10 @@ private:
 
     SISkeleton*                    drawer_;
 
+
+    yarp::sig::ImageOf<yarp::sig::PixelRgb>* imgin_ = YARP_NULLPTR;
+
+
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb>> inport_skeleton_img_;
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb>> outport_skeleton_img_;
 };

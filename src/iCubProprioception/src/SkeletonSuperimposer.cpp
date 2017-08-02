@@ -107,7 +107,7 @@ SkeletonSuperimposer::~SkeletonSuperimposer() noexcept
 
 void SkeletonSuperimposer::run()
 {
-    ImageOf<PixelRgb>* imgin = YARP_NULLPTR;
+    ImageOf<PixelRgb>* tmp_imgin = YARP_NULLPTR;
     Vector ee_x(3);
     Vector ee_o(4);
     Vector cam_x(3);
@@ -118,7 +118,9 @@ void SkeletonSuperimposer::run()
     {
         bool have_data = true;
 
-        imgin          = inport_skeleton_img_.read(false);
+        tmp_imgin = inport_skeleton_img_.read(false);
+        if (tmp_imgin != YARP_NULLPTR)
+            imgin_ = tmp_imgin;
 
         have_data     &= itf_right_arm_cart_->getPose(ee_x, ee_o);
 
@@ -129,7 +131,7 @@ void SkeletonSuperimposer::run()
 
         have_data     &= itf_right_arm_encoders_->getEncoders(encs.data());
 
-        if (imgin != YARP_NULLPTR && have_data)
+        if (imgin_ != YARP_NULLPTR && have_data)
         {
             Matrix Ha = axis2dcm(ee_o);
             ee_x.push_back(1.0);
@@ -175,7 +177,7 @@ void SkeletonSuperimposer::run()
             }
 
             ImageOf<PixelRgb>& imgout = outport_skeleton_img_.prepare();
-            imgout = *imgin;
+            imgout = *imgin_;
 
             cv::Mat img = cv::cvarrToMat(imgout.getIplImage());
             drawer_->superimpose(hand_pose, cam_x.data(), cam_o.data(), img);

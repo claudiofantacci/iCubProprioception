@@ -149,34 +149,45 @@ CADSuperimposer::~CADSuperimposer() noexcept
 
 void CADSuperimposer::run()
 {
-    ImageOf<PixelRgb>* imgin = YARP_NULLPTR;
-    Vector root_eye_enc(8);
-    Vector cam_pose(7);
-    Vector ee_pose(7);
-    Vector encs_arm(16);
+    ImageOf<PixelRgb>* tmp_imgin = YARP_NULLPTR;
+    Vector tmp_root_eye_enc(8);
+    Vector tmp_cam_pose(7);
+    Vector tmp_ee_pose(7);
+    Vector tmp_encs_arm(16);
 
     while (!isStopping())
     {
-        imgin        = inport_renderer_img_.read(false);
-        root_eye_enc = readRootToEye(camera_);
-        ee_pose      = getEndEffectorPose();
-        encs_arm     = getRightArmEncoders();
+        tmp_imgin = inport_renderer_img_.read(false);
+        if (tmp_imgin != YARP_NULLPTR)
+            imgin_ = tmp_imgin;
 
-        if (  imgin        != YARP_NULLPTR                &&
-            !(root_eye_enc == zeros(root_eye_enc.size())) &&
-            !(ee_pose      == zeros(ee_pose.size()))      &&
-            !(encs_arm     == zeros(encs_arm.size())))
+        tmp_root_eye_enc = readRootToEye(camera_);
+        if (!(tmp_root_eye_enc == zeros(tmp_root_eye_enc.size())))
+            root_eye_enc_ = tmp_root_eye_enc;
+
+        tmp_ee_pose = getEndEffectorPose();
+        if (!(tmp_ee_pose == zeros(tmp_ee_pose.size())))
+            ee_pose_ = tmp_ee_pose;
+
+        tmp_encs_arm = getRightArmEncoders();
+        if (!(tmp_encs_arm == zeros(tmp_encs_arm.size())))
+            encs_arm_ = tmp_encs_arm;
+
+        if (  imgin_        != YARP_NULLPTR                 &&
+            !(root_eye_enc_ == zeros(root_eye_enc_.size())) &&
+            !(ee_pose_      == zeros(ee_pose_.size()))      &&
+            !(encs_arm_     == zeros(encs_arm_.size())))
         {
-            eye_.setAng(CTRL_DEG2RAD * root_eye_enc);
-            cam_pose = eye_.EndEffPose();
+            eye_.setAng(CTRL_DEG2RAD * root_eye_enc_);
+            Vector cam_pose = eye_.EndEffPose();
 
-            if (ee_pose.size() == 6)
+            if (ee_pose_.size() == 6)
             {
-                double ang =  norm(ee_pose.subVector(3, 5));
-                ee_pose(3) /= ang;
-                ee_pose(4) /= ang;
-                ee_pose(5) /= ang;
-                ee_pose.push_back(ang);
+                double ang =  norm(ee_pose_.subVector(3, 5));
+                ee_pose_(3) /= ang;
+                ee_pose_(4) /= ang;
+                ee_pose_(5) /= ang;
+                ee_pose_.push_back(ang);
             }
 
 #if ICP_USE_ANALOGS == 1
@@ -189,22 +200,22 @@ void CADSuperimposer::run()
             for (unsigned int i = 0; i < 3; ++i)
             {
 #if ICP_USE_ANALOGS == 1
-                right_finger_[i].getChainJoints(encs_arm, analogs, chainjoints);
+                right_finger_[i].getChainJoints(encs_arm_, analogs, chainjoints);
 #else
-                right_finger_[i].getChainJoints(encs_arm, chainjoints);
+                right_finger_[i].getChainJoints(encs_arm_, chainjoints);
 #endif
 
                 right_finger_[i].setAng(CTRL_DEG2RAD * chainjoints);
             }
 
             Superimpose::ModelPoseContainer hand_pose;
-            getRightHandObjPoseMap(ee_pose, hand_pose);
+            getRightHandObjPoseMap(ee_pose_, hand_pose);
             getExtraObjPoseMap(hand_pose);
 
             ImageOf<PixelRgb>& imgout = outport_renderer_img_.prepare();
-            imgout = *imgin;
-            cv::Mat img = cv::cvarrToMat(imgout.getIplImage(), true);
+            imgout = *imgin_;
 
+            cv::Mat img = cv::cvarrToMat(imgout.getIplImage());
             drawer_->superimpose(hand_pose, cam_pose.data(), cam_pose.data()+3, img);
 
             outport_renderer_img_.write();
