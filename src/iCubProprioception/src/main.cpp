@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
     rf.setDefaultContext("iCubProprioception");
     rf.configure(argc, argv);
 
-    /* SuperimposerFactory, derived from RFModule, must be declared, initialized and run in the main thread (thread_0). */
+    /* SuperimposerHandler, derived from RFModule, must be declared, initialized and run in the main thread (thread_0). */
     SuperimposerHandler sh("iCubProprioception");
     sh.runModule(rf);
 
