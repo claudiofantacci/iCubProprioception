@@ -23,8 +23,8 @@ set(${EXE_TARGET_NAME}_THRIFT_HDR
         thrift/idl_mesh.thrift)
 
 # Dependencies
-find_package(GLEW            REQUIRED)
-find_package(GLFW3           REQUIRED)
+find_package(glew            REQUIRED)
+find_package(glfw3           REQUIRED)
 find_package(ICUB            REQUIRED)
 find_package(OpenCV          REQUIRED)
 find_package(OpenGL          REQUIRED)
