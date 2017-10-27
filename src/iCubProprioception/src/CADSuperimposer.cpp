@@ -127,7 +127,8 @@ CADSuperimposer::CADSuperimposer(const ConstString& port_prefix, const ConstStri
                         cam_width_, cam_height_, cam_fx_, cam_fy_, cam_cx_, cam_cy_,
                         1,
                         {1.0, 0.0, 0.0, M_PI},
-                        shader_path_);
+                        shader_path_,
+                        false);
 
     drawer_->setBackgroundOpt(true);
     drawer_->setWireframeOpt(true);
