@@ -12,7 +12,7 @@
     <!-- GENERIC INFORMATION-->
     <name>BackgroundApps-SIM</name>
     <description>Background applications for iCubSim-based simulations</description>
-    <version>2.0.1</version>
+    <version>3.0.0</version>
 
     <authors>
         <author email="claudio.fantacci@iit.it">Claudio Fantacci</author>
@@ -29,15 +29,6 @@
     <module>
         <name>iCub_SIM</name>
 		<node>vmdeb</node>
-        <dependencies>
-            <port timeout="5.0">/yarplogger</port>
-        </dependencies>
-    </module>
-
-    <module>
-        <name>gazebo</name>
-        <node>yarprun</node>
-        <parameters>-s libgazebo_yarp_clock.so --verbose</parameters>
         <dependencies>
             <port timeout="5.0">/yarplogger</port>
         </dependencies>
