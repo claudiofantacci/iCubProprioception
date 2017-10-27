@@ -140,7 +140,7 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
     setRightArmRemoteControlboard();
 
     /* Right arm cartesian controler. */
-    if (setRightArmCartesianController()) setTorsoDOF();
+    setRightArmCartesianController();
 
     /* Head control board. */
     setHeadRemoteControlboard();
@@ -566,20 +566,6 @@ bool SuperimposerHandler::setRightArmCartesianController()
         return false;
     }
 
-    if (!itf_rightarm_cart_->setTrajTime(2.5))
-    {
-        yError() << log_ID_ << "Error setting ICartesianControl trajectory time.";
-        return false;
-    }
-    yInfo() << log_ID_ << "Succesfully set ICartesianControl trajectory time!";
-
-    if (!itf_rightarm_cart_->setInTargetTol(0.01))
-    {
-        yError() << log_ID_ << "Error setting ICartesianControl target tolerance.";
-        return false;
-    }
-    yInfo() << log_ID_ << "Succesfully set ICartesianControl target tolerance!";
-
     return true;
 }
 
@@ -636,28 +622,6 @@ bool SuperimposerHandler::setGazeController()
         yError() << log_ID_ << "Gaze control device not available.";
         return false;
     }
-
-    return true;
-}
-
-
-bool SuperimposerHandler::setTorsoDOF()
-{
-    Vector curDOF;
-    itf_rightarm_cart_->getDOF(curDOF);
-    yInfo() << log_ID_ << "Old DOF: [" + curDOF.toString(0) + "].";
-    yInfo() << log_ID_ << "Setting iCub to use the DOF from the torso.";
-    Vector newDOF(curDOF);
-    newDOF[0] = 1;
-    newDOF[1] = 2;
-    newDOF[2] = 1;
-    if (!itf_rightarm_cart_->setDOF(newDOF, curDOF))
-    {
-        yError() << log_ID_ << "Cannot use torso DOF.";
-        return false;
-    }
-    yInfo() << log_ID_ << "Setting the DOF done.";
-    yInfo() << log_ID_ << "New DOF: [" + curDOF.toString(0) + "]";
 
     return true;
 }

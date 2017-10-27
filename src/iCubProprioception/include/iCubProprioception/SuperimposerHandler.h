@@ -62,8 +62,6 @@ protected:
 
     bool setGazeController();
 
-    bool setTorsoDOF();
-
     bool setCommandPort();
 
     bool moveFingers(const double joint[6]);
