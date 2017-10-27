@@ -27,8 +27,8 @@ icubcontrib_add_uninstall_target()
 option(INSTALL_SIM_APP "Install yarpmanager applications for the iCub_SIM" OFF)
 
 # Build test related commands?
-option(BUILD_TESTING "Create tests using CMake" OFF)
-if(BUILD_TESTING)
+option(BUILD_TESTS "Create tests using CMake" OFF)
+if(BUILD_TESTS)
     enable_testing()
 endif()
 
@@ -43,8 +43,3 @@ add_install_rpath_support(BIN_DIRS "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BIND
 
 ### Compile- and install-related commands
 add_subdirectory(src)
-
-# Add integration tests (unit tests for each library should be in each sublibrary directory)
-if(BUILD_TESTING)
-    add_subdirectory(test)
-endif()
