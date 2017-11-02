@@ -16,8 +16,10 @@
 class ExtCADSuperimposer : public iKinCADSuperimposer
 {
 public:
-    ExtCADSuperimposer(const yarp::os::ConstString& port_prefix, const yarp::os::ConstString& robot, const yarp::os::ConstString& camera,
-                       const SICAD::ModelPathContainer& cad_hand, const yarp::os::ConstString& shader_path);
+    ExtCADSuperimposer(const yarp::os::ConstString& robot, const yarp::os::ConstString& camera,
+                       const SICAD::ModelPathContainer& cad_hand, const yarp::os::ConstString& shader_path,
+                       const yarp::os::ConstString& port_prefix,
+                       const bool draw_thumb, const bool draw_forearm);
 
     ~ExtCADSuperimposer() noexcept;
 

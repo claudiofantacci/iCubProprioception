@@ -17,14 +17,18 @@ using namespace iCub::ctrl;
 using namespace iCub::iKin;
 
 
-CADSuperimposer::CADSuperimposer(const ConstString& port_prefix, const ConstString& robot, const ConstString& camera,
-                                 const SICAD::ModelPathContainer& cad_hand, const ConstString& shader_path) :
+CADSuperimposer::CADSuperimposer(const yarp::os::ConstString& robot, const yarp::os::ConstString& camera,
+                                 const SICAD::ModelPathContainer& cad_hand, const yarp::os::ConstString& shader_path,
+                                 const yarp::os::ConstString& port_prefix,
+                                 const bool draw_thumb, const bool draw_forearm) :
     ID_(port_prefix),
     log_ID_("[" + ID_ + "]"),
     robot_(robot),
     camera_(camera),
     cad_hand_(cad_hand),
     shader_path_(shader_path),
+    draw_thumb_(draw_thumb),
+    draw_forearm_(draw_forearm),
     eye_(iCubEye(camera_ + "_v2")),
     right_arm_(iCubArm("right_v2")),
     right_finger_{iCubFinger("right_thumb"), iCubFinger("right_index"), iCubFinger("right_middle")}
@@ -258,7 +262,7 @@ void CADSuperimposer::getRightHandObjPoseMap(const Vector& ee_pose, Superimpose:
 
     pose.assign(ee_pose.data(), ee_pose.data()+7);
     hand_pose.emplace("palm", pose);
-    for (size_t fng = 1; fng < 3; ++fng)
+    for (size_t fng = (draw_thumb_? 0 : 1); fng < 3; ++fng)
     {
         std::string finger_s;
         pose.clear();
@@ -289,15 +293,18 @@ void CADSuperimposer::getRightHandObjPoseMap(const Vector& ee_pose, Superimpose:
             hand_pose.emplace(finger_s, pose);
         }
     }
-    yarp::sig::Matrix invH6 = Ha *
-                              getInvertedH(-0.0625, -0.02598,       0,   -M_PI, -right_arm_.getAng(9)) *
-                              getInvertedH(      0,        0, -M_PI_2, -M_PI_2, -right_arm_.getAng(8));
-    Vector j_x = invH6.getCol(3).subVector(0, 2);
-    Vector j_o = dcm2axis(invH6);
-    pose.clear();
-    pose.assign(j_x.data(), j_x.data()+3);
-    pose.insert(pose.end(), j_o.data(), j_o.data()+4);
-    hand_pose.emplace("forearm", pose);
+    if (draw_forearm_)
+    {
+        yarp::sig::Matrix invH6 = Ha *
+                                  getInvertedH(-0.0625, -0.02598,       0,   -M_PI, -right_arm_.getAng(9)) *
+                                  getInvertedH(      0,        0, -M_PI_2, -M_PI_2, -right_arm_.getAng(8));
+        Vector j_x = invH6.getCol(3).subVector(0, 2);
+        Vector j_o = dcm2axis(invH6);
+        pose.clear();
+        pose.assign(j_x.data(), j_x.data()+3);
+        pose.insert(pose.end(), j_o.data(), j_o.data()+4);
+        hand_pose.emplace("forearm", pose);
+    }
 }
 
 

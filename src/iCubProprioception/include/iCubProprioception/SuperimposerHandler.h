@@ -77,6 +77,8 @@ private:
     bool                          ikin_;
     bool                          ext_;
     bool                          batch_;
+    bool                          draw_thumb_;
+    bool                          draw_forearm_;
 
     yarp::dev::PolyDriver         torso_remote_driver_;
 

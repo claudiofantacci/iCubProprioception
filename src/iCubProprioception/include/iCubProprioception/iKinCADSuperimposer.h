@@ -16,8 +16,10 @@
 class iKinCADSuperimposer : public CADSuperimposer
 {
 public:
-    iKinCADSuperimposer(const yarp::os::ConstString& port_prefix, const yarp::os::ConstString& robot, const yarp::os::ConstString& camera,
-                        const SICAD::ModelPathContainer& cad_hand, const yarp::os::ConstString& shader_path);
+    iKinCADSuperimposer(const yarp::os::ConstString& robot, const yarp::os::ConstString& camera,
+                        const SICAD::ModelPathContainer& cad_hand, const yarp::os::ConstString& shader_path,
+                        const yarp::os::ConstString& port_prefix,
+                        const bool draw_thumb, const bool draw_forearm);
 
     ~iKinCADSuperimposer() noexcept;
 

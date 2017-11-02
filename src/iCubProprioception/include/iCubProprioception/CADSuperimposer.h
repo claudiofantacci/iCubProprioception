@@ -22,8 +22,10 @@ class CADSuperimposer : public yarp::os::Thread,
                         public iCubProprioceptionOGLIDL
 {
 public:
-    CADSuperimposer(const yarp::os::ConstString& port_prefix, const yarp::os::ConstString& robot, const yarp::os::ConstString& camera,
-                    const SICAD::ModelPathContainer& cad_hand, const yarp::os::ConstString& shader_path);
+    CADSuperimposer(const yarp::os::ConstString& robot, const yarp::os::ConstString& camera,
+                    const SICAD::ModelPathContainer& cad_hand, const yarp::os::ConstString& shader_path,
+                    const yarp::os::ConstString& port_prefix,
+                    const bool draw_thumb, const bool draw_forearm);
 
     ~CADSuperimposer() noexcept;
 
@@ -73,6 +75,9 @@ private:
     SICAD*                           drawer_;
     const SICAD::ModelPathContainer& cad_hand_;
     const yarp::os::ConstString      shader_path_;
+
+    bool draw_thumb_;
+    bool draw_forearm_;
 
     yarp::dev::PolyDriver            drv_gaze_;
     yarp::dev::IGazeControl*         itf_gaze_;

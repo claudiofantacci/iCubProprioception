@@ -15,9 +15,14 @@ using namespace iCub::ctrl;
 using namespace iCub::iKin;
 
 
-iKinCADSuperimposer::iKinCADSuperimposer(const ConstString& port_prefix, const ConstString& robot, const ConstString& camera,
-                                         const SICAD::ModelPathContainer& cad_hand, const ConstString& shader_path) :
-    CADSuperimposer(port_prefix, robot, camera, cad_hand, shader_path)
+iKinCADSuperimposer::iKinCADSuperimposer(const ConstString& robot, const ConstString& camera,
+                                         const SICAD::ModelPathContainer& cad_hand, const ConstString& shader_path,
+                                         const ConstString& port_prefix,
+                                         const bool draw_thumb, const bool draw_forearm) :
+    CADSuperimposer(robot, camera,
+                    cad_hand, shader_path,
+                    port_prefix,
+                    draw_thumb, draw_forearm)
 {
     yInfo() << log_ID_ << "Invoked iKinCADSuperimposer (derived class) ctor...";
 
