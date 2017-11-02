@@ -38,8 +38,6 @@ protected:
 
     yarp::sig::Vector getTorsoEncoders() override;
 
-    void getExtraObjPoseMap(Superimpose::ModelPoseContainer& hand_pose) override;
-
 
     bool setHeadRemoteControlboard();
 
@@ -50,6 +48,9 @@ protected:
     bool setArmCartesianController();
     
 private:
+    yarp::sig::Vector readRootToEE();
+
+    
     yarp::dev::PolyDriver         drv_head_remote_;
     yarp::dev::PolyDriver         drv_torso_remote_;
     yarp::dev::PolyDriver         drv_right_arm_remote_;
@@ -65,10 +66,6 @@ private:
 #if ICP_USE_ANALOGS == 1
     yarp::dev::IAnalogSensor*     itf_right_hand_analog_;
 #endif
-
-    iCub::iKin::iCubArm           right_arm_;
-
-    yarp::sig::Vector readRootToEE();
 };
 
 #endif /* IKINCADSUPERIMPOSER_H */

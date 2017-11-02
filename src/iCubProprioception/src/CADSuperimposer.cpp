@@ -19,9 +19,15 @@ using namespace iCub::iKin;
 
 CADSuperimposer::CADSuperimposer(const ConstString& port_prefix, const ConstString& robot, const ConstString& camera,
                                  const SICAD::ModelPathContainer& cad_hand, const ConstString& shader_path) :
-    ID_(port_prefix), log_ID_("[" + ID_ + "]"),
-    robot_(robot), camera_(camera),
-    cad_hand_(cad_hand), shader_path_(shader_path)
+    ID_(port_prefix),
+    log_ID_("[" + ID_ + "]"),
+    robot_(robot),
+    camera_(camera),
+    cad_hand_(cad_hand),
+    shader_path_(shader_path),
+    eye_(iCubEye(camera_ + "_v2")),
+    right_arm_(iCubArm("right_v2")),
+    right_finger_{iCubFinger("right_thumb"), iCubFinger("right_index"), iCubFinger("right_middle")}
 {
     yInfo() << log_ID_ << "Invoked CADSuperimposer (base class) ctor...";
 
@@ -101,19 +107,23 @@ CADSuperimposer::CADSuperimposer(const ConstString& port_prefix, const ConstStri
     /* Initiliaze left eye interface */
     yInfo() << log_ID_ << "Setting" + camera_ + "eye.";
 
-    eye_ = iCubEye(camera_ + "_v2");
     eye_.setAllConstraints(false);
     eye_.releaseLink(0);
     eye_.releaseLink(1);
     eye_.releaseLink(2);
 
 
+    /* Initialize right arm interface */
+    yInfo() << log_ID_ << "Setting right arm.";
+
+    right_arm_.setAllConstraints(false);
+    right_arm_.releaseLink(0);
+    right_arm_.releaseLink(1);
+    right_arm_.releaseLink(2);
+
+
     /* Initialize right hand finger interfaces */
     yInfo() << log_ID_ << "Setting right hand fingers.";
-
-    right_finger_[0] = iCubFinger("right_thumb");
-    right_finger_[1] = iCubFinger("right_index");
-    right_finger_[2] = iCubFinger("right_middle");
 
     right_finger_[0].setAllConstraints(false);
     right_finger_[1].setAllConstraints(false);
@@ -182,20 +192,13 @@ void CADSuperimposer::run()
             eye_.setAng(CTRL_DEG2RAD * root_eye_enc_);
             Vector cam_pose = eye_.EndEffPose();
 
-            if (ee_pose_.size() == 6)
-            {
-                double ang =  norm(ee_pose_.subVector(3, 5));
-                ee_pose_(3) /= ang;
-                ee_pose_(4) /= ang;
-                ee_pose_(5) /= ang;
-                ee_pose_.push_back(ang);
-            }
-
 #if ICP_USE_ANALOGS == 1
             Vector analogs;
             itf_right_hand_analog_->read(analogs);
             yAssert(analogs.size() >= 15);
 #endif
+
+            right_arm_.setAng(encs_arm_.subVector(0, 9) * (M_PI/180.0));
 
             Vector chainjoints;
             for (unsigned int i = 0; i < 3; ++i)
@@ -211,7 +214,6 @@ void CADSuperimposer::run()
 
             Superimpose::ModelPoseContainer hand_pose;
             getRightHandObjPoseMap(ee_pose_, hand_pose);
-            getExtraObjPoseMap(hand_pose);
 
             ImageOf<PixelRgb>& imgout = outport_renderer_img_.prepare();
             imgout = *imgin_;
@@ -287,6 +289,18 @@ void CADSuperimposer::getRightHandObjPoseMap(const Vector& ee_pose, Superimpose:
             hand_pose.emplace(finger_s, pose);
         }
     }
+
+    std::cout << "right_arm_.getAng(9): " << right_arm_.getAng(9) << std::endl;
+    std::cout << "right_arm_.getAng(8): " << right_arm_.getAng(8) << std::endl;
+    yarp::sig::Matrix invH6 = Ha *
+                              getInvertedH(-0.0625, -0.02598,       0,   -M_PI, -right_arm_.getAng(9)) *
+                              getInvertedH(      0,        0, -M_PI_2, -M_PI_2, -right_arm_.getAng(8));
+    Vector j_x = invH6.getCol(3).subVector(0, 2);
+    Vector j_o = dcm2axis(invH6);
+    pose.clear();
+    pose.assign(j_x.data(), j_x.data()+3);
+    pose.insert(pose.end(), j_o.data(), j_o.data()+4);
+    hand_pose.emplace("forearm", pose);
 }
 
 
@@ -307,6 +321,54 @@ bool CADSuperimposer::mesh_wireframe(const bool status)
     drawer_->setWireframeOpt(status);
     
     return true;
+}
+
+
+Matrix CADSuperimposer::getInvertedH(const double a, const double d, const double alpha, const double offset, const double q)
+{
+    /** Table of the DH parameters for the right arm V2.
+     *  Link i  Ai (mm)     d_i (mm)    alpha_i (rad)   theta_i (deg)
+     *  i = 0	32          0           pi/2               0 + (-22 ->    84)
+     *  i = 1	0           -5.5        pi/2             -90 + (-39 ->    39)
+     *  i = 2	-23.3647    -143.3      pi/2            -105 + (-59 ->    59)
+     *  i = 3	0           -107.74     pi/2             -90 + (  5 ->   -95)
+     *  i = 4	0           0           -pi/2            -90 + (  0 -> 160.8)
+     *  i = 5	-15.0       -152.28     -pi/2           -105 + (-37 ->   100)
+     *  i = 6	15.0        0           pi/2               0 + (5.5 ->   106)
+     *  i = 7	0           -141.3      pi/2             -90 + (-50 ->    50)
+     *  i = 8	0           0           pi/2              90 + ( 10 ->   -65)
+     *  i = 9	62.5        25.98       0                180 + (-25 ->    25)
+     **/
+
+    yarp::sig::Matrix H(4, 4);
+
+    double theta = offset + q;
+    double c_th  = cos(theta);
+    double s_th  = sin(theta);
+    double c_al  = cos(alpha);
+    double s_al  = sin(alpha);
+
+    H(0,0) =        c_th;
+    H(0,1) =       -s_th;
+    H(0,2) =           0;
+    H(0,3) =           a;
+
+    H(1,0) = s_th * c_al;
+    H(1,1) = c_th * c_al;
+    H(1,2) =       -s_al;
+    H(1,3) =   -d * s_al;
+
+    H(2,0) = s_th * s_al;
+    H(2,1) = c_th * s_al;
+    H(2,2) =        c_al;
+    H(2,3) =    d * c_al;
+    
+    H(3,0) =           0;
+    H(3,1) =           0;
+    H(3,2) =           0;
+    H(3,3) =           1;
+    
+    return H;
 }
 
 

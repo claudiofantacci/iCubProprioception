@@ -28,15 +28,9 @@ public:
 protected:
     yarp::sig::Vector getEndEffectorPose() override;
 
-    void getExtraObjPoseMap(Superimpose::ModelPoseContainer& hand_pose) override;
-
     bool sync_input(const bool status) override;
 
-    bool render_extra_mesh(const bool status) override;
-
 private:
-    bool view_forearm_ = false;
-
     bool synch_ = false;
 
     

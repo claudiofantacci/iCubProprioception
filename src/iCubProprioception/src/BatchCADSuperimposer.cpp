@@ -61,18 +61,6 @@ BatchCADSuperimposer::BatchCADSuperimposer(const ConstString& port_prefix, const
         throw std::runtime_error("Cannot open input port for right hand analogs!");
     }
 
-
-    /* Initialize right arm interface */
-    yInfo() << log_ID_ << "Setting right arm interface.";
-
-    right_arm_ = iCubArm("right");
-
-    right_arm_.setAllConstraints(false);
-    right_arm_.releaseLink(0);
-    right_arm_.releaseLink(1);
-    right_arm_.releaseLink(2);
-
-
     yInfo() << log_ID_ << "...BatchCADSuperimposer ctor completed!";
 }
 
@@ -143,42 +131,9 @@ Vector BatchCADSuperimposer::getTorsoEncoders()
 }
 
 
-void BatchCADSuperimposer::getExtraObjPoseMap(Superimpose::ModelPoseContainer& hand_pose)
-{
-    if (view_forearm_)
-    {
-        Vector root_ee_enc = readRootToEE();
-        if (root_ee_enc == zeros(root_ee_enc.size()))
-            return;
-
-        Superimpose::ModelPose pose;
-
-        right_arm_.setAng(CTRL_DEG2RAD * root_ee_enc);
-
-        Matrix H_forearm = right_arm_.getH(7, true);
-
-        Vector j_x = H_forearm.getCol(3).subVector(0, 2);
-        Vector j_o = dcm2axis(H_forearm);
-
-        pose.assign(j_x.data(), j_x.data()+3);
-        pose.insert(pose.end(), j_o.data(), j_o.data()+4);
-        
-        hand_pose.emplace("forearm", pose);
-    }
-}
-
-
 bool BatchCADSuperimposer::sync_input(const bool status)
 {
     synch_ = status;
-
-    return true;
-}
-
-
-bool BatchCADSuperimposer::render_extra_mesh(const bool status)
-{
-    view_forearm_ = status;
 
     return true;
 }

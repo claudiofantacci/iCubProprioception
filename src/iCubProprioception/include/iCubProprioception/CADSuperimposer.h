@@ -12,6 +12,7 @@
 #include <yarp/dev/PolyDriver.h>
 #include <yarp/sig/Image.h>
 #include <yarp/sig/Vector.h>
+#include <yarp/sig/Matrix.h>
 #include <yarp/os/ConstString.h>
 #include <yarp/os/Port.h>
 #include <yarp/os/Thread.h>
@@ -33,12 +34,6 @@ public:
     void threadRelease() override;
 
 protected:
-    const yarp::os::ConstString ID_;
-    const yarp::os::ConstString log_ID_;
-    const yarp::os::ConstString robot_;
-    const yarp::os::ConstString camera_;
-
-
     virtual yarp::sig::Vector getEndEffectorPose() = 0;
 
     virtual yarp::sig::Vector getHeadEncoders() = 0;
@@ -51,14 +46,31 @@ protected:
 
     virtual yarp::sig::Vector getTorsoEncoders() = 0;
 
-    virtual void getExtraObjPoseMap(Superimpose::ModelPoseContainer& hand_pose) = 0;
-
 
     bool mesh_background(const bool status) override;
 
     bool mesh_wireframe(const bool status) override;
 
+
+    yarp::sig::Matrix getInvertedH(const double a, const double d, const double alpha, const double offset, const double q);
+
+
+    const yarp::os::ConstString ID_;
+    const yarp::os::ConstString log_ID_;
+    const yarp::os::ConstString robot_;
+    const yarp::os::ConstString camera_;
+
 private:
+    void getRightHandObjPoseMap(const yarp::sig::Vector& ee_pose, Superimpose::ModelPoseContainer& hand_pose);
+
+    bool openGazeController();
+
+    yarp::sig::Vector readRootToEye(const yarp::os::ConstString& camera);
+
+    bool setCommandPort();
+
+
+    SICAD*                           drawer_;
     const SICAD::ModelPathContainer& cad_hand_;
     const yarp::os::ConstString      shader_path_;
 
@@ -73,9 +85,8 @@ private:
     float                            cam_cy_;
 
     iCub::iKin::iCubEye              eye_;
+    iCub::iKin::iCubArm              right_arm_;
     iCub::iKin::iCubFinger           right_finger_[3];
-
-    SICAD*                           drawer_;
 
 
     yarp::sig::ImageOf<yarp::sig::PixelRgb>* imgin_ = YARP_NULLPTR;
@@ -87,17 +98,6 @@ private:
     yarp::os::Port                                                  port_command_;
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb>> inport_renderer_img_;
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb>> outport_renderer_img_;
-
-
-    void getRightHandObjPoseMap(const yarp::sig::Vector& ee_pose, Superimpose::ModelPoseContainer& hand_pose);
-
-    bool openGazeController();
-
-    yarp::sig::Vector readRootToEE();
-
-    yarp::sig::Vector readRootToEye(const yarp::os::ConstString& camera);
-
-    bool setCommandPort();
 };
 
 #endif /* CADSUPERIMPOSER_H */

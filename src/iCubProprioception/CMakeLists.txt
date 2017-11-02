@@ -87,23 +87,22 @@ set(${EXE_TARGET_NAME}_SHADERS_FRAG
         ${PROJECT_SOURCE_DIR}/shader/shader_background.frag)
 
 set(${EXE_TARGET_NAME}_MESH
-        ${PROJECT_SOURCE_DIR}/mesh/icub_right_hand/r_palm.obj
-        ${PROJECT_SOURCE_DIR}/mesh/icub_right_hand/r_ail0.obj
-        ${PROJECT_SOURCE_DIR}/mesh/icub_right_hand/r_ail1.obj
-        ${PROJECT_SOURCE_DIR}/mesh/icub_right_hand/r_ail2.obj
-        ${PROJECT_SOURCE_DIR}/mesh/icub_right_hand/r_ail3.obj
-        ${PROJECT_SOURCE_DIR}/mesh/icub_right_hand/r_forearm.obj
-        ${PROJECT_SOURCE_DIR}/mesh/icub_right_hand/r_forearm_full.obj
-        ${PROJECT_SOURCE_DIR}/mesh/icub_right_hand/r_indexbase.obj
-        ${PROJECT_SOURCE_DIR}/mesh/icub_right_hand/r_ml0.obj
-        ${PROJECT_SOURCE_DIR}/mesh/icub_right_hand/r_ml1.obj
-        ${PROJECT_SOURCE_DIR}/mesh/icub_right_hand/r_ml2.obj
-        ${PROJECT_SOURCE_DIR}/mesh/icub_right_hand/r_ml3.obj
-        ${PROJECT_SOURCE_DIR}/mesh/icub_right_hand/r_tl0.obj
-        ${PROJECT_SOURCE_DIR}/mesh/icub_right_hand/r_tl1.obj
-        ${PROJECT_SOURCE_DIR}/mesh/icub_right_hand/r_tl2.obj
-        ${PROJECT_SOURCE_DIR}/mesh/icub_right_hand/r_tl3.obj
-        ${PROJECT_SOURCE_DIR}/mesh/icub_right_hand/r_tl4.obj)
+        ${PROJECT_SOURCE_DIR}/mesh/icub_right_arm/r_palm.obj
+        ${PROJECT_SOURCE_DIR}/mesh/icub_right_arm/r_ail0.obj
+        ${PROJECT_SOURCE_DIR}/mesh/icub_right_arm/r_ail1.obj
+        ${PROJECT_SOURCE_DIR}/mesh/icub_right_arm/r_ail2.obj
+        ${PROJECT_SOURCE_DIR}/mesh/icub_right_arm/r_ail3.obj
+        ${PROJECT_SOURCE_DIR}/mesh/icub_right_arm/r_forearm.obj
+        ${PROJECT_SOURCE_DIR}/mesh/icub_right_arm/r_indexbase.obj
+        ${PROJECT_SOURCE_DIR}/mesh/icub_right_arm/r_ml0.obj
+        ${PROJECT_SOURCE_DIR}/mesh/icub_right_arm/r_ml1.obj
+        ${PROJECT_SOURCE_DIR}/mesh/icub_right_arm/r_ml2.obj
+        ${PROJECT_SOURCE_DIR}/mesh/icub_right_arm/r_ml3.obj
+        ${PROJECT_SOURCE_DIR}/mesh/icub_right_arm/r_tl0.obj
+        ${PROJECT_SOURCE_DIR}/mesh/icub_right_arm/r_tl1.obj
+        ${PROJECT_SOURCE_DIR}/mesh/icub_right_arm/r_tl2.obj
+        ${PROJECT_SOURCE_DIR}/mesh/icub_right_arm/r_tl3.obj
+        ${PROJECT_SOURCE_DIR}/mesh/icub_right_arm/r_tl4.obj)
 
 if(${CMAKE_GENERATOR} MATCHES "Xcode")
     source_group("Thrift IDL" FILES ${${EXE_TARGET_NAME}_THRIFT_HDR} ${${EXE_TARGET_NAME}_THRIFT_SRC})

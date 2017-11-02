@@ -38,12 +38,8 @@ protected:
 
     yarp::sig::Vector getTorsoEncoders() override;
 
-    void getExtraObjPoseMap(Superimpose::ModelPoseContainer& hand_pose) override;
-
 
     bool sync_input(const bool status) override;
-
-    bool render_extra_mesh(const bool status) override;
 
 
     bool setHeadRemoteControlboard();
@@ -55,18 +51,14 @@ protected:
     bool setArmCartesianController();
 
 private:
-    iCub::iKin::iCubArm right_arm_;
-
-
-    bool synch_ = false;
-
-    bool view_forearm_ = false;
-
-
     yarp::sig::Vector readRootToEE();
 
     yarp::sig::Vector readFromBufferedPort(yarp::os::BufferedPort<yarp::sig::Vector>& bp);
+
     
+    bool synch_ = false;
+
+
     yarp::os::BufferedPort<yarp::sig::Vector> inport_pose_ext_;
     yarp::os::BufferedPort<yarp::sig::Vector> inport_head_enc_;
     yarp::os::BufferedPort<yarp::sig::Vector> inport_torso_enc_;

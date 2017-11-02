@@ -61,24 +61,9 @@ yarp::sig::Vector ExtCADSuperimposer::getEndEffectorPose()
 }
 
 
-void ExtCADSuperimposer::getExtraObjPoseMap(Superimpose::ModelPoseContainer& hand_pose)
-{
-    if (view_forearm_)
-        iKinCADSuperimposer::getExtraObjPoseMap(hand_pose);
-}
-
-
 bool ExtCADSuperimposer::sync_input(const bool status)
 {
     synch_ = status;
-
-    return true;
-}
-
-
-bool ExtCADSuperimposer::render_extra_mesh(const bool status)
-{
-    view_forearm_ = status;
 
     return true;
 }
