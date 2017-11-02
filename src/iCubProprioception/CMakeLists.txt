@@ -72,7 +72,7 @@ set(${EXE_TARGET_NAME}_APP
         ${PROJECT_SOURCE_DIR}/app/iCubProprioception-BATCH.xml)
 
 set(${EXE_TARGET_NAME}_CONFIG
-        ${PROJECT_SOURCE_DIR}/config/parameters.ini)
+        ${PROJECT_SOURCE_DIR}/config/config.ini)
 
 set(${EXE_TARGET_NAME}_APP_SIM
         ${PROJECT_SOURCE_DIR}/app/iCubProprioception-SIM.xml
