@@ -289,9 +289,6 @@ void CADSuperimposer::getRightHandObjPoseMap(const Vector& ee_pose, Superimpose:
             hand_pose.emplace(finger_s, pose);
         }
     }
-
-    std::cout << "right_arm_.getAng(9): " << right_arm_.getAng(9) << std::endl;
-    std::cout << "right_arm_.getAng(8): " << right_arm_.getAng(8) << std::endl;
     yarp::sig::Matrix invH6 = Ha *
                               getInvertedH(-0.0625, -0.02598,       0,   -M_PI, -right_arm_.getAng(9)) *
                               getInvertedH(      0,        0, -M_PI_2, -M_PI_2, -right_arm_.getAng(8));
