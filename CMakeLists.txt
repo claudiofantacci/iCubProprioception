@@ -26,12 +26,6 @@ icubcontrib_add_uninstall_target()
 # Install SIM applications?
 option(INSTALL_SIM_APP "Install yarpmanager applications for the iCub_SIM" OFF)
 
-# Build test related commands?
-option(BUILD_TESTS "Create tests using CMake" OFF)
-if(BUILD_TESTS)
-    enable_testing()
-endif()
-
 # Support RPATH?
 option(ENABLE_RPATH "Enable RPATH for this library" ON)
 mark_as_advanced(ENABLE_RPATH)
