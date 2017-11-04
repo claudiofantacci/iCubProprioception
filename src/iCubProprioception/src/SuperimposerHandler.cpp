@@ -43,8 +43,8 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
     ext_      = ((rf.findGroup("ext").size()    == 1 ? true : (rf.findGroup("ext").size()   == 2 ? rf.find("ext").asBool()   : false)));
     batch_    = ((rf.findGroup("batch").size()  == 1 ? true : (rf.findGroup("batch").size() == 2 ? rf.find("batch").asBool() : false)));
 
-    draw_thumb_   = rf.findGroup("SICAD").check("draw_thumb",   Value(false)).asBlob();
-    draw_forearm_ = rf.findGroup("SICAD").check("draw_forearm", Value(false)).asBlob();
+    draw_thumb_   = rf.findGroup("SICAD").check("draw_thumb",   Value(false)).asBool();
+    draw_forearm_ = rf.findGroup("SICAD").check("draw_forearm", Value(false)).asBool();
 
     yInfo() << log_ID_ << "Running with:";
     yInfo() << log_ID_ << " - robot name:"              << robot_;
