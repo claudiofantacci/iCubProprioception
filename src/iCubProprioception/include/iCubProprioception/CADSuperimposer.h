@@ -56,6 +56,12 @@ protected:
 
     yarp::sig::Matrix getInvertedH(const double a, const double d, const double alpha, const double offset, const double q);
 
+    yarp::sig::Vector readRootToEye(const yarp::os::ConstString& camera);
+
+    yarp::sig::Vector readRootToEndEffector();
+
+    void getRightHandObjPoseMap(const yarp::sig::Vector& ee_pose, Superimpose::ModelPoseContainer& hand_pose);
+
 
     const yarp::os::ConstString ID_;
     const yarp::os::ConstString log_ID_;
@@ -63,11 +69,7 @@ protected:
     const yarp::os::ConstString camera_;
 
 private:
-    void getRightHandObjPoseMap(const yarp::sig::Vector& ee_pose, Superimpose::ModelPoseContainer& hand_pose);
-
     bool openGazeController();
-
-    yarp::sig::Vector readRootToEye(const yarp::os::ConstString& camera);
 
     bool setCommandPort();
 
@@ -95,9 +97,9 @@ private:
 
 
     yarp::sig::ImageOf<yarp::sig::PixelRgb>* imgin_ = YARP_NULLPTR;
-    yarp::sig::Vector                        root_eye_enc_;
+    yarp::sig::Vector                        enc_root_eye_;
     yarp::sig::Vector                        ee_pose_;
-    yarp::sig::Vector                        encs_arm_;
+    yarp::sig::Vector                        encs_root_arm_;
 
 
     yarp::os::Port                                                  port_command_;
