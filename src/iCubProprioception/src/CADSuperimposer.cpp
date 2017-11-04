@@ -191,7 +191,7 @@ void CADSuperimposer::run()
         if (  imgin_        != YARP_NULLPTR                 &&
             !(root_eye_enc_ == zeros(root_eye_enc_.size())) &&
             !(ee_pose_      == zeros(ee_pose_.size()))      &&
-            !(encs_arm_     == zeros(encs_arm_.size())))
+            !(encs_arm_     == zeros(encs_arm_.size()))       )
         {
             eye_.setAng(CTRL_DEG2RAD * root_eye_enc_);
             Vector cam_pose = eye_.EndEffPose();
