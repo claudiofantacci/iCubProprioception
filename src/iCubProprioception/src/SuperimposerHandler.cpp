@@ -48,10 +48,12 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
 
     yInfo() << log_ID_ << "Running with:";
     yInfo() << log_ID_ << " - robot name:"              << robot_;
-    yInfo() << log_ID_ << " - draw skeleton:"           << (skeleton_ ? "true" : "false");
-    yInfo() << log_ID_ << " - render using ikin:"       << (ikin_     ? "true" : "false");
-    yInfo() << log_ID_ << " - render using ext source:" << (ext_      ? "true" : "false");
-    yInfo() << log_ID_ << " - render batch data:"       << (batch_    ? "true" : "false");
+    yInfo() << log_ID_ << " - draw skeleton:"           << (skeleton_     ? "true" : "false");
+    yInfo() << log_ID_ << " - render using ikin:"       << (ikin_         ? "true" : "false");
+    yInfo() << log_ID_ << " - render using ext source:" << (ext_          ? "true" : "false");
+    yInfo() << log_ID_ << " - render batch data:"       << (batch_        ? "true" : "false");
+    yInfo() << log_ID_ << " - render thumb:     "       << (draw_thumb_   ? "true" : "false");
+    yInfo() << log_ID_ << " - render forearm:"          << (draw_forearm_ ? "true" : "false");
 
 
     /* Search mesh files in /mesh context folder */
