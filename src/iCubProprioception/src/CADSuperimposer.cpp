@@ -292,7 +292,8 @@ void CADSuperimposer::getRightHandObjPoseMap(const Vector& ee_pose, Superimpose:
     {
         yarp::sig::Matrix invH6 = Ha *
                                   getInvertedH(-0.0625, -0.02598,       0,   -M_PI, -right_arm_.getAng(9)) *
-                                  getInvertedH(      0,        0, -M_PI_2, -M_PI_2, -right_arm_.getAng(8));
+                                  getInvertedH(      0,        0, -M_PI_2, -M_PI_2, -right_arm_.getAng(8)) *
+                                  getInvertedH(      0,   0.1413, -M_PI_2,  M_PI_2, -right_arm_.getAng(7));
         Vector j_x = invH6.getCol(3).subVector(0, 2);
         Vector j_o = dcm2axis(invH6);
         pose.clear();
