@@ -16,7 +16,7 @@
     <module>
         <name>iCubProprioception</name>
         <node>localhost</node>
-        <parameters>--robot icub --skel --ikin --ext --from parameters.ini</parameters>
+        <parameters>--robot icub --skel --ikin --ext --from config.ini</parameters>
     </module>
 
     <module>
