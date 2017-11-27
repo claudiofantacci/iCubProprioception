@@ -6,21 +6,13 @@ endif()
 
 project(iCubProprioception
         LANGUAGES CXX
-        VERSION 0.4.0.0)
+        VERSION 0.5.0.0)
 
 include(GNUInstallDirs)
 
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-
-### iCub-contrib project
-find_package(ICUBcontrib REQUIRED)
-list(APPEND CMAKE_MODULE_PATH ${ICUBCONTRIB_MODULE_PATH})
-include(ICUBcontribHelpers)
-include(ICUBcontribOptions)
-icubcontrib_set_default_prefix()
-icubcontrib_add_uninstall_target()
 
 ### Options
 # Install SIM applications?
@@ -35,5 +27,16 @@ add_install_rpath_support(BIN_DIRS "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BIND
                           DEPENDS ENABLE_RPATH
                           USE_LINK_PATH)
 
+# Default Build type to Release
+if(NOT CMAKE_CONFIGURATION_TYPES)
+    if(NOT CMAKE_BUILD_TYPE)
+        message(STATUS "Setting build type to 'Release' as none was specified.")
+        set_property(CACHE CMAKE_BUILD_TYPE PROPERTY VALUE "Release")
+    endif()
+endif()
+
 ### Compile- and install-related commands
 add_subdirectory(src)
+
+# Add the uninstall target
+include(AddUninstallTarget)
