@@ -293,7 +293,7 @@ void CADSuperimposer::getRightHandObjPoseMap(const Vector& ee_pose, Superimpose:
         yarp::sig::Matrix invH6 = Ha *
                                   getInvertedH(-0.0625, -0.02598,       0,   -M_PI, -right_arm_.getAng(9)) *
                                   getInvertedH(      0,        0, -M_PI_2, -M_PI_2, -right_arm_.getAng(8)) *
-                                  getInvertedH(      0,   0.1413, -M_PI_2,  M_PI_2, -right_arm_.getAng(7));
+                                  getInvertedH(      0,   0.1413, -M_PI_2,  M_PI_2, 0);
         Vector j_x = invH6.getCol(3).subVector(0, 2);
         Vector j_o = dcm2axis(invH6);
         pose.clear();
@@ -393,7 +393,7 @@ Vector CADSuperimposer::readRootToEye(const ConstString& camera)
     enc_root_eye.setSubvector(0, enc_torso);
 
     for (size_t i = 0; i < 4; ++i)
-        enc_root_eye(3+i) = enc_head(i);
+        enc_root_eye(enc_torso.size() + i) = enc_head(i);
 
     if (camera == "left")
         enc_root_eye(7) = enc_head(4) + enc_head(5) / 2.0;
@@ -418,9 +418,8 @@ Vector CADSuperimposer::readRootToEndEffector()
 
     enc_root_ee.resize(enc_torso.size() + enc_right_arm.size());
 
-    enc_root_ee.setSubvector(0, enc_torso);
-    for (size_t i = 0; i < 4; ++i)
-        enc_root_ee(3+i) = enc_right_arm(i);
+    enc_root_ee.setSubvector(0,                enc_torso);
+    enc_root_ee.setSubvector(enc_torso.size(), enc_right_arm);
 
     return enc_root_ee;
 }
