@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="yarpmanifest.xsl"?>
+<application>
+
+    <!-- GENERIC INFORMATION -->
+    <name>iCubProprioception</name>
+    <description>Superimpose the hand skeleton and/or 3D CAD model on the iCub camera images</description>
+    <version>0.5.0.0</version>
+
+    <authors>
+        <author email="claudio.fantacci@iit.it">Claudio Fantacci</author>
+    </authors>
+
+
+    <!-- RQUIRED MODULES -->
+    <module>
+        <name>iCubProprioception</name>
+        <node>localhost</node>
+        <parameters>--robot icub --skel --from config.ini</parameters>
+    </module>
+
+    <module>
+        <name>yarpview</name>
+        <parameters>--name /view/cam/left/skeleton --x 340 --y 0 --RefreshTime 30</parameters>
+        <node>localhost</node>
+    </module>
+
+    <module>
+        <name>yarpview</name>
+        <parameters>--name /view/cam/right/skeleton --x 340 --y 370 --RefreshTime 30</parameters>
+        <node>localhost</node>
+    </module>
+
+
+    <!-- REQUIRED CONNECTIONS -->
+    <!-- RC: Skeleton -->
+    <connection>
+        <from>/icub/camcalib/left/out</from>
+        <to>/iCubProprioception/SkeletonSuperimposer/cam/left:i</to>
+        <protocol>mcast</protocol>
+    </connection>
+
+    <connection>
+        <from>/icub/camcalib/right/out</from>
+        <to>/iCubProprioception/SkeletonSuperimposer/cam/right:i</to>
+        <protocol>mcast</protocol>
+    </connection>
+
+    <connection>
+        <from>/iCubProprioception/SkeletonSuperimposer/cam/left:o</from>
+        <to>/view/cam/left/skeleton</to>
+        <protocol>udp</protocol>
+    </connection>
+
+    <connection>
+        <from>/iCubProprioception/SkeletonSuperimposer/cam/right:o</from>
+        <to>/view/cam/right/skeleton</to>
+        <protocol>udp</protocol>
+    </connection>
+
+</application>

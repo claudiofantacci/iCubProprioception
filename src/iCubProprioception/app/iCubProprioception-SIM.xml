@@ -2,10 +2,16 @@
 <?xml-stylesheet type="text/xsl" href="yarpmanifest.xsl"?>
 <application>
 
+    <!-- REQUIRED -->
+    <dependencies>
+        <port>/yarprun</port>
+    </dependencies>
+
+
     <!-- GENERIC INFORMATION -->
-    <name>iCubProprioception</name>
-    <description>Superimpose the hand skeleton and/or 3D CAD model on the camera images of iCub</description>
-    <version>6.1.0</version>
+    <name>iCubProprioception-SIM</name>
+    <description>Superimpose the hand skeleton and/or 3D CAD model on the camera images of icubSim</description>
+    <version>0.5.0.0</version>
 
     <authors>
         <author email="claudio.fantacci@iit.it">Claudio Fantacci</author>
@@ -15,8 +21,8 @@
     <!-- RQUIRED MODULES -->
     <module>
         <name>iCubProprioception</name>
-        <node>localhost</node>
-        <parameters>--robot icub --skel --ikin --ext --from config.ini</parameters>
+        <node>yarprun</node>
+        <parameters>--robot icubSim --skel --ikin --ext --from config.ini</parameters>
     </module>
 
     <module>
@@ -63,33 +69,33 @@
 
     <module>
         <name>yarpview</name>
-        <parameters>--name /view/cam/right/ext --x 1300 --y 0 --RefreshTime 30 --compact</parameters>
-        <node>icub22</node>
+        <parameters>--name /view/cam/right/ext --x 980 --y 370 --RefreshTime 30</parameters>
+        <node>localhost</node>
     </module>
 
 
     <!-- REQUIRED CONNECTIONS -->
     <connection>
-        <from>/icub/camcalib/left/out</from>
+        <from>/icubSim/cam/left</from>
         <to>/view/cam/left</to>
-        <protocol>udp</protocol>
+        <protocol>tcp</protocol>
     </connection>
 
     <connection>
-        <from>/icub/camcalib/right/out</from>
+        <from>/icubSim/cam/right</from>
         <to>/view/cam/right</to>
-        <protocol>udp</protocol>
+        <protocol>tcp</protocol>
     </connection>
 
     <!-- RC: SKELETON -->
     <connection>
-        <from>/icub/camcalib/left/out</from>
+        <from>/icubSim/cam/left</from>
         <to>/iCubProprioception/SkeletonSuperimposer/cam/left:i</to>
         <protocol>udp</protocol>
     </connection>
 
     <connection>
-        <from>/icub/camcalib/right/out</from>
+        <from>/icubSim/cam/right</from>
         <to>/iCubProprioception/SkeletonSuperimposer/cam/right:i</to>
         <protocol>udp</protocol>
     </connection>
@@ -108,15 +114,15 @@
 
     <!-- RC: iKin CAD -->
     <connection>
-        <from>/icub/camcalib/left/out</from>
+        <from>/icubSim/cam/left</from>
         <to>/iCubProprioception/iKinCADSuperimposer/cam/left:i</to>
-        <protocol>tcp</protocol>
+        <protocol>mcast</protocol>
     </connection>
 
     <connection>
-        <from>/icub/camcalib/right/out</from>
+        <from>/icubSim/cam/right</from>
         <to>/iCubProprioception/iKinCADSuperimposer/cam/right:i</to>
-        <protocol>tcp</protocol>
+        <protocol>mcast</protocol>
     </connection>
 
     <connection>
@@ -133,15 +139,15 @@
 
     <!-- RC: Ext CAD -->
     <connection>
-        <from>/icub/camcalib/left/out</from>
+        <from>/icubSim/cam/left</from>
         <to>/iCubProprioception/ExtCADSuperimposer/cam/left:i</to>
-        <protocol>tcp</protocol>
+        <protocol>mcast</protocol>
     </connection>
 
     <connection>
-        <from>/icub/camcalib/right/out</from>
+        <from>/icubSim/cam/right</from>
         <to>/iCubProprioception/ExtCADSuperimposer/cam/right:i</to>
-        <protocol>tcp</protocol>
+        <protocol>mcast</protocol>
     </connection>
 
     <connection>

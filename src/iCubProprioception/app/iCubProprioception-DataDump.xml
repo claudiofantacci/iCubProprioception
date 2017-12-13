@@ -5,7 +5,7 @@
     <!-- GENERIC INFORMATION -->
     <name>iCubProprioception-DataDump</name>
     <description>Collect data for iCubProprioception module</description>
-    <version>5.0.1</version>
+    <version>0.5.0.0</version>
 
     <authors>
         <author email="claudio.fantacci@iit.it">Claudio Fantacci</author>
@@ -103,13 +103,13 @@
     <connection>
         <from>/icub/camcalib/left/out</from>
         <to>/iCubProprioception/SkeletonSuperimposer/cam/left:i</to>
-        <protocol>tcp</protocol>
+        <protocol>mcast</protocol>
     </connection>
 
     <connection>
         <from>/icub/camcalib/right/out</from>
         <to>/iCubProprioception/SkeletonSuperimposer/cam/right:i</to>
-        <protocol>tcp</protocol>
+        <protocol>mcast</protocol>
     </connection>
 
     <connection>
@@ -128,13 +128,13 @@
     <connection>
         <from>/icub/camcalib/left/out</from>
         <to>/iCubProprioception/iKinCADSuperimposer/cam/left:i</to>
-        <protocol>tcp</protocol>
+        <protocol>mcast</protocol>
     </connection>
 
     <connection>
         <from>/icub/camcalib/right/out</from>
         <to>/iCubProprioception/iKinCADSuperimposer/cam/right:i</to>
-        <protocol>tcp</protocol>
+        <protocol>mcast</protocol>
     </connection>
 
     <connection>
@@ -153,13 +153,13 @@
     <connection>
         <from>/icub/camcalib/left/out</from>
         <to>/iCubProprioception/ExtCADSuperimposer/cam/left:i</to>
-        <protocol>tcp</protocol>
+        <protocol>mcast</protocol>
     </connection>
 
     <connection>
         <from>/icub/camcalib/right/out</from>
         <to>/iCubProprioception/ExtCADSuperimposer/cam/right:i</to>
-        <protocol>tcp</protocol>
+        <protocol>mcast</protocol>
     </connection>
 
     <connection>
@@ -190,13 +190,13 @@
     <connection>
         <from>/icub/camcalib/left/out</from>
         <to>/datadumper/camera/left</to>
-        <protocol>tcp</protocol>
+        <protocol>mcast</protocol>
     </connection>
 
     <connection>
         <from>/icub/camcalib/right/out</from>
         <to>/datadumper/camera/right</to>
-        <protocol>tcp</protocol>
+        <protocol>mcast</protocol>
     </connection>
 
     <connection>
