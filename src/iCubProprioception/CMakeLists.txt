@@ -59,49 +59,46 @@ target_link_libraries(${EXE_TARGET_NAME} PRIVATE SuperimposeMesh::SuperimposeMes
                                                  ${GLEW_LIBRARIES}
                                                  glfw)
 
-target_compile_features(${EXE_TARGET_NAME} PUBLIC cxx_nullptr cxx_constexpr)
-
 install(TARGETS ${EXE_TARGET_NAME} DESTINATION bin)
 
 # Custom commands
 # EXTRA files
 set(${EXE_TARGET_NAME}_APP
-        ${PROJECT_SOURCE_DIR}/app/iCubProprioception.xml
-        ${PROJECT_SOURCE_DIR}/app/iCubProprioception-DataDump.xml
-        ${PROJECT_SOURCE_DIR}/app/iCubProprioception-BATCH.xml)
+        app/iCubProprioception-DataDump.xml
+        app/iCubProprioception-External.xml
+        app/iCubProprioception-iKin.xml
+        app/iCubProprioception-BATCH.xml
+        app/iCubProprioception-SIM.xml
+        app/iCubProprioception-Skeleton.xml)
 
 set(${EXE_TARGET_NAME}_CONFIG
-        ${PROJECT_SOURCE_DIR}/config/config.ini)
-
-set(${EXE_TARGET_NAME}_APP_SIM
-        ${PROJECT_SOURCE_DIR}/app/iCubProprioception-SIM.xml
-        ${PROJECT_SOURCE_DIR}/app/BackgroundApps-SIM.xml)
+        config/config.ini)
 
 set(${EXE_TARGET_NAME}_SHADERS_VERT
-        ${PROJECT_SOURCE_DIR}/shader/shader_model.vert
-        ${PROJECT_SOURCE_DIR}/shader/shader_background.vert)
+        shader/shader_model.vert
+        shader/shader_background.vert)
 
 set(${EXE_TARGET_NAME}_SHADERS_FRAG
-        ${PROJECT_SOURCE_DIR}/shader/shader_model.frag
-        ${PROJECT_SOURCE_DIR}/shader/shader_background.frag)
+        shader/shader_model.frag
+        shader/shader_background.frag)
 
 set(${EXE_TARGET_NAME}_MESH
-        ${PROJECT_SOURCE_DIR}/mesh/icub_right_arm/r_palm.obj
-        ${PROJECT_SOURCE_DIR}/mesh/icub_right_arm/r_ail0.obj
-        ${PROJECT_SOURCE_DIR}/mesh/icub_right_arm/r_ail1.obj
-        ${PROJECT_SOURCE_DIR}/mesh/icub_right_arm/r_ail2.obj
-        ${PROJECT_SOURCE_DIR}/mesh/icub_right_arm/r_ail3.obj
-        ${PROJECT_SOURCE_DIR}/mesh/icub_right_arm/r_forearm.obj
-        ${PROJECT_SOURCE_DIR}/mesh/icub_right_arm/r_indexbase.obj
-        ${PROJECT_SOURCE_DIR}/mesh/icub_right_arm/r_ml0.obj
-        ${PROJECT_SOURCE_DIR}/mesh/icub_right_arm/r_ml1.obj
-        ${PROJECT_SOURCE_DIR}/mesh/icub_right_arm/r_ml2.obj
-        ${PROJECT_SOURCE_DIR}/mesh/icub_right_arm/r_ml3.obj
-        ${PROJECT_SOURCE_DIR}/mesh/icub_right_arm/r_tl0.obj
-        ${PROJECT_SOURCE_DIR}/mesh/icub_right_arm/r_tl1.obj
-        ${PROJECT_SOURCE_DIR}/mesh/icub_right_arm/r_tl2.obj
-        ${PROJECT_SOURCE_DIR}/mesh/icub_right_arm/r_tl3.obj
-        ${PROJECT_SOURCE_DIR}/mesh/icub_right_arm/r_tl4.obj)
+        mesh/icub_right_arm/r_palm.obj
+        mesh/icub_right_arm/r_ail0.obj
+        mesh/icub_right_arm/r_ail1.obj
+        mesh/icub_right_arm/r_ail2.obj
+        mesh/icub_right_arm/r_ail3.obj
+        mesh/icub_right_arm/r_forearm.obj
+        mesh/icub_right_arm/r_indexbase.obj
+        mesh/icub_right_arm/r_ml0.obj
+        mesh/icub_right_arm/r_ml1.obj
+        mesh/icub_right_arm/r_ml2.obj
+        mesh/icub_right_arm/r_ml3.obj
+        mesh/icub_right_arm/r_tl0.obj
+        mesh/icub_right_arm/r_tl1.obj
+        mesh/icub_right_arm/r_tl2.obj
+        mesh/icub_right_arm/r_tl3.obj
+        mesh/icub_right_arm/r_tl4.obj)
 
 if(${CMAKE_GENERATOR} MATCHES "Xcode")
     source_group("Thrift IDL" FILES ${${EXE_TARGET_NAME}_THRIFT_HDR} ${${EXE_TARGET_NAME}_THRIFT_SRC})
@@ -119,9 +116,6 @@ if(${APP_DOMAIN} STREQUAL "")
 endif()
 
 install(FILES ${${EXE_TARGET_NAME}_APP}          DESTINATION ${CMAKE_INSTALL_PREFIX}/share/${APP_DOMAIN}/applications)
-if(INSTALL_SIM_APP)
-    install(FILES ${${EXE_TARGET_NAME}_APP_SIM}      DESTINATION ${CMAKE_INSTALL_PREFIX}/share/${APP_DOMAIN}/applications)
-endif()
 install(FILES ${${EXE_TARGET_NAME}_CONFIG}       DESTINATION ${CMAKE_INSTALL_PREFIX}/share/${APP_DOMAIN}/contexts/${EXE_TARGET_NAME})
 install(FILES ${${EXE_TARGET_NAME}_SHADERS_VERT} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/${APP_DOMAIN}/contexts/${EXE_TARGET_NAME}/shader)
 install(FILES ${${EXE_TARGET_NAME}_SHADERS_FRAG} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/${APP_DOMAIN}/contexts/${EXE_TARGET_NAME}/shader)

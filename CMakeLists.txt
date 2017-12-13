@@ -8,15 +8,13 @@ project(iCubProprioception
         LANGUAGES CXX
         VERSION 0.5.0.0)
 
+set(CMAKE_CXX_STANDARD 11)
+
 include(GNUInstallDirs)
 
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-
-### Options
-# Install SIM applications?
-option(INSTALL_SIM_APP "Install yarpmanager applications for the iCub_SIM" OFF)
 
 # Support RPATH?
 option(ENABLE_RPATH "Enable RPATH for this library" ON)
