@@ -3,7 +3,7 @@
 <application>
 
     <!-- GENERIC INFORMATION -->
-    <name>iCubProprioception</name>
+    <name>iCubProprioception-Skeleton</name>
     <description>Superimpose the hand skeleton and/or 3D CAD model on the iCub camera images</description>
     <version>0.5.0.0</version>
 
