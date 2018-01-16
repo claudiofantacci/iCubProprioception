@@ -405,11 +405,11 @@ bool SuperimposerHandler::close()
     if (rightarm_remote_driver_.isValid())    rightarm_remote_driver_.close();
     if (head_remote_driver_.isValid())        head_remote_driver_.close();
     if (gaze_driver_.isValid())               gaze_driver_.close();
-    
+
 #if ICP_USE_ANALOGS == 1
     if (drv_right_hand_analog_.isValid())     drv_right_hand_analog_.close();
 #endif
-    
+
     if (port_command_.isOpen()) port_command_.close();
     return true;
 }

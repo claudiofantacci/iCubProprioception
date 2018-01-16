@@ -307,9 +307,9 @@ void CADSuperimposer::getRightHandObjPoseMap(const Vector& ee_pose, Superimpose:
 bool CADSuperimposer::mesh_background(const bool status)
 {
     yInfo() << log_ID_ << ConstString((status ? "Enable" : "Disable")) + " background of the mesh window.";
-    
+
     drawer_->setBackgroundOpt(status);
-    
+
     return true;
 }
 
@@ -319,7 +319,7 @@ bool CADSuperimposer::mesh_wireframe(const bool status)
     yInfo() << log_ID_ << ConstString((status ? "Enable" : "Disable")) + " wireframe rendering.";
 
     drawer_->setWireframeOpt(status);
-    
+
     return true;
 }
 
@@ -362,12 +362,12 @@ Matrix CADSuperimposer::getInvertedH(const double a, const double d, const doubl
     H(2,1) = c_th * s_al;
     H(2,2) =        c_al;
     H(2,3) =    d * c_al;
-    
+
     H(3,0) =           0;
     H(3,1) =           0;
     H(3,2) =           0;
     H(3,3) =           1;
-    
+
     return H;
 }
 
@@ -399,7 +399,7 @@ Vector CADSuperimposer::readRootToEye(const ConstString& camera)
         enc_root_eye(7) = enc_head(4) + enc_head(5) / 2.0;
     else if (camera == "right")
         enc_root_eye(7) = enc_head(4) - enc_head(5) / 2.0;
-    
+
     return enc_root_eye;
 }
 
@@ -469,4 +469,3 @@ bool CADSuperimposer::setCommandPort()
 
     return true;
 }
-
