@@ -95,10 +95,12 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
 
     /* Search shader files in /shader context folder */
     rf.setDefaultContext(context + "/shader");
-
     shader_path_ = rf.findFileByName("shader_model.vert");
-    if (!fileFound(shader_path_)) return false;
-    shader_path_ = shader_path_.substr(0, shader_path_.rfind("/"));
+    if (!fileFound(shader_path_))
+        throw std::runtime_error("ERROR::VISUALPROPRIOCEPTION::CTOR::DIR\nERROR: shader directory not found!");
+    size_t rfind_slash     = shader_path_.rfind("/");
+    size_t rfind_backslash = shader_path_.rfind("\\");
+    shader_path_ = shader_path_.substr(0, rfind_slash > rfind_backslash ? rfind_slash : rfind_backslash);
 
 
     /* Initializing useful pose matrices and vectors for the hand. */
