@@ -43,12 +43,6 @@
         <node>localhost</node>
     </module>
 
-    <module>
-        <name>yarpdataplayer</name>
-        <parameters>--withExtraTimeCol 2</parameters>
-        <node>localhost</node>
-    </module>
-
 
     <!-- REQUIRED CONNECTIONS -->
     <connection>
@@ -85,18 +79,6 @@
     <connection>
         <from>/iCubProprioception/BatchCADSuperimposer/cam/right:o</from>
         <to>/view/cam/right/batch</to>
-        <protocol>tcp</protocol>
-    </connection>
-
-    <connection>
-        <from>/hand-tracking/left/result/estimates:o</from>
-        <to>/iCubProprioception/BatchCADSuperimposer/cam/left/hand/right_pose:i</to>
-        <protocol>tcp</protocol>
-    </connection>
-
-    <connection>
-        <from>/hand-tracking/right/result/estimates:o</from>
-        <to>/iCubProprioception/BatchCADSuperimposer/cam/right/hand/right_pose:i</to>
         <protocol>tcp</protocol>
     </connection>
 
