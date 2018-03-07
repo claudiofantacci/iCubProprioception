@@ -43,21 +43,12 @@ protected:
 
     bool sync_input(const bool status) override;
 
-
-    bool setHeadRemoteControlboard();
-
-    bool setTorsoRemoteControlboard();
-
-    bool setArmRemoteControlboard();
-
-    bool setArmCartesianController();
-
 private:
     yarp::sig::Vector readRootToEE();
 
     yarp::sig::Vector readFromBufferedPort(yarp::os::BufferedPort<yarp::sig::Vector>& bp);
 
-    
+
     bool synch_ = false;
 
 

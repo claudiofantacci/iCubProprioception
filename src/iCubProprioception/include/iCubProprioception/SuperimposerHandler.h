@@ -33,7 +33,7 @@ public:
     double getPeriod() override { return 0.0; }
 
     bool   configure(yarp::os::ResourceFinder& rf) override;
-    
+
     bool   updateModule() override;
 
     bool   close() override;

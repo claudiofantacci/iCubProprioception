@@ -35,7 +35,7 @@ protected:
 private:
     bool synch_ = false;
 
-    
+
     yarp::os::BufferedPort<yarp::sig::Vector> inport_pose_ext_;
 };
 

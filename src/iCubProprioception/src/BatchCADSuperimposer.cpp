@@ -33,7 +33,7 @@ BatchCADSuperimposer::BatchCADSuperimposer(const ConstString& robot, const Const
         yError() << log_ID_ << "Cannot open input port for external pose!";
         throw std::runtime_error("Cannot open input port for external pose!");
     }
-    
+
 
     /* Port for the head encoders */
     if(!inport_head_enc_.open("/" + ID_ + "/cam/" + camera_ + "/head:i"))

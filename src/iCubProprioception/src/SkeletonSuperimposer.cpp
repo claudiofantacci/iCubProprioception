@@ -94,7 +94,7 @@ SkeletonSuperimposer::SkeletonSuperimposer(const ConstString& port_prefix, const
 
     drawer_ = new SISkeleton(eye_fx_, eye_fy_, eye_cx_, eye_cy_);
 
-    
+
     yInfo() << log_ID_ << "Initialization completed!";
 }
 
@@ -181,7 +181,7 @@ void SkeletonSuperimposer::run()
 
             cv::Mat img = cv::cvarrToMat(imgout.getIplImage());
             drawer_->superimpose(hand_pose, cam_x.data(), cam_o.data(), img);
-            
+
             outport_skeleton_img_.write();
         }
     }
@@ -321,6 +321,6 @@ bool SkeletonSuperimposer::setGazeController()
         yError() << log_ID_ << "Gaze control device not available.";
         return false;
     }
-    
+
     return true;
 }

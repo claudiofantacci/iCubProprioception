@@ -58,7 +58,7 @@ iKinCADSuperimposer::iKinCADSuperimposer(const ConstString& robot, const ConstSt
         throw std::runtime_error("Arm cartesiancontrollerclient errored!");
     }
 
-    
+
     yInfo() << log_ID_ << "...iKinCADSuperimposer ctor completed!";
 }
 

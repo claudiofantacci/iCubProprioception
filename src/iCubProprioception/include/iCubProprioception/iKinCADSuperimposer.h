@@ -48,11 +48,11 @@ protected:
     bool setArmRemoteControlboard();
 
     bool setArmCartesianController();
-    
+
 private:
     yarp::sig::Vector readRootToEE();
 
-    
+
     yarp::dev::PolyDriver         drv_head_remote_;
     yarp::dev::PolyDriver         drv_torso_remote_;
     yarp::dev::PolyDriver         drv_right_arm_remote_;
