@@ -6,7 +6,7 @@ endif()
 
 project(iCubProprioception
         LANGUAGES CXX
-        VERSION 0.5.0.0)
+        VERSION 0.5.1.0)
 
 set(CMAKE_CXX_STANDARD 11)
 
