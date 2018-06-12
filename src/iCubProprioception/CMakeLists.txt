@@ -36,19 +36,23 @@ include(YarpInstallationHelpers)
 yarp_add_idl(${EXE_TARGET_NAME}_THRIFT_SRC ${${EXE_TARGET_NAME}_THRIFT_HDR})
 
 # Executable main
-add_executable(${EXE_TARGET_NAME} ${${EXE_TARGET_NAME}_SRC}     ${${EXE_TARGET_NAME}_HDR}
+add_executable(${EXE_TARGET_NAME} ${${EXE_TARGET_NAME}_SRC} ${${EXE_TARGET_NAME}_HDR}
                                   ${${EXE_TARGET_NAME}_THRIFT_SRC})
 
-target_include_directories(${EXE_TARGET_NAME} PRIVATE "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
-                                                      ${YARP_INCLUDE_DIRS}
-                                                      ${ICUB_INCLUDE_DIRS})
+target_include_directories(${EXE_TARGET_NAME}
+                           PRIVATE
+                               "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+                               ${YARP_INCLUDE_DIRS}
+                               ${ICUB_INCLUDE_DIRS})
 
-target_link_libraries(${EXE_TARGET_NAME} PRIVATE SuperimposeMesh::SuperimposeMesh
-                                                 ${YARP_LIBRARIES}
-                                                 ${ICUB_LIBRARIES}
-                                                 ctrlLib
-                                                 iKin
-                                                 ${OpenCV_LIBS})
+target_link_libraries(${EXE_TARGET_NAME}
+                      PRIVATE
+                          SuperimposeMesh::SuperimposeMesh
+                          ${YARP_LIBRARIES}
+                          ${ICUB_LIBRARIES}
+                          ctrlLib
+                          iKin
+                          ${OpenCV_LIBS})
 
 install(TARGETS ${EXE_TARGET_NAME} DESTINATION bin)
 
@@ -66,10 +70,12 @@ set(${EXE_TARGET_NAME}_CONFIG
         config/config.ini)
 
 set(${EXE_TARGET_NAME}_SHADERS_VERT
+        shader/shader_frame.vert
         shader/shader_model.vert
         shader/shader_background.vert)
 
 set(${EXE_TARGET_NAME}_SHADERS_FRAG
+        shader/shader_frame.frag
         shader/shader_model.frag
         shader/shader_background.frag)
 
