@@ -98,8 +98,18 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
     shader_path_ = rf.findFileByName("shader_model.vert");
     if (!fileFound(shader_path_))
         throw std::runtime_error("ERROR::VISUALPROPRIOCEPTION::CTOR::DIR\nERROR: shader directory not found!");
-    size_t rfind_slash     = shader_path_.rfind("/");
+
+    size_t rfind_slash = shader_path_.rfind("/");
+    if (rfind_slash == std::string::npos)
+        rfind_slash = 0;
+    
     size_t rfind_backslash = shader_path_.rfind("\\");
+    if (rfind_backslash == std::string::npos)
+        rfind_backslash = 0;
+    
+    if (rfind_slash == 0 && rfind_backslash == 0)
+        throw std::runtime_error("ERROR::VISUALPROPRIOCEPTION::CTOR::DIR\nERROR: invalid shader directory!");
+    
     shader_path_ = shader_path_.substr(0, rfind_slash > rfind_backslash ? rfind_slash : rfind_backslash);
 
 
