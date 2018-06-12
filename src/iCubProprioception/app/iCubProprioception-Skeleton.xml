@@ -5,7 +5,7 @@
     <!-- GENERIC INFORMATION -->
     <name>iCubProprioception-Skeleton</name>
     <description>Superimpose the hand skeleton and/or 3D CAD model on the iCub camera images</description>
-    <version>0.5.0.0</version>
+    <version>0.5.1.0</version>
 
     <authors>
         <author email="claudio.fantacci@iit.it">Claudio Fantacci</author>
@@ -21,13 +21,13 @@
 
     <module>
         <name>yarpview</name>
-        <parameters>--name /view/cam/left/skeleton --x 340 --y 0 --RefreshTime 30</parameters>
+        <parameters>--name /view/cam/left/skeleton --x 50 --y 0 --RefreshTime 30</parameters>
         <node>localhost</node>
     </module>
 
     <module>
         <name>yarpview</name>
-        <parameters>--name /view/cam/right/skeleton --x 340 --y 370 --RefreshTime 30</parameters>
+        <parameters>--name /view/cam/right/skeleton --x 50 --y 400 --RefreshTime 30</parameters>
         <node>localhost</node>
     </module>
 
@@ -49,13 +49,13 @@
     <connection>
         <from>/iCubProprioception/SkeletonSuperimposer/cam/left:o</from>
         <to>/view/cam/left/skeleton</to>
-        <protocol>udp</protocol>
+        <protocol>mcast</protocol>
     </connection>
 
     <connection>
         <from>/iCubProprioception/SkeletonSuperimposer/cam/right:o</from>
         <to>/view/cam/right/skeleton</to>
-        <protocol>udp</protocol>
+        <protocol>mcast</protocol>
     </connection>
 
 </application>

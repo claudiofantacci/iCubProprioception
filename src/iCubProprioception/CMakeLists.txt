@@ -62,8 +62,8 @@ set(${EXE_TARGET_NAME}_APP
         app/iCubProprioception-DataDump.xml
         app/iCubProprioception-External.xml
         app/iCubProprioception-iKin.xml
-        app/iCubProprioception-BATCH.xml
-        app/iCubProprioception-SIM.xml
+        app/iCubProprioception-Batch.xml
+        app/iCubProprioception-Sim.xml
         app/iCubProprioception-Skeleton.xml)
 
 set(${EXE_TARGET_NAME}_CONFIG

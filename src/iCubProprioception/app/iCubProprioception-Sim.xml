@@ -9,9 +9,9 @@
 
 
     <!-- GENERIC INFORMATION -->
-    <name>iCubProprioception-SIM</name>
+    <name>iCubProprioception-Sim</name>
     <description>Superimpose the hand skeleton and/or 3D CAD model on the camera images of icubSim</description>
-    <version>0.5.0.0</version>
+    <version>0.5.1.0</version>
 
     <authors>
         <author email="claudio.fantacci@iit.it">Claudio Fantacci</author>
@@ -27,49 +27,49 @@
 
     <module>
         <name>yarpview</name>
-        <parameters>--name /view/cam/left --x 20 --y 0 --RefreshTime 30</parameters>
+        <parameters>--name /view/cam/left --x 50 --y 50 --RefreshTime 30</parameters>
         <node>localhost</node>
     </module>
 
     <module>
         <name>yarpview</name>
-        <parameters>--name /view/cam/right --x 20 --y 370 --RefreshTime 30</parameters>
+        <parameters>--name /view/cam/right --x 50 --y 400 --RefreshTime 30</parameters>
         <node>localhost</node>
     </module>
 
     <module>
         <name>yarpview</name>
-        <parameters>--name /view/cam/left/skeleton --x 340 --y 0 --RefreshTime 30</parameters>
+        <parameters>--name /view/cam/left/skeleton --x 360 --y 50 --RefreshTime 30</parameters>
         <node>localhost</node>
     </module>
 
     <module>
         <name>yarpview</name>
-        <parameters>--name /view/cam/right/skeleton --x 340 --y 370 --RefreshTime 30</parameters>
+        <parameters>--name /view/cam/right/skeleton --x 360 --y 400 --RefreshTime 30</parameters>
         <node>localhost</node>
     </module>
 
     <module>
         <name>yarpview</name>
-        <parameters>--name /view/cam/left/ikin --x 660 --y 0 --RefreshTime 30</parameters>
+        <parameters>--name /view/cam/left/ikin --x 670 --y 50 --RefreshTime 30</parameters>
         <node>localhost</node>
     </module>
 
     <module>
         <name>yarpview</name>
-        <parameters>--name /view/cam/right/ikin --x 660 --y 370 --RefreshTime 30</parameters>
+        <parameters>--name /view/cam/right/ikin --x 670 --y 400 --RefreshTime 30</parameters>
         <node>localhost</node>
     </module>
 
     <module>
         <name>yarpview</name>
-        <parameters>--name /view/cam/left/ext --x 980 --y 0 --RefreshTime 30</parameters>
+        <parameters>--name /view/cam/left/ext --x 980 --y 50 --RefreshTime 30</parameters>
         <node>localhost</node>
     </module>
 
     <module>
         <name>yarpview</name>
-        <parameters>--name /view/cam/right/ext --x 980 --y 370 --RefreshTime 30</parameters>
+        <parameters>--name /view/cam/right/ext --x 980 --y 400 --RefreshTime 30</parameters>
         <node>localhost</node>
     </module>
 
@@ -78,38 +78,38 @@
     <connection>
         <from>/icubSim/cam/left</from>
         <to>/view/cam/left</to>
-        <protocol>tcp</protocol>
+        <protocol>mcast</protocol>
     </connection>
 
     <connection>
         <from>/icubSim/cam/right</from>
         <to>/view/cam/right</to>
-        <protocol>tcp</protocol>
+        <protocol>mcast</protocol>
     </connection>
 
     <!-- RC: SKELETON -->
     <connection>
         <from>/icubSim/cam/left</from>
         <to>/iCubProprioception/SkeletonSuperimposer/cam/left:i</to>
-        <protocol>udp</protocol>
+        <protocol>mcast</protocol>
     </connection>
 
     <connection>
         <from>/icubSim/cam/right</from>
         <to>/iCubProprioception/SkeletonSuperimposer/cam/right:i</to>
-        <protocol>udp</protocol>
+        <protocol>mcast</protocol>
     </connection>
 
     <connection>
         <from>/iCubProprioception/SkeletonSuperimposer/cam/left:o</from>
         <to>/view/cam/left/skeleton</to>
-        <protocol>udp</protocol>
+        <protocol>mcast</protocol>
     </connection>
 
     <connection>
         <from>/iCubProprioception/SkeletonSuperimposer/cam/right:o</from>
         <to>/view/cam/right/skeleton</to>
-        <protocol>udp</protocol>
+        <protocol>mcast</protocol>
     </connection>
 
     <!-- RC: iKin CAD -->
@@ -128,13 +128,13 @@
     <connection>
         <from>/iCubProprioception/iKinCADSuperimposer/cam/left:o</from>
         <to>/view/cam/left/ikin</to>
-        <protocol>tcp</protocol>
+        <protocol>mcast</protocol>
     </connection>
 
     <connection>
         <from>/iCubProprioception/iKinCADSuperimposer/cam/right:o</from>
         <to>/view/cam/right/ikin</to>
-        <protocol>tcp</protocol>
+        <protocol>mcast</protocol>
     </connection>
 
     <!-- RC: Ext CAD -->
@@ -153,13 +153,13 @@
     <connection>
         <from>/iCubProprioception/ExtCADSuperimposer/cam/left:o</from>
         <to>/view/cam/left/ext</to>
-        <protocol>tcp</protocol>
+        <protocol>mcast</protocol>
     </connection>
 
     <connection>
         <from>/iCubProprioception/ExtCADSuperimposer/cam/right:o</from>
         <to>/view/cam/right/ext</to>
-        <protocol>tcp</protocol>
+        <protocol>mcast</protocol>
     </connection>
 
 </application>

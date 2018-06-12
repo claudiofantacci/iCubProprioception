@@ -3,9 +3,9 @@
 <application>
 
     <!-- GENERIC INFORMATION -->
-    <name>iCubProprioception-BATCH</name>
+    <name>iCubProprioception-Batch</name>
     <description>Superimpose the hand skeleton and/or 3D CAD model on the camera images stored from iCub</description>
-    <version>0.5.0.0</version>
+    <version>0.5.1.0</version>
 
     <authors>
         <author email="claudio.fantacci@iit.it">Claudio Fantacci</author>
@@ -21,25 +21,25 @@
 
     <module>
         <name>yarpview</name>
-        <parameters>--name /view/cam/left --x 20 --y 0 --RefreshTime 30</parameters>
+        <parameters>--name /view/cam/left --x 50 --y 50 --RefreshTime 30</parameters>
         <node>localhost</node>
     </module>
 
     <module>
         <name>yarpview</name>
-        <parameters>--name /view/cam/right --x 20 --y 370 --RefreshTime 30</parameters>
+        <parameters>--name /view/cam/right --x 50 --y 400 --RefreshTime 30</parameters>
         <node>localhost</node>
     </module>
 
     <module>
         <name>yarpview</name>
-        <parameters>--name /view/cam/left/batch --x 340 --y 0 --RefreshTime 30</parameters>
+        <parameters>--name /view/cam/left/batch --x 360 --y 50 --RefreshTime 30</parameters>
         <node>localhost</node>
     </module>
 
     <module>
         <name>yarpview</name>
-        <parameters>--name /view/cam/right/batch --x 340 --y 370 --RefreshTime 30</parameters>
+        <parameters>--name /view/cam/right/batch --x 360 --y 400 --RefreshTime 30</parameters>
         <node>localhost</node>
     </module>
 
@@ -73,61 +73,61 @@
     <connection>
         <from>/iCubProprioception/BatchCADSuperimposer/cam/left:o</from>
         <to>/view/cam/left/batch</to>
-        <protocol>tcp</protocol>
+        <protocol>fast_tcp</protocol>
     </connection>
 
     <connection>
         <from>/iCubProprioception/BatchCADSuperimposer/cam/right:o</from>
         <to>/view/cam/right/batch</to>
-        <protocol>tcp</protocol>
+        <protocol>fast_tcp</protocol>
     </connection>
 
     <connection>
         <from>/icub/head/state:o</from>
         <to>/iCubProprioception/BatchCADSuperimposer/cam/left/head:i</to>
-        <protocol>tcp</protocol>
+        <protocol>fast_tcp</protocol>
     </connection>
 
     <connection>
         <from>/icub/head/state:o</from>
         <to>/iCubProprioception/BatchCADSuperimposer/cam/right/head:i</to>
-        <protocol>tcp</protocol>
+        <protocol>fast_tcp</protocol>
     </connection>
 
     <connection>
         <from>/icub/right_arm/state:o</from>
         <to>/iCubProprioception/BatchCADSuperimposer/cam/left/right_arm:i</to>
-        <protocol>tcp</protocol>
+        <protocol>fast_tcp</protocol>
     </connection>
 
     <connection>
         <from>/icub/right_arm/state:o</from>
         <to>/iCubProprioception/BatchCADSuperimposer/cam/right/right_arm:i</to>
-        <protocol>tcp</protocol>
+        <protocol>fast_tcp</protocol>
     </connection>
 
     <connection>
         <from>/icub/torso/state:o</from>
         <to>/iCubProprioception/BatchCADSuperimposer/cam/left/torso:i</to>
-        <protocol>tcp</protocol>
+        <protocol>fast_tcp</protocol>
     </connection>
 
     <connection>
         <from>/icub/torso/state:o</from>
         <to>/iCubProprioception/BatchCADSuperimposer/cam/right/torso:i</to>
-        <protocol>tcp</protocol>
+        <protocol>fast_tcp</protocol>
     </connection>
 
     <!--connection>
         <from>/icub/right_arm/analogs/state:o</from>
         <to>/iCubProprioception/BatchCADSuperimposer/cam/left/right_analogs:i</to>
-        <protocol>tcp</protocol>
+        <protocol>fast_tcp</protocol>
     </connection-->
 
     <!--connection>
         <from>/icub/right_arm/analogs/state:o</from>
         <to>/iCubProprioception/BatchCADSuperimposer/cam/right/right_analogs:i</to>
-        <protocol>tcp</protocol>
+        <protocol>fast_tcp</protocol>
     </connection-->
 
 </application>

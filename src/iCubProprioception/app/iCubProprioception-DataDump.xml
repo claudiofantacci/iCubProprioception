@@ -5,7 +5,7 @@
     <!-- GENERIC INFORMATION -->
     <name>iCubProprioception-DataDump</name>
     <description>Collect data for iCubProprioception module</description>
-    <version>0.5.0.0</version>
+    <version>0.5.1.0</version>
 
     <authors>
         <author email="claudio.fantacci@iit.it">Claudio Fantacci</author>
@@ -115,13 +115,13 @@
     <connection>
         <from>/iCubProprioception/SkeletonSuperimposer/cam/left:o</from>
         <to>/view/cam/left/skeleton</to>
-        <protocol>tcp</protocol>
+        <protocol>mcast</protocol>
     </connection>
 
     <connection>
         <from>/iCubProprioception/SkeletonSuperimposer/cam/right:o</from>
         <to>/view/cam/right/skeleton</to>
-        <protocol>tcp</protocol>
+        <protocol>mcast</protocol>
     </connection>
 
     <!-- RC: iKin CAD -->
@@ -140,13 +140,13 @@
     <connection>
         <from>/iCubProprioception/iKinCADSuperimposer/cam/left:o</from>
         <to>/view/cam/left/ikin</to>
-        <protocol>tcp</protocol>
+        <protocol>mcast</protocol>
     </connection>
 
     <connection>
         <from>/iCubProprioception/iKinCADSuperimposer/cam/right:o</from>
         <to>/view/cam/right/ikin</to>
-        <protocol>tcp</protocol>
+        <protocol>mcast</protocol>
     </connection>
 
     <!-- RC: Ext CAD -->
@@ -165,74 +165,74 @@
     <connection>
         <from>/iCubProprioception/ExtCADSuperimposer/cam/left:o</from>
         <to>/view/cam/left/ext</to>
-        <protocol>tcp</protocol>
+        <protocol>mcast</protocol>
     </connection>
 
     <connection>
         <from>/iCubProprioception/ExtCADSuperimposer/cam/right:o</from>
         <to>/view/cam/right/ext</to>
-        <protocol>tcp</protocol>
+        <protocol>mcast</protocol>
     </connection>
 
     <!-- RC: DUMP -->
     <connection>
         <from>/icub/camcalib/left/out</from>
         <to>/datadumper/camera/left</to>
-        <protocol>mcast</protocol>
+        <protocol>fast_tcp</protocol>
     </connection>
 
     <connection>
         <from>/icub/camcalib/right/out</from>
         <to>/datadumper/camera/right</to>
-        <protocol>mcast</protocol>
+        <protocol>fast_tcp</protocol>
     </connection>
 
     <connection>
         <from>/icub/cartesianController/right_arm/state:o</from>
         <to>/datadumper/endeffector/pose</to>
-        <protocol>tcp</protocol>
+        <protocol>fast_tcp</protocol>
     </connection>
 
     <connection>
         <from>/iCubProprioception/SkeletonSuperimposer/cam/left:o</from>
         <to>/datadumper/skeleton/left</to>
-        <protocol>tcp</protocol>
+        <protocol>fast_tcp</protocol>
     </connection>
 
     <connection>
         <from>/iCubProprioception/SkeletonSuperimposer/cam/right:o</from>
         <to>/datadumper/skeleton/right</to>
-        <protocol>tcp</protocol>
+        <protocol>fast_tcp</protocol>
     </connection>
 
     <connection>
         <from>/iCubProprioception/iKinCADSuperimposer/cam/left:o</from>
         <to>/datadumper/ikin_cad/left</to>
-        <protocol>tcp</protocol>
+        <protocol>fast_tcp</protocol>
     </connection>
 
     <connection>
         <from>/iCubProprioception/iKinCADSuperimposer/cam/right:o</from>
         <to>/datadumper/ikin_cad/right</to>
-        <protocol>tcp</protocol>
+        <protocol>fast_tcp</protocol>
     </connection>
 
     <connection>
         <from>/iCubProprioception/ExtCADSuperimposer/cam/left:o</from>
         <to>/datadumper/ext_cad/left</to>
-        <protocol>tcp</protocol>
+        <protocol>fast_tcp</protocol>
     </connection>
 
     <connection>
         <from>/iCubProprioception/ExtCADSuperimposer/cam/right:o</from>
         <to>/datadumper/ext_cad/right</to>
-        <protocol>tcp</protocol>
+        <protocol>fast_tcp</protocol>
     </connection>
 
     <connection>
         <from>/icub/torso/state:o</from>
         <to>/datadumper/torso</to>
-        <protocol>tcp</protocol>
+        <protocol>fast_tcp</protocol>
     </connection>
 
     <connection>
@@ -244,13 +244,13 @@
     <connection>
         <from>/icub/head/state:o</from>
         <to>/datadumper/head</to>
-        <protocol>tcp</protocol>
+        <protocol>fast_tcp</protocol>
     </connection>
 
     <connection>
         <from>/icub/right_hand/analog:o</from>
         <to>/datadumper/analog</to>
-        <protocol>tcp</protocol>
+        <protocol>fast_tcp</protocol>
     </connection>
 
 </application>

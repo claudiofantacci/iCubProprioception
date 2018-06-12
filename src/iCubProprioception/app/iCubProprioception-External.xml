@@ -5,7 +5,7 @@
     <!-- GENERIC INFORMATION -->
     <name>iCubProprioception-External</name>
     <description>Superimpose the 3D CAD model of the arm on the iCub camera images</description>
-    <version>0.5.0.0</version>
+    <version>0.5.1.0</version>
 
     <authors>
         <author email="claudio.fantacci@iit.it">Claudio Fantacci</author>
@@ -49,13 +49,13 @@
     <connection>
         <from>/iCubProprioception/ExtCADSuperimposer/cam/left:o</from>
         <to>/view/cam/left/ext</to>
-        <protocol>udp</protocol>
+        <protocol>mcast</protocol>
     </connection>
 
     <connection>
         <from>/iCubProprioception/ExtCADSuperimposer/cam/right:o</from>
         <to>/view/cam/right/ext</to>
-        <protocol>udp</protocol>
+        <protocol>mcast</protocol>
     </connection>
 
 </application>
