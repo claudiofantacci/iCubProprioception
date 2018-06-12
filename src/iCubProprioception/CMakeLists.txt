@@ -23,16 +23,13 @@ set(${EXE_TARGET_NAME}_THRIFT_HDR
         thrift/idl_mesh.thrift)
 
 # Dependencies
-find_package(glew            REQUIRED)
-find_package(glfw3           REQUIRED)
-find_package(ICUB            REQUIRED)
-find_package(OpenCV          REQUIRED)
-find_package(OpenGL          REQUIRED)
-find_package(SuperimposeMesh REQUIRED)
-find_package(YARP            REQUIRED)
+find_package(ICUB                    REQUIRED)
+find_package(OpenCV                  REQUIRED)
+find_package(SuperimposeMesh 0.9.4.0 REQUIRED)
+find_package(YARP                    REQUIRED)
 
-list(APPEND CMAKE_MODULE_PATH   ${YARP_MODULE_PATH}
-                                ${ICUB_MODULE_PATH})
+list(APPEND CMAKE_MODULE_PATH ${YARP_MODULE_PATH}
+                              ${ICUB_MODULE_PATH})
 
 include(YarpInstallationHelpers)
 
@@ -43,21 +40,15 @@ add_executable(${EXE_TARGET_NAME} ${${EXE_TARGET_NAME}_SRC}     ${${EXE_TARGET_N
                                   ${${EXE_TARGET_NAME}_THRIFT_SRC})
 
 target_include_directories(${EXE_TARGET_NAME} PRIVATE "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
-                                                      ${GLEW_INCLUDE_DIRS}
                                                       ${YARP_INCLUDE_DIRS}
-                                                      ${ICUB_INCLUDE_DIRS}
-                                                      ${OPENGL_INCLUDE_DIR}
-                                                      ${ASSIMP_INCLUDE_DIRS})
+                                                      ${ICUB_INCLUDE_DIRS})
 
 target_link_libraries(${EXE_TARGET_NAME} PRIVATE SuperimposeMesh::SuperimposeMesh
                                                  ${YARP_LIBRARIES}
                                                  ${ICUB_LIBRARIES}
                                                  ctrlLib
                                                  iKin
-                                                 ${OpenCV_LIBS}
-                                                 ${OPENGL_LIBRARIES}
-                                                 ${GLEW_LIBRARIES}
-                                                 glfw)
+                                                 ${OpenCV_LIBS})
 
 install(TARGETS ${EXE_TARGET_NAME} DESTINATION bin)
 
