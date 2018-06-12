@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="yarpmanifest.xsl"?>
+<application>
+
+    <!-- GENERIC INFORMATION -->
+    <name>iCubProprioception-External</name>
+    <description>Superimpose the 3D CAD model of the arm on the iCub camera images</description>
+    <version>0.5.1.0</version>
+
+    <authors>
+        <author email="claudio.fantacci@iit.it">Claudio Fantacci</author>
+    </authors>
+
+
+    <!-- RQUIRED MODULES -->
+    <module>
+        <name>iCubProprioception</name>
+        <node>localhost</node>
+        <parameters>--robot icub --ext --from config.ini</parameters>
+    </module>
+
+    <module>
+        <name>yarpview</name>
+        <parameters>--name /view/cam/left/ext --x 980 --y 0 --RefreshTime 30</parameters>
+        <node>localhost</node>
+    </module>
+
+    <module>
+        <name>yarpview</name>
+        <parameters>--name /view/cam/right/ext --x 1300 --y 0 --RefreshTime 30 --compact</parameters>
+        <node>icub22</node>
+    </module>
+
+
+    <!-- REQUIRED CONNECTIONS -->
+    <!-- RC: Ext CAD -->
+    <connection>
+        <from>/icub/camcalib/left/out</from>
+        <to>/iCubProprioception/ExtCADSuperimposer/cam/left:i</to>
+        <protocol>mcast</protocol>
+    </connection>
+
+    <connection>
+        <from>/icub/camcalib/right/out</from>
+        <to>/iCubProprioception/ExtCADSuperimposer/cam/right:i</to>
+        <protocol>mcast</protocol>
+    </connection>
+
+    <connection>
+        <from>/iCubProprioception/ExtCADSuperimposer/cam/left:o</from>
+        <to>/view/cam/left/ext</to>
+        <protocol>mcast</protocol>
+    </connection>
+
+    <connection>
+        <from>/iCubProprioception/ExtCADSuperimposer/cam/right:o</from>
+        <to>/view/cam/right/ext</to>
+        <protocol>mcast</protocol>
+    </connection>
+
+</application>

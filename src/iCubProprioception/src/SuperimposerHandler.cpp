@@ -43,12 +43,17 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
     ext_      = ((rf.findGroup("ext").size()    == 1 ? true : (rf.findGroup("ext").size()   == 2 ? rf.find("ext").asBool()   : false)));
     batch_    = ((rf.findGroup("batch").size()  == 1 ? true : (rf.findGroup("batch").size() == 2 ? rf.find("batch").asBool() : false)));
 
+    draw_thumb_   = rf.findGroup("SICAD").check("draw_thumb",   Value(false)).asBool();
+    draw_forearm_ = rf.findGroup("SICAD").check("draw_forearm", Value(false)).asBool();
+
     yInfo() << log_ID_ << "Running with:";
     yInfo() << log_ID_ << " - robot name:"              << robot_;
-    yInfo() << log_ID_ << " - draw skeleton:"           << (skeleton_ ? "true" : "false");
-    yInfo() << log_ID_ << " - render using ikin:"       << (ikin_     ? "true" : "false");
-    yInfo() << log_ID_ << " - render using ext source:" << (ext_      ? "true" : "false");
-    yInfo() << log_ID_ << " - render batch data:"       << (batch_    ? "true" : "false");
+    yInfo() << log_ID_ << " - draw skeleton:"           << (skeleton_     ? "true" : "false");
+    yInfo() << log_ID_ << " - render using ikin:"       << (ikin_         ? "true" : "false");
+    yInfo() << log_ID_ << " - render using ext source:" << (ext_          ? "true" : "false");
+    yInfo() << log_ID_ << " - render batch data:"       << (batch_        ? "true" : "false");
+    yInfo() << log_ID_ << " - render thumb:     "       << (draw_thumb_   ? "true" : "false");
+    yInfo() << log_ID_ << " - render forearm:"          << (draw_forearm_ ? "true" : "false");
 
 
     /* Search mesh files in /mesh context folder */
@@ -90,10 +95,22 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
 
     /* Search shader files in /shader context folder */
     rf.setDefaultContext(context + "/shader");
-
     shader_path_ = rf.findFileByName("shader_model.vert");
-    if (!fileFound(shader_path_)) return false;
-    shader_path_ = shader_path_.substr(0, shader_path_.rfind("/"));
+    if (!fileFound(shader_path_))
+        throw std::runtime_error("ERROR::VISUALPROPRIOCEPTION::CTOR::DIR\nERROR: shader directory not found!");
+
+    size_t rfind_slash = shader_path_.rfind("/");
+    if (rfind_slash == std::string::npos)
+        rfind_slash = 0;
+    
+    size_t rfind_backslash = shader_path_.rfind("\\");
+    if (rfind_backslash == std::string::npos)
+        rfind_backslash = 0;
+    
+    if (rfind_slash == 0 && rfind_backslash == 0)
+        throw std::runtime_error("ERROR::VISUALPROPRIOCEPTION::CTOR::DIR\nERROR: invalid shader directory!");
+    
+    shader_path_ = shader_path_.substr(0, rfind_slash > rfind_backslash ? rfind_slash : rfind_backslash);
 
 
     /* Initializing useful pose matrices and vectors for the hand. */
@@ -140,7 +157,7 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
     setRightArmRemoteControlboard();
 
     /* Right arm cartesian controler. */
-    if (setRightArmCartesianController()) setTorsoDOF();
+    setRightArmCartesianController();
 
     /* Head control board. */
     setHeadRemoteControlboard();
@@ -186,7 +203,10 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
     if (ikin_)
     {
         /* Left camera */
-        try { trd_left_cam_ikin_cad_ = new iKinCADSuperimposer(ID_ + "/iKinCADSuperimposer", robot_, "left", cad_hand_, shader_path_); }
+        try { trd_left_cam_ikin_cad_ = new iKinCADSuperimposer(robot_, "left",
+                                                               cad_hand_, shader_path_,
+                                                               ID_ + "/iKinCADSuperimposer",
+                                                               draw_thumb_, draw_forearm_); }
         catch (const std::runtime_error& e) { yError() << e.what(); }
 
         if (trd_left_cam_ikin_cad_ != YARP_NULLPTR)
@@ -200,7 +220,10 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
             yError() << log_ID_ << "Could not initialize iKinFwd hand mesh superimposition!";
 
         /* Right camera */
-        try { trd_right_cam_ikin_cad_ = new iKinCADSuperimposer(ID_ + "/iKinCADSuperimposer", robot_, "right", cad_hand_, shader_path_); }
+        try { trd_right_cam_ikin_cad_ = new iKinCADSuperimposer(robot_, "right",
+                                                                cad_hand_, shader_path_,
+                                                                ID_ + "/iKinCADSuperimposer",
+                                                                draw_thumb_, draw_forearm_); }
         catch (const std::runtime_error& e) { yError() << e.what(); }
 
         if (trd_right_cam_ikin_cad_ != YARP_NULLPTR)
@@ -219,7 +242,10 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
     if (ext_)
     {
         /* Left camera */
-        try { trd_left_cam_ext_cad_ = new ExtCADSuperimposer(ID_ + "/ExtCADSuperimposer", robot_, "left", cad_hand_, shader_path_); }
+        try { trd_left_cam_ext_cad_ = new ExtCADSuperimposer(robot_, "left",
+                                                             cad_hand_, shader_path_,
+                                                             ID_ + "/ExtCADSuperimposer",
+                                                             draw_thumb_, draw_forearm_); }
         catch (const std::runtime_error& e) { yError() << e.what(); }
 
         if (trd_left_cam_ext_cad_ != YARP_NULLPTR)
@@ -234,7 +260,10 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
 
 
         /* Right camera */
-        try { trd_right_cam_ext_cad_ = new ExtCADSuperimposer(ID_ + "/ExtCADSuperimposer", robot_, "right", cad_hand_, shader_path_); }
+        try { trd_right_cam_ext_cad_ = new ExtCADSuperimposer(robot_, "right",
+                                                              cad_hand_, shader_path_,
+                                                              ID_ + "/ExtCADSuperimposer",
+                                                              draw_thumb_, draw_forearm_); }
         catch (const std::runtime_error& e) { yError() << e.what(); }
 
         if (trd_right_cam_ext_cad_ != YARP_NULLPTR)
@@ -253,7 +282,10 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
     if (batch_)
     {
         /* Left camera */
-        try { trd_left_cam_batch_cad_ = new BatchCADSuperimposer(ID_ + "/BatchCADSuperimposer", robot_, "left", cad_hand_, shader_path_); }
+        try { trd_left_cam_batch_cad_ = new BatchCADSuperimposer(robot_, "left",
+                                                                 cad_hand_, shader_path_,
+                                                                 ID_ + "/BatchCADSuperimposer",
+                                                                 draw_thumb_, draw_forearm_); }
         catch (const std::runtime_error& e) { yError() << e.what(); }
 
         if (trd_left_cam_batch_cad_ != YARP_NULLPTR)
@@ -267,7 +299,10 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
             yError() << log_ID_ << "Could not initialize Batch hand mesh superimposition for the left camera!";
 
         /* Right camera */
-        try { trd_right_cam_batch_cad_ = new BatchCADSuperimposer(ID_ + "/BatchCADSuperimposer", robot_, "right", cad_hand_, shader_path_); }
+        try { trd_right_cam_batch_cad_ = new BatchCADSuperimposer(robot_, "right",
+                                                                  cad_hand_, shader_path_,
+                                                                  ID_ + "/BatchCADSuperimposer",
+                                                                  draw_thumb_, draw_forearm_); }
         catch (const std::runtime_error& e) { yError() << e.what(); }
 
         if (trd_right_cam_batch_cad_ != YARP_NULLPTR)
@@ -292,7 +327,7 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
 
 bool SuperimposerHandler::updateModule()
 {
-    glfwPollEvents();
+    glfwWaitEventsTimeout(1.0);
 
     return true;
 }
@@ -380,11 +415,11 @@ bool SuperimposerHandler::close()
     if (rightarm_remote_driver_.isValid())    rightarm_remote_driver_.close();
     if (head_remote_driver_.isValid())        head_remote_driver_.close();
     if (gaze_driver_.isValid())               gaze_driver_.close();
-    
+
 #if ICP_USE_ANALOGS == 1
     if (drv_right_hand_analog_.isValid())     drv_right_hand_analog_.close();
 #endif
-    
+
     if (port_command_.isOpen()) port_command_.close();
     return true;
 }
@@ -444,9 +479,9 @@ bool SuperimposerHandler::close_fingers()
 
 std::string SuperimposerHandler::quit()
 {
-    yInfo() << log_ID_ << "Quitting...";
+    yInfo() << log_ID_ << "Invoked quit.";
 
-    this->stopModule();
+    stopModule();
 
     return "[bye]";
 }
@@ -566,20 +601,6 @@ bool SuperimposerHandler::setRightArmCartesianController()
         return false;
     }
 
-    if (!itf_rightarm_cart_->setTrajTime(2.5))
-    {
-        yError() << log_ID_ << "Error setting ICartesianControl trajectory time.";
-        return false;
-    }
-    yInfo() << log_ID_ << "Succesfully set ICartesianControl trajectory time!";
-
-    if (!itf_rightarm_cart_->setInTargetTol(0.01))
-    {
-        yError() << log_ID_ << "Error setting ICartesianControl target tolerance.";
-        return false;
-    }
-    yInfo() << log_ID_ << "Succesfully set ICartesianControl target tolerance!";
-
     return true;
 }
 
@@ -636,28 +657,6 @@ bool SuperimposerHandler::setGazeController()
         yError() << log_ID_ << "Gaze control device not available.";
         return false;
     }
-
-    return true;
-}
-
-
-bool SuperimposerHandler::setTorsoDOF()
-{
-    Vector curDOF;
-    itf_rightarm_cart_->getDOF(curDOF);
-    yInfo() << log_ID_ << "Old DOF: [" + curDOF.toString(0) + "].";
-    yInfo() << log_ID_ << "Setting iCub to use the DOF from the torso.";
-    Vector newDOF(curDOF);
-    newDOF[0] = 1;
-    newDOF[1] = 2;
-    newDOF[2] = 1;
-    if (!itf_rightarm_cart_->setDOF(newDOF, curDOF))
-    {
-        yError() << log_ID_ << "Cannot use torso DOF.";
-        return false;
-    }
-    yInfo() << log_ID_ << "Setting the DOF done.";
-    yInfo() << log_ID_ << "New DOF: [" + curDOF.toString(0) + "]";
 
     return true;
 }

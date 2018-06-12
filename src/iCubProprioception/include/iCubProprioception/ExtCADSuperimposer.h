@@ -16,8 +16,10 @@
 class ExtCADSuperimposer : public iKinCADSuperimposer
 {
 public:
-    ExtCADSuperimposer(const yarp::os::ConstString& port_prefix, const yarp::os::ConstString& robot, const yarp::os::ConstString& camera,
-                       const Superimpose::ObjFileMap& cad_hand, const yarp::os::ConstString& shader_path);
+    ExtCADSuperimposer(const yarp::os::ConstString& robot, const yarp::os::ConstString& camera,
+                       const SICAD::ModelPathContainer& cad_hand, const yarp::os::ConstString& shader_path,
+                       const yarp::os::ConstString& port_prefix,
+                       const bool draw_thumb, const bool draw_forearm);
 
     ~ExtCADSuperimposer() noexcept;
 
@@ -28,18 +30,11 @@ public:
 protected:
     yarp::sig::Vector getEndEffectorPose() override;
 
-    void getExtraObjPoseMap(Superimpose::ObjPoseMap& hand_pose) override;
-
     bool sync_input(const bool status) override;
 
-    bool render_extra_mesh(const bool status) override;
-
 private:
-    yarp::sig::Vector                         ext_pose_copy_;
+    bool synch_ = false;
 
-    bool                                      view_forearm_ = false;
-
-    bool                                      synch_ = true;
 
     yarp::os::BufferedPort<yarp::sig::Vector> inport_pose_ext_;
 };

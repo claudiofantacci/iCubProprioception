@@ -30,10 +30,10 @@ public:
 
     SuperimposerHandler(const yarp::os::ConstString& project_name);
 
-    double getPeriod() override { return 0.033; }
+    double getPeriod() override { return 0.0; }
 
     bool   configure(yarp::os::ResourceFinder& rf) override;
-    
+
     bool   updateModule() override;
 
     bool   close() override;
@@ -62,8 +62,6 @@ protected:
 
     bool setGazeController();
 
-    bool setTorsoDOF();
-
     bool setCommandPort();
 
     bool moveFingers(const double joint[6]);
@@ -79,11 +77,13 @@ private:
     bool                          ikin_;
     bool                          ext_;
     bool                          batch_;
+    bool                          draw_thumb_;
+    bool                          draw_forearm_;
 
     yarp::dev::PolyDriver         torso_remote_driver_;
 
     yarp::dev::PolyDriver         rightarm_remote_driver_;
-    yarp::dev::IEncoders        * itf_rightarm_enc_;
+    yarp::dev::IEncoders*         itf_rightarm_enc_;
     yarp::dev::IPositionControl2* itf_rightarm_pos_;
     int                           num_rightarm_enc_;
 
@@ -94,23 +94,23 @@ private:
     yarp::dev::IPositionControl2* itf_head_pos_;
 
     yarp::dev::PolyDriver         gaze_driver_;
-    yarp::dev::IGazeControl     * itf_head_gaze_;
+    yarp::dev::IGazeControl*      itf_head_gaze_;
 
     yarp::dev::PolyDriver         drv_right_hand_analog_;
 
-    SkeletonSuperimposer        * trd_left_cam_skeleton_   = YARP_NULLPTR;
-    SkeletonSuperimposer        * trd_right_cam_skeleton_  = YARP_NULLPTR;
+    SkeletonSuperimposer*         trd_left_cam_skeleton_   = YARP_NULLPTR;
+    SkeletonSuperimposer*         trd_right_cam_skeleton_  = YARP_NULLPTR;
 
-    iKinCADSuperimposer         * trd_left_cam_ikin_cad_   = YARP_NULLPTR;
-    iKinCADSuperimposer         * trd_right_cam_ikin_cad_  = YARP_NULLPTR;
+    iKinCADSuperimposer*          trd_left_cam_ikin_cad_   = YARP_NULLPTR;
+    iKinCADSuperimposer*          trd_right_cam_ikin_cad_  = YARP_NULLPTR;
 
-    ExtCADSuperimposer          * trd_left_cam_ext_cad_    = YARP_NULLPTR;
-    ExtCADSuperimposer          * trd_right_cam_ext_cad_   = YARP_NULLPTR;
+    ExtCADSuperimposer*           trd_left_cam_ext_cad_    = YARP_NULLPTR;
+    ExtCADSuperimposer*           trd_right_cam_ext_cad_   = YARP_NULLPTR;
 
-    BatchCADSuperimposer        * trd_left_cam_batch_cad_  = YARP_NULLPTR;
-    BatchCADSuperimposer        * trd_right_cam_batch_cad_ = YARP_NULLPTR;
+    BatchCADSuperimposer*         trd_left_cam_batch_cad_  = YARP_NULLPTR;
+    BatchCADSuperimposer*         trd_right_cam_batch_cad_ = YARP_NULLPTR;
 
-    Superimpose::ObjFileMap       cad_hand_;
+    SICAD::ModelPathContainer     cad_hand_;
     yarp::os::ConstString         shader_path_;
 
     yarp::os::Port                port_command_;

@@ -15,9 +15,14 @@ using namespace iCub::ctrl;
 using namespace iCub::iKin;
 
 
-ExtCADSuperimposer::ExtCADSuperimposer(const ConstString& port_prefix, const ConstString& robot, const ConstString& camera,
-                                       const Superimpose::ObjFileMap& cad_hand, const ConstString& shader_path) :
-    iKinCADSuperimposer(port_prefix, robot, camera, cad_hand, shader_path)
+ExtCADSuperimposer::ExtCADSuperimposer(const ConstString& robot, const ConstString& camera,
+                                       const SICAD::ModelPathContainer& cad_hand, const ConstString& shader_path,
+                                       const ConstString& port_prefix,
+                                       const bool draw_thumb, const bool draw_forearm) :
+    iKinCADSuperimposer(robot, camera,
+                        cad_hand, shader_path,
+                        port_prefix,
+                        draw_thumb, draw_forearm)
 {
     yInfo() << log_ID_ << "Invoked ExtCADSuperimposer (derived class) ctor...";
 
@@ -54,34 +59,16 @@ void ExtCADSuperimposer::threadRelease()
 
 yarp::sig::Vector ExtCADSuperimposer::getEndEffectorPose()
 {
-    Vector* estimates_mean = inport_pose_ext_.read(synch_);
+    Vector* ext_ee_pose = inport_pose_ext_.read(synch_);
 
-    if (estimates_mean        != YARP_NULLPTR) ext_pose_copy_ = *estimates_mean;
-    if (ext_pose_copy_.size() == 0 &&
-        !inport_pose_ext_.isClosed())          ext_pose_copy_ = *(inport_pose_ext_.read(true));
-
-    return ext_pose_copy_;
-}
-
-
-void ExtCADSuperimposer::getExtraObjPoseMap(Superimpose::ObjPoseMap& hand_pose)
-{
-    if (view_forearm_)
-        iKinCADSuperimposer::getExtraObjPoseMap(hand_pose);
+    if   (ext_ee_pose != YARP_NULLPTR) return *ext_ee_pose;
+    else                               return zeros(1);
 }
 
 
 bool ExtCADSuperimposer::sync_input(const bool status)
 {
     synch_ = status;
-
-    return true;
-}
-
-
-bool ExtCADSuperimposer::render_extra_mesh(const bool status)
-{
-    view_forearm_ = status;
 
     return true;
 }

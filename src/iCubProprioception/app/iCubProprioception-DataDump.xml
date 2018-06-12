@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="yarpmanifest.xsl"?>
+<application>
+
+    <!-- GENERIC INFORMATION -->
+    <name>iCubProprioception-DataDump</name>
+    <description>Collect data for iCubProprioception module</description>
+    <version>0.5.1.0</version>
+
+    <authors>
+        <author email="claudio.fantacci@iit.it">Claudio Fantacci</author>
+    </authors>
+
+
+    <!-- REQUIRED MODULES -->
+    <module>
+        <name>iCubProprioception</name>
+        <node>localhost</node>
+        <parameters>--robot icub --skel --ikin --ext --from config.ini</parameters>
+    </module>
+
+    <module>
+        <name>yarpdatadumper</name>
+        <node>localhost</node>
+        <parameters>--name /datadumper/camera/left --txTime --rxTime --type image</parameters>
+    </module>
+
+    <module>
+        <name>yarpdatadumper</name>
+        <node>localhost</node>
+        <parameters>--name /datadumper/camera/right --txTime --rxTime --type image</parameters>
+    </module>
+
+    <module>
+        <name>yarpdatadumper</name>
+        <node>localhost</node>
+        <parameters>--name /datadumper/endeffector/pose --txTime --rxTime --type bottle</parameters>
+    </module>
+
+    <module>
+        <name>yarpdatadumper</name>
+        <node>localhost</node>
+        <parameters>--name /datadumper/ikin_cad/left --txTime --rxTime --type image</parameters>
+    </module>
+
+    <module>
+        <name>yarpdatadumper</name>
+        <node>localhost</node>
+        <parameters>--name /datadumper/ikin_cad/right --txTime --rxTime --type image</parameters>
+    </module>
+
+    <module>
+        <name>yarpdatadumper</name>
+        <node>localhost</node>
+        <parameters>--name /datadumper/ext_cad/left --txTime --rxTime --type image</parameters>
+    </module>
+
+    <module>
+        <name>yarpdatadumper</name>
+        <node>localhost</node>
+        <parameters>--name /datadumper/ext_cad/right --txTime --rxTime --type image</parameters>
+    </module>
+
+    <module>
+        <name>yarpdatadumper</name>
+        <node>localhost</node>
+        <parameters>--name /datadumper/skeleton/left --txTime --rxTime --type image</parameters>
+    </module>
+
+    <module>
+        <name>yarpdatadumper</name>
+        <node>localhost</node>
+        <parameters>--name /datadumper/skeleton/right --txTime --rxTime --type image</parameters>
+    </module>
+
+    <module>
+        <name>yarpdatadumper</name>
+        <node>localhost</node>
+        <parameters>--name /datadumper/torso --txTime --rxTime --type bottle</parameters>
+    </module>
+
+    <module>
+        <name>yarpdatadumper</name>
+        <node>localhost</node>
+        <parameters>--name /datadumper/right_arm --txTime --rxTime --type bottle</parameters>
+    </module>
+
+    <module>
+        <name>yarpdatadumper</name>
+        <node>localhost</node>
+        <parameters>--name /datadumper/head --txTime --rxTime --type bottle</parameters>
+    </module>
+
+    <module>
+        <name>yarpdatadumper</name>
+        <node>localhost</node>
+        <parameters>--name /datadumper/analog --txTime --rxTime --type bottle</parameters>
+    </module>
+
+
+    <!-- REQUIRED CONNECTIONS -->
+    <!-- RC: SKELETON -->
+    <connection>
+        <from>/icub/camcalib/left/out</from>
+        <to>/iCubProprioception/SkeletonSuperimposer/cam/left:i</to>
+        <protocol>mcast</protocol>
+    </connection>
+
+    <connection>
+        <from>/icub/camcalib/right/out</from>
+        <to>/iCubProprioception/SkeletonSuperimposer/cam/right:i</to>
+        <protocol>mcast</protocol>
+    </connection>
+
+    <connection>
+        <from>/iCubProprioception/SkeletonSuperimposer/cam/left:o</from>
+        <to>/view/cam/left/skeleton</to>
+        <protocol>mcast</protocol>
+    </connection>
+
+    <connection>
+        <from>/iCubProprioception/SkeletonSuperimposer/cam/right:o</from>
+        <to>/view/cam/right/skeleton</to>
+        <protocol>mcast</protocol>
+    </connection>
+
+    <!-- RC: iKin CAD -->
+    <connection>
+        <from>/icub/camcalib/left/out</from>
+        <to>/iCubProprioception/iKinCADSuperimposer/cam/left:i</to>
+        <protocol>mcast</protocol>
+    </connection>
+
+    <connection>
+        <from>/icub/camcalib/right/out</from>
+        <to>/iCubProprioception/iKinCADSuperimposer/cam/right:i</to>
+        <protocol>mcast</protocol>
+    </connection>
+
+    <connection>
+        <from>/iCubProprioception/iKinCADSuperimposer/cam/left:o</from>
+        <to>/view/cam/left/ikin</to>
+        <protocol>mcast</protocol>
+    </connection>
+
+    <connection>
+        <from>/iCubProprioception/iKinCADSuperimposer/cam/right:o</from>
+        <to>/view/cam/right/ikin</to>
+        <protocol>mcast</protocol>
+    </connection>
+
+    <!-- RC: Ext CAD -->
+    <connection>
+        <from>/icub/camcalib/left/out</from>
+        <to>/iCubProprioception/ExtCADSuperimposer/cam/left:i</to>
+        <protocol>mcast</protocol>
+    </connection>
+
+    <connection>
+        <from>/icub/camcalib/right/out</from>
+        <to>/iCubProprioception/ExtCADSuperimposer/cam/right:i</to>
+        <protocol>mcast</protocol>
+    </connection>
+
+    <connection>
+        <from>/iCubProprioception/ExtCADSuperimposer/cam/left:o</from>
+        <to>/view/cam/left/ext</to>
+        <protocol>mcast</protocol>
+    </connection>
+
+    <connection>
+        <from>/iCubProprioception/ExtCADSuperimposer/cam/right:o</from>
+        <to>/view/cam/right/ext</to>
+        <protocol>mcast</protocol>
+    </connection>
+
+    <!-- RC: DUMP -->
+    <connection>
+        <from>/icub/camcalib/left/out</from>
+        <to>/datadumper/camera/left</to>
+        <protocol>fast_tcp</protocol>
+    </connection>
+
+    <connection>
+        <from>/icub/camcalib/right/out</from>
+        <to>/datadumper/camera/right</to>
+        <protocol>fast_tcp</protocol>
+    </connection>
+
+    <connection>
+        <from>/icub/cartesianController/right_arm/state:o</from>
+        <to>/datadumper/endeffector/pose</to>
+        <protocol>fast_tcp</protocol>
+    </connection>
+
+    <connection>
+        <from>/iCubProprioception/SkeletonSuperimposer/cam/left:o</from>
+        <to>/datadumper/skeleton/left</to>
+        <protocol>fast_tcp</protocol>
+    </connection>
+
+    <connection>
+        <from>/iCubProprioception/SkeletonSuperimposer/cam/right:o</from>
+        <to>/datadumper/skeleton/right</to>
+        <protocol>fast_tcp</protocol>
+    </connection>
+
+    <connection>
+        <from>/iCubProprioception/iKinCADSuperimposer/cam/left:o</from>
+        <to>/datadumper/ikin_cad/left</to>
+        <protocol>fast_tcp</protocol>
+    </connection>
+
+    <connection>
+        <from>/iCubProprioception/iKinCADSuperimposer/cam/right:o</from>
+        <to>/datadumper/ikin_cad/right</to>
+        <protocol>fast_tcp</protocol>
+    </connection>
+
+    <connection>
+        <from>/iCubProprioception/ExtCADSuperimposer/cam/left:o</from>
+        <to>/datadumper/ext_cad/left</to>
+        <protocol>fast_tcp</protocol>
+    </connection>
+
+    <connection>
+        <from>/iCubProprioception/ExtCADSuperimposer/cam/right:o</from>
+        <to>/datadumper/ext_cad/right</to>
+        <protocol>fast_tcp</protocol>
+    </connection>
+
+    <connection>
+        <from>/icub/torso/state:o</from>
+        <to>/datadumper/torso</to>
+        <protocol>fast_tcp</protocol>
+    </connection>
+
+    <connection>
+        <from>/icub/right_arm/state:o</from>
+        <to>/datadumper/right_arm</to>
+        <protocol>tcp</protocol>
+    </connection>
+
+    <connection>
+        <from>/icub/head/state:o</from>
+        <to>/datadumper/head</to>
+        <protocol>fast_tcp</protocol>
+    </connection>
+
+    <connection>
+        <from>/icub/right_hand/analog:o</from>
+        <to>/datadumper/analog</to>
+        <protocol>fast_tcp</protocol>
+    </connection>
+
+</application>
