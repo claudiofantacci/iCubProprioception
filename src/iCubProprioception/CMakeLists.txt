@@ -25,8 +25,12 @@ set(${EXE_TARGET_NAME}_THRIFT_HDR
 # Dependencies
 find_package(ICUB                    REQUIRED)
 find_package(OpenCV                  REQUIRED)
-find_package(SuperimposeMesh 0.9.4.0 REQUIRED)
 find_package(YARP                    REQUIRED)
+find_package(SuperimposeMesh 0.9.4.0 QUIET)
+if(NOT BayesFilters_FOUND)
+    message(STATUS "Did not found required master release of SuperimposeMesh. Looking for devel version.")
+    find_package(SuperimposeMesh 0.9.104.0 REQUIRED)
+endif()
 
 list(APPEND CMAKE_MODULE_PATH ${YARP_MODULE_PATH}
                               ${ICUB_MODULE_PATH})
