@@ -48,26 +48,26 @@
     <connection>
         <from>/icub/camcalib/left/out</from>
         <to>/view/cam/left</to>
-        <protocol>mcast</protocol>
+        <protocol>fast_tcp</protocol>
     </connection>
 
     <connection>
         <from>/icub/camcalib/right/out</from>
         <to>/view/cam/right</to>
-        <protocol>mcast</protocol>
+        <protocol>fast_tcp</protocol>
     </connection>
 
     <!-- RC: BATCH -->
     <connection>
         <from>/icub/camcalib/left/out</from>
         <to>/iCubProprioception/BatchCADSuperimposer/cam/left:i</to>
-        <protocol>mcast</protocol>
+        <protocol>fast_tcp</protocol>
     </connection>
 
     <connection>
         <from>/icub/camcalib/right/out</from>
         <to>/iCubProprioception/BatchCADSuperimposer/cam/right:i</to>
-        <protocol>mcast</protocol>
+        <protocol>fast_tcp</protocol>
     </connection>
 
     <connection>

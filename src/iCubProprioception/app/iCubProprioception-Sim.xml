@@ -78,88 +78,88 @@
     <connection>
         <from>/icubSim/cam/left</from>
         <to>/view/cam/left</to>
-        <protocol>mcast</protocol>
+        <protocol>fast_tcp</protocol>
     </connection>
 
     <connection>
         <from>/icubSim/cam/right</from>
         <to>/view/cam/right</to>
-        <protocol>mcast</protocol>
+        <protocol>fast_tcp</protocol>
     </connection>
 
     <!-- RC: SKELETON -->
     <connection>
         <from>/icubSim/cam/left</from>
         <to>/iCubProprioception/SkeletonSuperimposer/cam/left:i</to>
-        <protocol>mcast</protocol>
+        <protocol>fast_tcp</protocol>
     </connection>
 
     <connection>
         <from>/icubSim/cam/right</from>
         <to>/iCubProprioception/SkeletonSuperimposer/cam/right:i</to>
-        <protocol>mcast</protocol>
+        <protocol>fast_tcp</protocol>
     </connection>
 
     <connection>
         <from>/iCubProprioception/SkeletonSuperimposer/cam/left:o</from>
         <to>/view/cam/left/skeleton</to>
-        <protocol>mcast</protocol>
+        <protocol>fast_tcp</protocol>
     </connection>
 
     <connection>
         <from>/iCubProprioception/SkeletonSuperimposer/cam/right:o</from>
         <to>/view/cam/right/skeleton</to>
-        <protocol>mcast</protocol>
+        <protocol>fast_tcp</protocol>
     </connection>
 
     <!-- RC: iKin CAD -->
     <connection>
         <from>/icubSim/cam/left</from>
         <to>/iCubProprioception/iKinCADSuperimposer/cam/left:i</to>
-        <protocol>mcast</protocol>
+        <protocol>fast_tcp</protocol>
     </connection>
 
     <connection>
         <from>/icubSim/cam/right</from>
         <to>/iCubProprioception/iKinCADSuperimposer/cam/right:i</to>
-        <protocol>mcast</protocol>
+        <protocol>fast_tcp</protocol>
     </connection>
 
     <connection>
         <from>/iCubProprioception/iKinCADSuperimposer/cam/left:o</from>
         <to>/view/cam/left/ikin</to>
-        <protocol>mcast</protocol>
+        <protocol>fast_tcp</protocol>
     </connection>
 
     <connection>
         <from>/iCubProprioception/iKinCADSuperimposer/cam/right:o</from>
         <to>/view/cam/right/ikin</to>
-        <protocol>mcast</protocol>
+        <protocol>fast_tcp</protocol>
     </connection>
 
     <!-- RC: Ext CAD -->
     <connection>
         <from>/icubSim/cam/left</from>
         <to>/iCubProprioception/ExtCADSuperimposer/cam/left:i</to>
-        <protocol>mcast</protocol>
+        <protocol>fast_tcp</protocol>
     </connection>
 
     <connection>
         <from>/icubSim/cam/right</from>
         <to>/iCubProprioception/ExtCADSuperimposer/cam/right:i</to>
-        <protocol>mcast</protocol>
+        <protocol>fast_tcp</protocol>
     </connection>
 
     <connection>
         <from>/iCubProprioception/ExtCADSuperimposer/cam/left:o</from>
         <to>/view/cam/left/ext</to>
-        <protocol>mcast</protocol>
+        <protocol>fast_tcp</protocol>
     </connection>
 
     <connection>
         <from>/iCubProprioception/ExtCADSuperimposer/cam/right:o</from>
         <to>/view/cam/right/ext</to>
-        <protocol>mcast</protocol>
+        <protocol>fast_tcp</protocol>
     </connection>
 
 </application>

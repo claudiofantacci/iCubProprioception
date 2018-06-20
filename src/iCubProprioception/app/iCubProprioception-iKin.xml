@@ -37,25 +37,25 @@
     <connection>
         <from>/icub/camcalib/left/out</from>
         <to>/iCubProprioception/iKinCADSuperimposer/cam/left:i</to>
-        <protocol>mcast</protocol>
+        <protocol>fast_tcp</protocol>
     </connection>
 
     <connection>
         <from>/icub/camcalib/right/out</from>
         <to>/iCubProprioception/iKinCADSuperimposer/cam/right:i</to>
-        <protocol>mcast</protocol>
+        <protocol>fast_tcp</protocol>
     </connection>
 
     <connection>
         <from>/iCubProprioception/iKinCADSuperimposer/cam/left:o</from>
         <to>/view/cam/left/ikin</to>
-        <protocol>mcast</protocol>
+        <protocol>fast_tcp</protocol>
     </connection>
 
     <connection>
         <from>/iCubProprioception/iKinCADSuperimposer/cam/right:o</from>
         <to>/view/cam/right/ikin</to>
-        <protocol>mcast</protocol>
+        <protocol>fast_tcp</protocol>
     </connection>
 
 </application>
