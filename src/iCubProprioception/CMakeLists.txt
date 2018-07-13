@@ -25,7 +25,10 @@ set(${EXE_TARGET_NAME}_THRIFT_HDR
 # Dependencies
 find_package(ICUB                    REQUIRED)
 find_package(OpenCV                  REQUIRED)
-find_package(YARP                    REQUIRED)
+
+find_package(YARP             CONFIG REQUIRED
+             COMPONENTS OS math sig dev eigen idl_tools gsl)
+
 find_package(SuperimposeMesh 0.9.4.0 QUIET)
 if(NOT SuperimposeMesh_FOUND)
     message(STATUS "Did not found required master release of SuperimposeMesh. Looking for devel version.")
@@ -51,12 +54,18 @@ target_include_directories(${EXE_TARGET_NAME}
 
 target_link_libraries(${EXE_TARGET_NAME}
                       PRIVATE
-                          SuperimposeMesh::SuperimposeMesh
-                          ${YARP_LIBRARIES}
-                          ${ICUB_LIBRARIES}
                           ctrlLib
                           iKin
-                          ${OpenCV_LIBS})
+                          ${ICUB_LIBRARIES}
+                          ${OpenCV_LIBS}
+                          SuperimposeMesh::SuperimposeMesh
+                          YARP::YARP_OS
+                          YARP::YARP_init
+                          YARP::YARP_math
+                          YARP::YARP_sig
+                          YARP::YARP_dev
+                          YARP::YARP_eigen
+                          YARP::YARP_gsl)
 
 install(TARGETS ${EXE_TARGET_NAME} DESTINATION bin)
 
