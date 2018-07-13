@@ -140,9 +140,8 @@ CADSuperimposer::CADSuperimposer(const yarp::os::ConstString& robot, const yarp:
     drawer_ = new SICAD(cad_hand_,
                         cam_width_, cam_height_, cam_fx_, cam_fy_, cam_cx_, cam_cy_,
                         1,
-                        {1.0, 0.0, 0.0, static_cast<float>(M_PI)},
                         shader_path_,
-                        false);
+                        {1.0, 0.0, 0.0, static_cast<float>(M_PI)});
 
     drawer_->setBackgroundOpt(true);
     drawer_->setWireframeOpt(true);
