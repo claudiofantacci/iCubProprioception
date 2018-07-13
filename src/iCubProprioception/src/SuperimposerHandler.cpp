@@ -52,7 +52,7 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
     yInfo() << log_ID_ << " - render using ikin:"       << (ikin_         ? "true" : "false");
     yInfo() << log_ID_ << " - render using ext source:" << (ext_          ? "true" : "false");
     yInfo() << log_ID_ << " - render batch data:"       << (batch_        ? "true" : "false");
-    yInfo() << log_ID_ << " - render thumb:     "       << (draw_thumb_   ? "true" : "false");
+    yInfo() << log_ID_ << " - render thumb:"            << (draw_thumb_   ? "true" : "false");
     yInfo() << log_ID_ << " - render forearm:"          << (draw_forearm_ ? "true" : "false");
 
 
@@ -102,14 +102,14 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
     size_t rfind_slash = shader_path_.rfind("/");
     if (rfind_slash == std::string::npos)
         rfind_slash = 0;
-    
+
     size_t rfind_backslash = shader_path_.rfind("\\");
     if (rfind_backslash == std::string::npos)
         rfind_backslash = 0;
-    
+
     if (rfind_slash == 0 && rfind_backslash == 0)
         throw std::runtime_error("ERROR::VISUALPROPRIOCEPTION::CTOR::DIR\nERROR: invalid shader directory!");
-    
+
     shader_path_ = shader_path_.substr(0, rfind_slash > rfind_backslash ? rfind_slash : rfind_backslash);
 
 
@@ -170,8 +170,14 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
     if (skeleton_)
     {
         /* Left camera */
-        try { trd_left_cam_skeleton_ = new SkeletonSuperimposer(ID_ + "/SkeletonSuperimposer", robot_, "left"); }
-        catch (const std::runtime_error& e) { yError() << e.what(); }
+        try
+        {
+            trd_left_cam_skeleton_ = new SkeletonSuperimposer(ID_ + "/SkeletonSuperimposer", robot_, "left");
+        }
+        catch (const std::runtime_error& e)
+        {
+            yError() << e.what();
+        }
 
         if (trd_left_cam_skeleton_ != YARP_NULLPTR)
         {
@@ -184,8 +190,14 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
             yError() << log_ID_ << "Could not initialize hand skeleton superimposition!";
 
         /* Right camera */
-        try { trd_right_cam_skeleton_ = new SkeletonSuperimposer(ID_ + "/SkeletonSuperimposer", robot_, "right"); }
-        catch (const std::runtime_error& e) { yError() << e.what(); }
+        try
+        {
+            trd_right_cam_skeleton_ = new SkeletonSuperimposer(ID_ + "/SkeletonSuperimposer", robot_, "right");
+        }
+        catch (const std::runtime_error& e)
+        {
+            yError() << e.what();
+        }
 
         if (trd_right_cam_skeleton_ != YARP_NULLPTR)
         {
@@ -203,11 +215,17 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
     if (ikin_)
     {
         /* Left camera */
-        try { trd_left_cam_ikin_cad_ = new iKinCADSuperimposer(robot_, "left",
-                                                               cad_hand_, shader_path_,
-                                                               ID_ + "/iKinCADSuperimposer",
-                                                               draw_thumb_, draw_forearm_); }
-        catch (const std::runtime_error& e) { yError() << e.what(); }
+        try
+        {
+            trd_left_cam_ikin_cad_ = new iKinCADSuperimposer(robot_, "left",
+                                                             cad_hand_, shader_path_,
+                                                             ID_ + "/iKinCADSuperimposer",
+                                                             draw_thumb_, draw_forearm_);
+        }
+        catch (const std::runtime_error& e)
+        {
+            yError() << e.what();
+        }
 
         if (trd_left_cam_ikin_cad_ != YARP_NULLPTR)
         {
@@ -220,11 +238,17 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
             yError() << log_ID_ << "Could not initialize iKinFwd hand mesh superimposition!";
 
         /* Right camera */
-        try { trd_right_cam_ikin_cad_ = new iKinCADSuperimposer(robot_, "right",
-                                                                cad_hand_, shader_path_,
-                                                                ID_ + "/iKinCADSuperimposer",
-                                                                draw_thumb_, draw_forearm_); }
-        catch (const std::runtime_error& e) { yError() << e.what(); }
+        try
+        {
+            trd_right_cam_ikin_cad_ = new iKinCADSuperimposer(robot_, "right",
+                                                              cad_hand_, shader_path_,
+                                                              ID_ + "/iKinCADSuperimposer",
+                                                              draw_thumb_, draw_forearm_);
+        }
+        catch (const std::runtime_error& e)
+        {
+            yError() << e.what();
+        }
 
         if (trd_right_cam_ikin_cad_ != YARP_NULLPTR)
         {
@@ -242,11 +266,17 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
     if (ext_)
     {
         /* Left camera */
-        try { trd_left_cam_ext_cad_ = new ExtCADSuperimposer(robot_, "left",
-                                                             cad_hand_, shader_path_,
-                                                             ID_ + "/ExtCADSuperimposer",
-                                                             draw_thumb_, draw_forearm_); }
-        catch (const std::runtime_error& e) { yError() << e.what(); }
+        try
+        {
+            trd_left_cam_ext_cad_ = new ExtCADSuperimposer(robot_, "left",
+                                                           cad_hand_, shader_path_,
+                                                           ID_ + "/ExtCADSuperimposer",
+                                                           draw_thumb_, draw_forearm_);
+        }
+        catch (const std::runtime_error& e)
+        {
+            yError() << e.what();
+        }
 
         if (trd_left_cam_ext_cad_ != YARP_NULLPTR)
         {
@@ -260,11 +290,17 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
 
 
         /* Right camera */
-        try { trd_right_cam_ext_cad_ = new ExtCADSuperimposer(robot_, "right",
-                                                              cad_hand_, shader_path_,
-                                                              ID_ + "/ExtCADSuperimposer",
-                                                              draw_thumb_, draw_forearm_); }
-        catch (const std::runtime_error& e) { yError() << e.what(); }
+        try
+        {
+            trd_right_cam_ext_cad_ = new ExtCADSuperimposer(robot_, "right",
+                                                            cad_hand_, shader_path_,
+                                                            ID_ + "/ExtCADSuperimposer",
+                                                            draw_thumb_, draw_forearm_);
+        }
+        catch (const std::runtime_error& e)
+        {
+            yError() << e.what();
+        }
 
         if (trd_right_cam_ext_cad_ != YARP_NULLPTR)
         {
@@ -282,11 +318,17 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
     if (batch_)
     {
         /* Left camera */
-        try { trd_left_cam_batch_cad_ = new BatchCADSuperimposer(robot_, "left",
-                                                                 cad_hand_, shader_path_,
-                                                                 ID_ + "/BatchCADSuperimposer",
-                                                                 draw_thumb_, draw_forearm_); }
-        catch (const std::runtime_error& e) { yError() << e.what(); }
+        try
+        {
+            trd_left_cam_batch_cad_ = new BatchCADSuperimposer(robot_, "left",
+                                                               cad_hand_, shader_path_,
+                                                               ID_ + "/BatchCADSuperimposer",
+                                                               draw_thumb_, draw_forearm_);
+        }
+        catch (const std::runtime_error& e)
+        {
+            yError() << e.what();
+        }
 
         if (trd_left_cam_batch_cad_ != YARP_NULLPTR)
         {
@@ -299,11 +341,17 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
             yError() << log_ID_ << "Could not initialize Batch hand mesh superimposition for the left camera!";
 
         /* Right camera */
-        try { trd_right_cam_batch_cad_ = new BatchCADSuperimposer(robot_, "right",
-                                                                  cad_hand_, shader_path_,
-                                                                  ID_ + "/BatchCADSuperimposer",
-                                                                  draw_thumb_, draw_forearm_); }
-        catch (const std::runtime_error& e) { yError() << e.what(); }
+        try
+        {
+            trd_right_cam_batch_cad_ = new BatchCADSuperimposer(robot_, "right",
+                                                                cad_hand_, shader_path_,
+                                                                ID_ + "/BatchCADSuperimposer",
+                                                                draw_thumb_, draw_forearm_);
+        }
+        catch (const std::runtime_error& e)
+        {
+            yError() << e.what();
+        }
 
         if (trd_right_cam_batch_cad_ != YARP_NULLPTR)
         {
