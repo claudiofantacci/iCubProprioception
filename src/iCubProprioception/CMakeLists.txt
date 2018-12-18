@@ -83,32 +83,32 @@ set(${EXE_TARGET_NAME}_CONFIG
         config/config.ini)
 
 set(${EXE_TARGET_NAME}_SHADERS_VERT
-        shader/shader_frame.vert
-        shader/shader_model.vert
-        shader/shader_background.vert)
+        ${CMAKE_CURRENT_SOURCE_DIR}/shader/shader_frame.vert
+        ${CMAKE_CURRENT_SOURCE_DIR}/shader/shader_model.vert
+        ${CMAKE_CURRENT_SOURCE_DIR}/shader/shader_background.vert)
 
 set(${EXE_TARGET_NAME}_SHADERS_FRAG
-        shader/shader_frame.frag
-        shader/shader_model.frag
-        shader/shader_background.frag)
+        ${CMAKE_CURRENT_SOURCE_DIR}/shader/shader_frame.frag
+        ${CMAKE_CURRENT_SOURCE_DIR}/shader/shader_model.frag
+        ${CMAKE_CURRENT_SOURCE_DIR}/shader/shader_background.frag)
 
 set(${EXE_TARGET_NAME}_MESH
-        mesh/icub_right_arm/r_palm.obj
-        mesh/icub_right_arm/r_ail0.obj
-        mesh/icub_right_arm/r_ail1.obj
-        mesh/icub_right_arm/r_ail2.obj
-        mesh/icub_right_arm/r_ail3.obj
-        mesh/icub_right_arm/r_forearm.obj
-        mesh/icub_right_arm/r_indexbase.obj
-        mesh/icub_right_arm/r_ml0.obj
-        mesh/icub_right_arm/r_ml1.obj
-        mesh/icub_right_arm/r_ml2.obj
-        mesh/icub_right_arm/r_ml3.obj
-        mesh/icub_right_arm/r_tl0.obj
-        mesh/icub_right_arm/r_tl1.obj
-        mesh/icub_right_arm/r_tl2.obj
-        mesh/icub_right_arm/r_tl3.obj
-        mesh/icub_right_arm/r_tl4.obj)
+        ${CMAKE_CURRENT_SOURCE_DIR}/mesh/icub_right_arm/r_palm.obj
+        ${CMAKE_CURRENT_SOURCE_DIR}/mesh/icub_right_arm/r_ail0.obj
+        ${CMAKE_CURRENT_SOURCE_DIR}/mesh/icub_right_arm/r_ail1.obj
+        ${CMAKE_CURRENT_SOURCE_DIR}/mesh/icub_right_arm/r_ail2.obj
+        ${CMAKE_CURRENT_SOURCE_DIR}/mesh/icub_right_arm/r_ail3.obj
+        ${CMAKE_CURRENT_SOURCE_DIR}/mesh/icub_right_arm/r_forearm.obj
+        ${CMAKE_CURRENT_SOURCE_DIR}/mesh/icub_right_arm/r_indexbase.obj
+        ${CMAKE_CURRENT_SOURCE_DIR}/mesh/icub_right_arm/r_ml0.obj
+        ${CMAKE_CURRENT_SOURCE_DIR}/mesh/icub_right_arm/r_ml1.obj
+        ${CMAKE_CURRENT_SOURCE_DIR}/mesh/icub_right_arm/r_ml2.obj
+        ${CMAKE_CURRENT_SOURCE_DIR}/mesh/icub_right_arm/r_ml3.obj
+        ${CMAKE_CURRENT_SOURCE_DIR}/mesh/icub_right_arm/r_tl0.obj
+        ${CMAKE_CURRENT_SOURCE_DIR}/mesh/icub_right_arm/r_tl1.obj
+        ${CMAKE_CURRENT_SOURCE_DIR}/mesh/icub_right_arm/r_tl2.obj
+        ${CMAKE_CURRENT_SOURCE_DIR}/mesh/icub_right_arm/r_tl3.obj
+        ${CMAKE_CURRENT_SOURCE_DIR}/mesh/icub_right_arm/r_tl4.obj)
 
 if(${CMAKE_GENERATOR} MATCHES "Xcode")
     source_group("Thrift IDL" FILES ${${EXE_TARGET_NAME}_THRIFT_HDR} ${${EXE_TARGET_NAME}_THRIFT_SRC})
