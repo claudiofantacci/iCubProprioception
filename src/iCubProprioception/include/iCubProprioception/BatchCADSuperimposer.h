@@ -16,10 +16,7 @@
 class BatchCADSuperimposer : public CADSuperimposer
 {
 public:
-    BatchCADSuperimposer(const yarp::os::ConstString& robot, const yarp::os::ConstString& camera,
-                         const SICAD::ModelPathContainer& cad_hand, const yarp::os::ConstString& shader_path,
-                         const yarp::os::ConstString& port_prefix,
-                         const bool draw_thumb, const bool draw_forearm);
+    BatchCADSuperimposer(const yarp::os::ConstString& robot, const yarp::os::ConstString& camera, const SICAD::ModelPathContainer& cad_hand, const yarp::os::ConstString& shader_path, const yarp::os::ConstString& port_prefix, const bool draw_thumb, const bool draw_forearm);
 
     ~BatchCADSuperimposer() noexcept;
 
@@ -48,14 +45,16 @@ private:
 
     yarp::sig::Vector readFromBufferedPort(yarp::os::BufferedPort<yarp::sig::Vector>& bp);
 
-
     bool synch_ = false;
 
-
     yarp::os::BufferedPort<yarp::sig::Vector> inport_pose_ext_;
+
     yarp::os::BufferedPort<yarp::sig::Vector> inport_head_enc_;
+
     yarp::os::BufferedPort<yarp::sig::Vector> inport_torso_enc_;
+
     yarp::os::BufferedPort<yarp::sig::Vector> inport_right_arm_enc_;
+
     yarp::os::BufferedPort<yarp::sig::Vector> inport_right_hand_analogs_;
 };
 

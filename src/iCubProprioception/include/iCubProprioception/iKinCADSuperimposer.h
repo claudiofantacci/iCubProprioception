@@ -16,10 +16,7 @@
 class iKinCADSuperimposer : public CADSuperimposer
 {
 public:
-    iKinCADSuperimposer(const yarp::os::ConstString& robot, const yarp::os::ConstString& camera,
-                        const SICAD::ModelPathContainer& cad_hand, const yarp::os::ConstString& shader_path,
-                        const yarp::os::ConstString& port_prefix,
-                        const bool draw_thumb, const bool draw_forearm);
+    iKinCADSuperimposer(const yarp::os::ConstString& robot, const yarp::os::ConstString& camera, const SICAD::ModelPathContainer& cad_hand, const yarp::os::ConstString& shader_path, const yarp::os::ConstString& port_prefix, const bool draw_thumb, const bool draw_forearm);
 
     ~iKinCADSuperimposer() noexcept;
 
@@ -40,7 +37,6 @@ protected:
 
     yarp::sig::Vector getTorsoEncoders() override;
 
-
     bool setHeadRemoteControlboard();
 
     bool setTorsoRemoteControlboard();
@@ -52,20 +48,24 @@ protected:
 private:
     yarp::sig::Vector readRootToEE();
 
+    yarp::dev::PolyDriver drv_head_remote_;
 
-    yarp::dev::PolyDriver         drv_head_remote_;
-    yarp::dev::PolyDriver         drv_torso_remote_;
-    yarp::dev::PolyDriver         drv_right_arm_remote_;
-    yarp::dev::PolyDriver         drv_right_arm_cartesian_;
+    yarp::dev::PolyDriver drv_torso_remote_;
+
+    yarp::dev::PolyDriver drv_right_arm_remote_;
+
     yarp::dev::PolyDriver drv_right_arm_cartesian_;
 
 #if PROPRIO_USE_ANALOGS == 1
     yarp::dev::PolyDriver drv_right_hand_analog_;
 #endif
 
-    yarp::dev::IEncoders*         itf_head_encoders_;
-    yarp::dev::IEncoders*         itf_torso_encoders_;
-    yarp::dev::IEncoders*         itf_right_arm_encoders_;
+    yarp::dev::IEncoders* itf_head_encoders_;
+
+    yarp::dev::IEncoders* itf_torso_encoders_;
+
+    yarp::dev::IEncoders* itf_right_arm_encoders_;
+
     yarp::dev::ICartesianControl* itf_right_arm_cart_;
 
 #if PROPRIO_USE_ANALOGS == 1

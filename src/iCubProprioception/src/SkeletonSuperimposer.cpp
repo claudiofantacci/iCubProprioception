@@ -1,4 +1,4 @@
-#include "iCubProprioception/SkeletonSuperimposer.h"
+#include <iCubProprioception/SkeletonSuperimposer.h>
 
 #include <exception>
 
@@ -17,9 +17,16 @@ using namespace iCub::ctrl;
 using namespace iCub::iKin;
 
 
-SkeletonSuperimposer::SkeletonSuperimposer(const ConstString& port_prefix, const ConstString& robot, const ConstString& camera) :
-    ID_(port_prefix), log_ID_("[" + ID_ + "]"),
-    robot_(robot), camera_(camera)
+SkeletonSuperimposer::SkeletonSuperimposer
+(
+    const ConstString& port_prefix,
+    const ConstString& robot,
+    const ConstString& camera
+ ) :
+    ID_(port_prefix),
+    log_ID_("[" + ID_ + "]"),
+    robot_(robot),
+    camera_(camera)
 {
     yInfo() << log_ID_ << "Initializing skeleton superimposer thread.";
 

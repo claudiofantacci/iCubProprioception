@@ -1,4 +1,4 @@
-#include "iCubProprioception/BatchCADSuperimposer.h"
+#include <iCubProprioception/BatchCADSuperimposer.h>
 
 #include <exception>
 #include <utility>
@@ -15,14 +15,17 @@ using namespace iCub::ctrl;
 using namespace iCub::iKin;
 
 
-BatchCADSuperimposer::BatchCADSuperimposer(const ConstString& robot, const ConstString& camera,
-                                           const SICAD::ModelPathContainer& cad_hand, const ConstString& shader_path,
-                                           const ConstString& port_prefix,
-                                           const bool draw_thumb, const bool draw_forearm) :
-    CADSuperimposer(robot, camera,
-                    cad_hand, shader_path,
-                    port_prefix,
-                    draw_thumb, draw_forearm)
+BatchCADSuperimposer::BatchCADSuperimposer
+(
+    const ConstString& robot,
+    const ConstString& camera,
+    const SICAD::ModelPathContainer& cad_hand,
+    const ConstString& shader_path,
+    const ConstString& port_prefix,
+    const bool draw_thumb,
+    const bool draw_forearm
+ ) :
+    CADSuperimposer(robot, camera, cad_hand, shader_path, port_prefix, draw_thumb, draw_forearm)
 {
     yInfo() << log_ID_ << "Invoked BatchCADSuperimposer (derived class) ctor...";
 
@@ -70,7 +73,8 @@ BatchCADSuperimposer::BatchCADSuperimposer(const ConstString& robot, const Const
 }
 
 
-BatchCADSuperimposer::~BatchCADSuperimposer() noexcept { }
+BatchCADSuperimposer::~BatchCADSuperimposer() noexcept
+{ }
 
 
 void BatchCADSuperimposer::onStop()

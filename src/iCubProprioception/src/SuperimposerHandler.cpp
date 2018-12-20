@@ -1,4 +1,4 @@
-#include "iCubProprioception/SuperimposerHandler.h"
+#include <iCubProprioception/SuperimposerHandler.h>
 
 #include <exception>
 #include <list>
@@ -19,11 +19,13 @@ using namespace yarp::math;
 
 
 SuperimposerHandler::SuperimposerHandler(const yarp::os::ConstString& project_name) :
-    ID_(project_name), log_ID_("[" + project_name + "]") { }
+    ID_(project_name), log_ID_("[" + project_name + "]")
+{ }
 
 
 SuperimposerHandler::SuperimposerHandler() :
-    SuperimposerHandler("SuperimposerModule") { }
+    SuperimposerHandler("SuperimposerModule")
+{ }
 
 
 bool SuperimposerHandler::configure(ResourceFinder &rf)

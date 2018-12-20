@@ -37,42 +37,54 @@ protected:
     bool setGazeController();
 
 private:
-    const yarp::os::ConstString    ID_;
-    const yarp::os::ConstString    log_ID_;
-    const yarp::os::ConstString    robot_;
-    const yarp::os::ConstString    camera_;
+    const yarp::os::ConstString ID_;
 
-    yarp::dev::PolyDriver          drv_right_arm_remote_;
+    const yarp::os::ConstString log_ID_;
 
     const yarp::os::ConstString robot_;
+
+    const yarp::os::ConstString camera_;
+
+    yarp::dev::PolyDriver drv_right_arm_remote_;
+
 #if PROPRIO_USE_ANALOGS == 1
     yarp::dev::PolyDriver drv_right_hand_analog_;
 #endif
-    yarp::dev::PolyDriver          drv_right_arm_cartesian_;
-    yarp::dev::PolyDriver          drv_gaze_;
 
-    yarp::dev::IEncoders*          itf_right_arm_encoders_;
-    yarp::dev::IControlLimits*     itf_fingers_limits_;
-    yarp::dev::ICartesianControl*  itf_right_arm_cart_;
+    yarp::dev::PolyDriver drv_right_arm_cartesian_;
+
+    yarp::dev::PolyDriver drv_gaze_;
+
+    yarp::dev::IEncoders* itf_right_arm_encoders_;
+
+    yarp::dev::IControlLimits* itf_fingers_limits_;
+
+    yarp::dev::ICartesianControl* itf_right_arm_cart_;
 
 #if PROPRIO_USE_ANALOGS == 1
     yarp::dev::IAnalogSensor* itf_right_hand_analog_;
 #endif
-    yarp::dev::IGazeControl*       itf_head_gaze_;
 
-    int                            num_right_arm_enc_;
-    float                          eye_fx_;
-    float                          eye_fy_;
-    float                          eye_cx_;
-    float                          eye_cy_;
+    yarp::dev::IGazeControl* itf_head_gaze_;
+
+    int num_right_arm_enc_;
+
+    float eye_fx_;
+
+    float eye_fy_;
+
+    float eye_cx_;
+
+    float eye_cy_;
 
     std::array<iCub::iKin::iCubFinger, 5> right_finger_;
 
+    SISkeleton* drawer_;
 
     yarp::sig::ImageOf<yarp::sig::PixelRgb>* imgin_ = YARP_NULLPTR;
 
-
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb>> inport_skeleton_img_;
+
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb>> outport_skeleton_img_;
 };
 

@@ -2,7 +2,7 @@
 #include <yarp/os/Network.h>
 #include <yarp/os/ResourceFinder.h>
 
-#include "iCubProprioception/SuperimposerHandler.h"
+#include <iCubProprioception/SuperimposerHandler.h>
 
 using namespace yarp::os;
 

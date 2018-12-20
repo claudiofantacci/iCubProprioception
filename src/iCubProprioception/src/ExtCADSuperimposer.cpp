@@ -1,4 +1,4 @@
-#include "iCubProprioception/ExtCADSuperimposer.h"
+#include <iCubProprioception/ExtCADSuperimposer.h>
 
 #include <exception>
 #include <utility>
@@ -15,14 +15,17 @@ using namespace iCub::ctrl;
 using namespace iCub::iKin;
 
 
-ExtCADSuperimposer::ExtCADSuperimposer(const ConstString& robot, const ConstString& camera,
-                                       const SICAD::ModelPathContainer& cad_hand, const ConstString& shader_path,
-                                       const ConstString& port_prefix,
-                                       const bool draw_thumb, const bool draw_forearm) :
-    iKinCADSuperimposer(robot, camera,
-                        cad_hand, shader_path,
-                        port_prefix,
-                        draw_thumb, draw_forearm)
+ExtCADSuperimposer::ExtCADSuperimposer
+(
+    const ConstString& robot,
+    const ConstString& camera,
+    const SICAD::ModelPathContainer& cad_hand,
+    const ConstString& shader_path,
+    const ConstString& port_prefix,
+    const bool draw_thumb,
+    const bool draw_forearm
+ ) :
+    iKinCADSuperimposer(robot, camera, cad_hand, shader_path, port_prefix, draw_thumb, draw_forearm)
 {
     yInfo() << log_ID_ << "Invoked ExtCADSuperimposer (derived class) ctor...";
 

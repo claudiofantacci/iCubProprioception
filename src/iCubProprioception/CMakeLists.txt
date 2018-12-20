@@ -7,7 +7,8 @@ set(${EXE_TARGET_NAME}_SRC
         src/ExtCADSuperimposer.cpp
         src/iKinCADSuperimposer.cpp
         src/SkeletonSuperimposer.cpp
-        src/SuperimposerHandler.cpp)
+        src/SuperimposerHandler.cpp
+)
 
 set(${EXE_TARGET_NAME}_HDR
         include/iCubProprioception/BatchCADSuperimposer.h
@@ -15,18 +16,29 @@ set(${EXE_TARGET_NAME}_HDR
         include/iCubProprioception/ExtCADSuperimposer.h
         include/iCubProprioception/iKinCADSuperimposer.h
         include/iCubProprioception/SkeletonSuperimposer.h
-        include/iCubProprioception/SuperimposerHandler.h)
+        include/iCubProprioception/SuperimposerHandler.h
+)
 
 set(${EXE_TARGET_NAME}_THRIFT_HDR
         thrift/idl_rfm.thrift
-        thrift/idl_mesh.thrift)
+        thrift/idl_mesh.thrift
+)
 
 # Dependencies
-find_package(ICUB                    REQUIRED)
-find_package(OpenCV                  REQUIRED)
+find_package(ICUB REQUIRED)
 
-find_package(YARP             CONFIG REQUIRED
-             COMPONENTS OS math sig dev eigen idl_tools gsl)
+find_package(OpenCV REQUIRED)
+
+find_package(YARP CONFIG REQUIRED
+             COMPONENTS
+                 OS
+                 math
+                 sig
+                 dev
+                 eigen
+                 idl_tools
+                 gsl
+)
 
 find_package(SuperimposeMesh 0.9.4.0 QUIET)
 if(NOT SuperimposeMesh_FOUND)
@@ -34,10 +46,9 @@ if(NOT SuperimposeMesh_FOUND)
     find_package(SuperimposeMesh 0.9.104.0 REQUIRED)
 endif()
 
-list(APPEND CMAKE_MODULE_PATH ${YARP_MODULE_PATH}
-                              ${ICUB_MODULE_PATH})
+list(APPEND CMAKE_MODULE_PATH ${ICUB_MODULE_PATH})
 
-include(YarpInstallationHelpers)
+yarp_add_idl(${EXE_TARGET_NAME}_THRIFT_SRC ${${EXE_TARGET_NAME}_THRIFT_HDR})
 
 option(PROPRIO_USE_ANALOGS "Use analog data from the hand of the robot" OFF)
 if(PROPRIO_USE_ANALOGS)
@@ -46,13 +57,14 @@ endif()
 
 # Executable main
 add_executable(${EXE_TARGET_NAME} ${${EXE_TARGET_NAME}_SRC} ${${EXE_TARGET_NAME}_HDR}
-                                  ${${EXE_TARGET_NAME}_THRIFT_SRC})
+                                  ${${EXE_TARGET_NAME}_THRIFT_SRC}
+)
 
 target_include_directories(${EXE_TARGET_NAME}
                            PRIVATE
                                "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
-                               ${YARP_INCLUDE_DIRS}
-                               ${ICUB_INCLUDE_DIRS})
+                               ${ICUB_INCLUDE_DIRS}
+)
 
 target_link_libraries(${EXE_TARGET_NAME}
                       PRIVATE
@@ -67,7 +79,8 @@ target_link_libraries(${EXE_TARGET_NAME}
                           YARP::YARP_sig
                           YARP::YARP_dev
                           YARP::YARP_eigen
-                          YARP::YARP_gsl)
+                          YARP::YARP_gsl
+)
 
 install(TARGETS ${EXE_TARGET_NAME} DESTINATION bin)
 
@@ -79,20 +92,24 @@ set(${EXE_TARGET_NAME}_APP
         app/iCubProprioception-iKin.xml
         app/iCubProprioception-Batch.xml
         app/iCubProprioception-Sim.xml
-        app/iCubProprioception-Skeleton.xml)
+        app/iCubProprioception-Skeleton.xml
+)
 
 set(${EXE_TARGET_NAME}_CONFIG
-        config/config.ini)
+        config/config.ini
+)
 
 set(${EXE_TARGET_NAME}_SHADERS_VERT
         ${CMAKE_CURRENT_SOURCE_DIR}/shader/shader_frame.vert
         ${CMAKE_CURRENT_SOURCE_DIR}/shader/shader_model.vert
-        ${CMAKE_CURRENT_SOURCE_DIR}/shader/shader_background.vert)
+        ${CMAKE_CURRENT_SOURCE_DIR}/shader/shader_background.vert
+)
 
 set(${EXE_TARGET_NAME}_SHADERS_FRAG
         ${CMAKE_CURRENT_SOURCE_DIR}/shader/shader_frame.frag
         ${CMAKE_CURRENT_SOURCE_DIR}/shader/shader_model.frag
-        ${CMAKE_CURRENT_SOURCE_DIR}/shader/shader_background.frag)
+        ${CMAKE_CURRENT_SOURCE_DIR}/shader/shader_background.frag
+)
 
 set(${EXE_TARGET_NAME}_MESH
         ${CMAKE_CURRENT_SOURCE_DIR}/mesh/icub_right_arm/r_ail0.obj
@@ -129,7 +146,8 @@ if(${CMAKE_GENERATOR} MATCHES "Xcode")
                        COMMAND ${CMAKE_COMMAND} -E make_directory                          $<TARGET_FILE_DIR:${EXE_TARGET_NAME}>
                        COMMAND ${CMAKE_COMMAND} -E copy ${${EXE_TARGET_NAME}_MESH}         $<TARGET_FILE_DIR:${EXE_TARGET_NAME}>
                        COMMAND ${CMAKE_COMMAND} -E copy ${${EXE_TARGET_NAME}_SHADERS_VERT} $<TARGET_FILE_DIR:${EXE_TARGET_NAME}>
-                       COMMAND ${CMAKE_COMMAND} -E copy ${${EXE_TARGET_NAME}_SHADERS_FRAG} $<TARGET_FILE_DIR:${EXE_TARGET_NAME}>)
+                       COMMAND ${CMAKE_COMMAND} -E copy ${${EXE_TARGET_NAME}_SHADERS_FRAG} $<TARGET_FILE_DIR:${EXE_TARGET_NAME}>
+)
 endif()
 
 # Choose APP domain. Default is yarp, may be ICUBcontrib or custom made.

@@ -1,4 +1,4 @@
-#include "iCubProprioception/CADSuperimposer.h"
+#include <iCubProprioception/CADSuperimposer.h>
 
 #include <exception>
 #include <utility>
@@ -17,10 +17,16 @@ using namespace iCub::ctrl;
 using namespace iCub::iKin;
 
 
-CADSuperimposer::CADSuperimposer(const yarp::os::ConstString& robot, const yarp::os::ConstString& camera,
-                                 const SICAD::ModelPathContainer& cad_hand, const yarp::os::ConstString& shader_path,
-                                 const yarp::os::ConstString& port_prefix,
-                                 const bool draw_thumb, const bool draw_forearm) :
+CADSuperimposer::CADSuperimposer
+(
+    const yarp::os::ConstString& robot,
+    const yarp::os::ConstString& camera,
+    const SICAD::ModelPathContainer& cad_hand,
+    const yarp::os::ConstString& shader_path,
+    const yarp::os::ConstString& port_prefix,
+    const bool draw_thumb,
+    const bool draw_forearm
+ ) :
     ID_(port_prefix),
     log_ID_("[" + ID_ + "]"),
     robot_(robot),
@@ -323,7 +329,14 @@ bool CADSuperimposer::mesh_wireframe(const bool status)
 }
 
 
-Matrix CADSuperimposer::getInvertedH(const double a, const double d, const double alpha, const double offset, const double q)
+Matrix CADSuperimposer::getInvertedH
+(
+    const double a,
+    const double d,
+    const double alpha,
+    const double offset,
+    const double q
+)
 {
     /** Table of the DH parameters for the right arm V2.
      *  Link i  Ai (mm)     d_i (mm)    alpha_i (rad)   theta_i (deg)
