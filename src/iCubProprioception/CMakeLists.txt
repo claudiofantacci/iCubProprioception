@@ -10,7 +10,6 @@ set(${EXE_TARGET_NAME}_SRC
         src/SuperimposerHandler.cpp)
 
 set(${EXE_TARGET_NAME}_HDR
-        include/iCubProprioception/common.h
         include/iCubProprioception/BatchCADSuperimposer.h
         include/iCubProprioception/CADSuperimposer.h
         include/iCubProprioception/ExtCADSuperimposer.h
@@ -40,7 +39,10 @@ list(APPEND CMAKE_MODULE_PATH ${YARP_MODULE_PATH}
 
 include(YarpInstallationHelpers)
 
-yarp_add_idl(${EXE_TARGET_NAME}_THRIFT_SRC ${${EXE_TARGET_NAME}_THRIFT_HDR})
+option(PROPRIO_USE_ANALOGS "Use analog data from the hand of the robot" OFF)
+if(PROPRIO_USE_ANALOGS)
+    add_definition(-DUSE_ANALOGS)
+endif()
 
 # Executable main
 add_executable(${EXE_TARGET_NAME} ${${EXE_TARGET_NAME}_SRC} ${${EXE_TARGET_NAME}_HDR}

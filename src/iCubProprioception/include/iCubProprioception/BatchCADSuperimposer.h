@@ -34,7 +34,7 @@ protected:
 
     yarp::sig::Vector getRightArmEncoders() override;
 
-#if ICP_USE_ANALOGS == 1
+#if PROPRIO_USE_ANALOGS == 1
     yarp::sig::Vector getRightHandAnalogs() override;
 #endif
 

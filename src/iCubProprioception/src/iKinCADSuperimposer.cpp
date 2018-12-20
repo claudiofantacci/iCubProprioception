@@ -132,7 +132,7 @@ Vector iKinCADSuperimposer::getRightArmEncoders()
 }
 
 
-#if ICP_USE_ANALOGS == 1
+#if PROPRIO_USE_ANALOGS == 1
 Vector iKinCADSuperimposer::getRightHandAnalogs()
 {
     Vector analog_arm = zeros(1);
@@ -257,7 +257,7 @@ bool iKinCADSuperimposer::setArmRemoteControlboard()
         return false;
     }
 
-#if ICP_USE_ANALOGS == 1
+#if PROPRIO_USE_ANALOGS == 1
     Property righthand_remote_analog;
     righthand_remote_analog.put("device", "analogsensorclient");
     righthand_remote_analog.put("local",  "/" + ID_ + "/cam/" + camera_ + "/right_hand");

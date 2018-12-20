@@ -1,5 +1,4 @@
 #include "iCubProprioception/SkeletonSuperimposer.h"
-#include "iCubProprioception/common.h"
 
 #include <exception>
 
@@ -249,7 +248,7 @@ bool SkeletonSuperimposer::setArmRemoteControlboard()
     }
 
     // FIXME: Add getChainJoints() methods with analogs.
-#if ICP_USE_ANALOGS == 1
+#if PROPRIO_USE_ANALOGS == 1
     Property righthand_remote_analog;
     righthand_remote_analog.put("device", "analogsensorclient");
     righthand_remote_analog.put("local",  "/" + ID_ + "/cam/" + camera_ + "/right_hand");

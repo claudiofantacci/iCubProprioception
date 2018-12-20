@@ -1,5 +1,4 @@
 #include "iCubProprioception/SuperimposerHandler.h"
-#include "iCubProprioception/common.h"
 
 #include <exception>
 #include <list>
@@ -492,7 +491,7 @@ bool SuperimposerHandler::close()
     if (head_remote_driver_.isValid())        head_remote_driver_.close();
     if (gaze_driver_.isValid())               gaze_driver_.close();
 
-#if ICP_USE_ANALOGS == 1
+#if PROPRIO_USE_ANALOGS == 1
     if (drv_right_hand_analog_.isValid())     drv_right_hand_analog_.close();
 #endif
 
@@ -631,7 +630,7 @@ bool SuperimposerHandler::setRightArmRemoteControlboard()
         return false;
     }
 
-#if ICP_USE_ANALOGS == 1
+#if PROPRIO_USE_ANALOGS == 1
     Property righthand_remote_analog;
     righthand_remote_analog.put("device", "analogsensorclient");
     righthand_remote_analog.put("local",  "/"+ID_+"/right_hand");

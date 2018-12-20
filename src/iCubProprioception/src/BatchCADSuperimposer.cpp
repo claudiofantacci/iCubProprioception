@@ -115,7 +115,7 @@ Vector BatchCADSuperimposer::getRightArmEncoders()
 }
 
 
-#if ICP_USE_ANALOGS == 1
+#if PROPRIO_USE_ANALOGS == 1
 Vector BatchCADSuperimposer::getRightHandAnalogs()
 {
     return readFromBufferedPort(inport_right_hand_analogs_);

@@ -190,7 +190,7 @@ void CADSuperimposer::run()
             eye_.setAng(CTRL_DEG2RAD * enc_root_eye_);
             Vector cam_pose = eye_.EndEffPose();
 
-#if ICP_USE_ANALOGS == 1
+#if PROPRIO_USE_ANALOGS == 1
             Vector analogs;
             itf_right_hand_analog_->read(analogs);
             yAssert(analogs.size() >= 15);
@@ -201,7 +201,7 @@ void CADSuperimposer::run()
             Vector chainjoints;
             for (unsigned int i = 0; i < 3; ++i)
             {
-#if ICP_USE_ANALOGS == 1
+#if PROPRIO_USE_ANALOGS == 1
                 right_finger_[i].getChainJoints(encs_root_arm_.subVector(3, 18), analogs, chainjoints);
 #else
                 right_finger_[i].getChainJoints(encs_root_arm_.subVector(3, 18), chainjoints);

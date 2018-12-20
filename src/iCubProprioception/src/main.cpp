@@ -3,7 +3,6 @@
 #include <yarp/os/ResourceFinder.h>
 
 #include "iCubProprioception/SuperimposerHandler.h"
-#include "iCubProprioception/common.h"
 
 using namespace yarp::os;
 
@@ -14,10 +13,10 @@ int main(int argc, char* argv[])
 
     yInfo() << log_ID << "Configuring and starting module...";
 
-#if ICP_USE_ANALOGS == 1
-    yInfo() << log_ID << "ICP_USE_ANALOGS: TRUE";
+#if PROPRIO_USE_ANALOGS == 1
+    yInfo() << log_ID << "PROPRIO_USE_ANALOGS: TRUE";
 #else
-    yInfo() << log_ID << "ICP_USE_ANALOGS: FALSE";
+    yInfo() << log_ID << "PROPRIO_USE_ANALOGS: FALSE";
 #endif
 
     Network yarp;

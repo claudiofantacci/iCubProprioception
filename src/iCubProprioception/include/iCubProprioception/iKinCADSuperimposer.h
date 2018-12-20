@@ -34,7 +34,7 @@ protected:
 
     yarp::sig::Vector getRightArmEncoders() override;
 
-#if ICP_USE_ANALOGS == 1
+#if PROPRIO_USE_ANALOGS == 1
     yarp::sig::Vector getRightHandAnalogs() override;
 #endif
 
@@ -57,16 +57,19 @@ private:
     yarp::dev::PolyDriver         drv_torso_remote_;
     yarp::dev::PolyDriver         drv_right_arm_remote_;
     yarp::dev::PolyDriver         drv_right_arm_cartesian_;
-#if ICP_USE_ANALOGS == 1
-    yarp::dev::PolyDriver         drv_right_hand_analog_;
+    yarp::dev::PolyDriver drv_right_arm_cartesian_;
+
+#if PROPRIO_USE_ANALOGS == 1
+    yarp::dev::PolyDriver drv_right_hand_analog_;
 #endif
 
     yarp::dev::IEncoders*         itf_head_encoders_;
     yarp::dev::IEncoders*         itf_torso_encoders_;
     yarp::dev::IEncoders*         itf_right_arm_encoders_;
     yarp::dev::ICartesianControl* itf_right_arm_cart_;
-#if ICP_USE_ANALOGS == 1
-    yarp::dev::IAnalogSensor*     itf_right_hand_analog_;
+
+#if PROPRIO_USE_ANALOGS == 1
+    yarp::dev::IAnalogSensor* itf_right_hand_analog_;
 #endif
 };
 

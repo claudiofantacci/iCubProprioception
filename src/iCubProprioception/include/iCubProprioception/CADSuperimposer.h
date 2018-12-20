@@ -42,7 +42,7 @@ protected:
 
     virtual yarp::sig::Vector getRightArmEncoders() = 0;
 
-#if ICP_USE_ANALOGS == 1
+#if PROPRIO_USE_ANALOGS == 1
     virtual yarp::sig::Vector getRightHandAnalogs() = 0;
 #endif
 
