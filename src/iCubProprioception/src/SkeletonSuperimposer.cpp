@@ -100,7 +100,7 @@ SkeletonSuperimposer::SkeletonSuperimposer
 
     yInfo() << log_ID_ << "Setting up skeleton superimposer.";
 
-    drawer_ = new SISkeleton(eye_fx_, eye_fy_, eye_cx_, eye_cy_);
+    drawer_ = new SISkeleton({"palm", "index", "medium", "ring", "little"}, eye_fx_, eye_fy_, eye_cx_, eye_cy_);
 
 
     yInfo() << log_ID_ << "Initialization completed!";
