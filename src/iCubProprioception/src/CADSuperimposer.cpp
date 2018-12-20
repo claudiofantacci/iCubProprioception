@@ -31,7 +31,7 @@ CADSuperimposer::CADSuperimposer(const yarp::os::ConstString& robot, const yarp:
     draw_forearm_(draw_forearm),
     eye_(iCubEye(camera_ + "_v2")),
     right_arm_(iCubArm("right_v2")),
-    right_finger_{iCubFinger("right_thumb"), iCubFinger("right_index"), iCubFinger("right_middle")}
+    right_finger_{iCubFinger("right_thumb"), iCubFinger("right_index"), iCubFinger("right_middle"), iCubFinger("right_ring"), iCubFinger("right_little")}
 {
     yInfo() << log_ID_ << "Invoked CADSuperimposer (base class) ctor...";
 

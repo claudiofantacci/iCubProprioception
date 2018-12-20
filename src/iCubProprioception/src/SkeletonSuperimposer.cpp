@@ -62,10 +62,12 @@ SkeletonSuperimposer::SkeletonSuperimposer(const ConstString& port_prefix, const
     right_finger_[0] = iCubFinger("right_thumb");
     right_finger_[1] = iCubFinger("right_index");
     right_finger_[2] = iCubFinger("right_middle");
+    right_finger_[3] = iCubFinger("right_ring");
+    right_finger_[4] = iCubFinger("right_little");
 
     std::deque<IControlLimits*> temp_lim;
     temp_lim.push_front(itf_fingers_limits_);
-    for (int i = 0; i < 3; ++i)
+    for (int i = 0; i < right_finger_.size(); ++i)
     {
         if (!right_finger_[i].alignJointsBounds(temp_lim))
         {
@@ -138,7 +140,7 @@ void SkeletonSuperimposer::run()
             Ha.setCol(3, ee_x);
 
             Vector chainjoints;
-            for (unsigned int i = 0; i < 3; ++i)
+            for (unsigned int i = 0; i < right_finger_.size(); ++i)
             {
                 right_finger_[i].getChainJoints(encs, chainjoints);
                 right_finger_[i].setAng(CTRL_DEG2RAD * chainjoints);
@@ -148,7 +150,7 @@ void SkeletonSuperimposer::run()
             Superimpose::ModelPose          pose;
             pose.assign(ee_x.data(), ee_x.data()+3);
             hand_pose.emplace("palm", pose);
-            for (unsigned int fng = 0; fng < 3; ++fng)
+            for (unsigned int fng = 0; fng < right_finger_.size(); ++fng)
             {
                 std::string finger_s;
                 pose.clear();
@@ -158,6 +160,8 @@ void SkeletonSuperimposer::run()
 
                     if      (fng == 1) { finger_s = "index"; }
                     else if (fng == 2) { finger_s = "medium"; }
+                    else if (fng == 3) { finger_s = "ring"; }
+                    else if (fng == 4) { finger_s = "little"; }
 
                     pose.assign(j_x.data(), j_x.data()+3);
                     hand_pose.emplace(finger_s, pose);
@@ -170,6 +174,8 @@ void SkeletonSuperimposer::run()
                     if      (fng == 0) { finger_s = "thumb"; }
                     else if (fng == 1) { finger_s = "index"; }
                     else if (fng == 2) { finger_s = "medium"; }
+                    else if (fng == 3) { finger_s = "ring"; }
+                    else if (fng == 4) { finger_s = "little"; }
 
                     pose.assign(j_x.data(), j_x.data()+3);
                     hand_pose.emplace(finger_s, pose);

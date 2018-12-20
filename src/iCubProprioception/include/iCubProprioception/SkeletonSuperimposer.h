@@ -62,9 +62,8 @@ private:
     float                          eye_fy_;
     float                          eye_cx_;
     float                          eye_cy_;
-    iCub::iKin::iCubFinger         right_finger_[3];
 
-    SISkeleton*                    drawer_;
+    std::array<iCub::iKin::iCubFinger, 5> right_finger_;
 
 
     yarp::sig::ImageOf<yarp::sig::PixelRgb>* imgin_ = YARP_NULLPTR;

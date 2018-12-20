@@ -93,8 +93,8 @@ private:
 
     iCub::iKin::iCubEye              eye_;
     iCub::iKin::iCubArm              right_arm_;
-    iCub::iKin::iCubFinger           right_finger_[3];
 
+    iCub::iKin::iCubFinger right_finger_[5];
 
     yarp::sig::ImageOf<yarp::sig::PixelRgb>* imgin_ = YARP_NULLPTR;
     yarp::sig::Vector                        enc_root_eye_;
