@@ -1,12 +1,8 @@
-if(WIN32)
-    cmake_minimum_required(VERSION 3.4)
-else()
-    cmake_minimum_required(VERSION 3.0)
-endif()
+cmake_minimum_required(VERSION 3.5)
 
 project(iCubProprioception
         LANGUAGES CXX
-        VERSION 0.5.1.0)
+        VERSION 0.5.102)
 
 set(CMAKE_CXX_STANDARD 11)
 

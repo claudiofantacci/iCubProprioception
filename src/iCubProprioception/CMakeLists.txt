@@ -1,5 +1,8 @@
 set(EXE_TARGET_NAME iCubProprioception)
 
+include(AddDependenciesPrintUtils)
+
+
 set(${EXE_TARGET_NAME}_SRC
         src/main.cpp
         src/BatchCADSuperimposer.cpp
@@ -43,8 +46,14 @@ find_package(YARP CONFIG REQUIRED
 find_package(SuperimposeMesh 0.9.4.0 QUIET)
 if(NOT SuperimposeMesh_FOUND)
     message(STATUS "Did not found required master release of SuperimposeMesh. Looking for devel version.")
-    find_package(SuperimposeMesh 0.9.104.0 REQUIRED)
+    find_package(SuperimposeMesh 0.10.100 REQUIRED)
 endif()
+
+print_dependency(ICUB)
+print_dependency(OpenCV)
+print_dependency(YARP)
+print_dependency(SuperimposeMesh)
+
 
 list(APPEND CMAKE_MODULE_PATH ${ICUB_MODULE_PATH})
 
