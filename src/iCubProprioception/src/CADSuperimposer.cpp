@@ -138,6 +138,8 @@ CADSuperimposer::CADSuperimposer
     right_finger_[0].setAllConstraints(false);
     right_finger_[1].setAllConstraints(false);
     right_finger_[2].setAllConstraints(false);
+    right_finger_[3].setAllConstraints(false);
+    right_finger_[4].setAllConstraints(false);
 
 
     /* Initialize CAD superimposer */
@@ -205,7 +207,7 @@ void CADSuperimposer::run()
             right_arm_.setAng(encs_root_arm_.subVector(0, 9) * (M_PI/180.0));
 
             Vector chainjoints;
-            for (unsigned int i = 0; i < 3; ++i)
+            for (unsigned int i = 0; i < right_finger_.size(); ++i)
             {
 #if PROPRIO_USE_ANALOGS == 1
                 right_finger_[i].getChainJoints(encs_root_arm_.subVector(3, 18), analogs, chainjoints);
@@ -262,7 +264,7 @@ void CADSuperimposer::getRightHandObjPoseMap(const Vector& ee_pose, Superimpose:
 
     pose.assign(ee_pose.data(), ee_pose.data()+7);
     hand_pose.emplace("palm", pose);
-    for (size_t fng = (draw_thumb_? 0 : 1); fng < 3; ++fng)
+    for (size_t fng = (draw_thumb_? 0 : 1); fng < right_finger_.size(); ++fng)
     {
         std::string finger_s;
         pose.clear();
@@ -273,6 +275,8 @@ void CADSuperimposer::getRightHandObjPoseMap(const Vector& ee_pose, Superimpose:
 
             if      (fng == 1) { finger_s = "index0";  }
             else if (fng == 2) { finger_s = "medium0"; }
+            else if (fng == 3) { finger_s = "ring0"; }
+            else if (fng == 4) { finger_s = "little0"; }
 
             pose.assign(j_x.data(), j_x.data()+3);
             pose.insert(pose.end(), j_o.data(), j_o.data()+4);
@@ -284,9 +288,11 @@ void CADSuperimposer::getRightHandObjPoseMap(const Vector& ee_pose, Superimpose:
             Vector j_x = (Ha * (right_finger_[fng].getH(i, true).getCol(3))).subVector(0, 2);
             Vector j_o = dcm2axis(Ha * right_finger_[fng].getH(i, true));
 
-            if      (fng == 0) { finger_s = "thumb"  + std::to_string(i+1); }
-            else if (fng == 1) { finger_s = "index"  + std::to_string(i+1); }
-            else if (fng == 2) { finger_s = "medium" + std::to_string(i+1); }
+            if      (fng == 0) { finger_s = "thumb"  + std::to_string(i + 1); }
+            else if (fng == 1) { finger_s = "index"  + std::to_string(i + 1); }
+            else if (fng == 2) { finger_s = "medium" + std::to_string(i + 1); }
+            else if (fng == 3) { finger_s = "ring" + std::to_string(i + 1); }
+            else if (fng == 4) { finger_s = "little" + std::to_string(i + 1); }
 
             pose.assign(j_x.data(), j_x.data()+3);
             pose.insert(pose.end(), j_o.data(), j_o.data()+4);

@@ -84,8 +84,8 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
     if (!fileFound(cad_hand_["index3"])) return false;
     cad_hand_["index4"] = rf.findFileByName("r_ail3.obj");
     if (!fileFound(cad_hand_["index4"])) return false;
-    cad_hand_["medium0"] = rf.findFileByName("r_ml0.obj");
 
+    cad_hand_["medium0"] = rf.findFileByName("r_ml0.obj");
     if (!fileFound(cad_hand_["medium0"])) return false;
     cad_hand_["medium1"] = rf.findFileByName("r_ml1.obj");
     if (!fileFound(cad_hand_["medium1"])) return false;
@@ -94,29 +94,27 @@ bool SuperimposerHandler::configure(ResourceFinder &rf)
     cad_hand_["medium3"] = rf.findFileByName("r_ml3.obj");
     if (!fileFound(cad_hand_["medium3"])) return false;
 
+    cad_hand_["ring0"] = rf.findFileByName("r_ringbase.obj");
     if (!fileFound(cad_hand_["ring0"])) return false;
-    cad_hand_["ring1"] = rf.findFileByName("r_ringbase.obj");
+    cad_hand_["ring1"] = rf.findFileByName("r_ril0.obj");
     if (!fileFound(cad_hand_["ring1"])) return false;
-    cad_hand_["ring2"] = rf.findFileByName("r_ril0.obj");
+    cad_hand_["ring2"] = rf.findFileByName("r_ril1.obj");
     if (!fileFound(cad_hand_["ring2"])) return false;
-    cad_hand_["ring3"] = rf.findFileByName("r_ril1.obj");
+    cad_hand_["ring3"] = rf.findFileByName("r_ril2.obj");
     if (!fileFound(cad_hand_["ring3"])) return false;
-    cad_hand_["ring4"] = rf.findFileByName("r_ril2.obj");
+    cad_hand_["ring4"] = rf.findFileByName("r_ril3.obj");
     if (!fileFound(cad_hand_["ring4"])) return false;
-    cad_hand_["ring5"] = rf.findFileByName("r_ril3.obj");
-    if (!fileFound(cad_hand_["ring5"])) return false;
 
+    cad_hand_["little0"] = rf.findFileByName("r_littlebase.obj");
     if (!fileFound(cad_hand_["little0"])) return false;
-    cad_hand_["little1"] = rf.findFileByName("r_littlebase.obj");
+    cad_hand_["little1"] = rf.findFileByName("r_lil0.obj");
     if (!fileFound(cad_hand_["little1"])) return false;
-    cad_hand_["little2"] = rf.findFileByName("r_lil0.obj");
+    cad_hand_["little2"] = rf.findFileByName("r_lil1.obj");
     if (!fileFound(cad_hand_["little2"])) return false;
-    cad_hand_["little3"] = rf.findFileByName("r_lil1.obj");
+    cad_hand_["little3"] = rf.findFileByName("r_lil2.obj");
     if (!fileFound(cad_hand_["little3"])) return false;
-    cad_hand_["little4"] = rf.findFileByName("r_lil2.obj");
+    cad_hand_["little4"] = rf.findFileByName("r_lil3.obj");
     if (!fileFound(cad_hand_["little4"])) return false;
-    cad_hand_["little5"] = rf.findFileByName("r_lil3.obj");
-    if (!fileFound(cad_hand_["little5"])) return false;
 
     cad_hand_["forearm"] = rf.findFileByName("r_forearm.obj");
     if (!fileFound(cad_hand_["forearm"])) return false;

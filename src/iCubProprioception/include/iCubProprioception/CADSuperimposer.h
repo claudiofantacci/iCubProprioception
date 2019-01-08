@@ -3,6 +3,7 @@
 
 #include <thrift/iCubProprioceptionOGLIDL.h>
 
+#include <array>
 #include <mutex>
 #include <vector>
 
@@ -100,7 +101,7 @@ private:
 
     iCub::iKin::iCubArm right_arm_;
 
-    iCub::iKin::iCubFinger right_finger_[5];
+    std::array<iCub::iKin::iCubFinger, 5> right_finger_;
 
     yarp::sig::ImageOf<yarp::sig::PixelRgb>* imgin_ = YARP_NULLPTR;
 
