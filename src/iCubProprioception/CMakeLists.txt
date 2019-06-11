@@ -43,10 +43,10 @@ find_package(YARP CONFIG REQUIRED
                  gsl
 )
 
-find_package(SuperimposeMesh 0.9.4.0 QUIET)
+find_package(SuperimposeMesh 0.11.0 QUIET)
 if(NOT SuperimposeMesh_FOUND)
     message(STATUS "Did not found required master release of SuperimposeMesh. Looking for devel version.")
-    find_package(SuperimposeMesh 0.10.100 REQUIRED)
+    find_package(SuperimposeMesh 0.11.100 REQUIRED)
 endif()
 
 print_dependency(ICUB)
@@ -81,7 +81,7 @@ target_link_libraries(${EXE_TARGET_NAME}
                           iKin
                           ${ICUB_LIBRARIES}
                           ${OpenCV_LIBS}
-                          SuperimposeMesh::SuperimposeMesh
+                          SI::SuperimposeMesh
                           YARP::YARP_OS
                           YARP::YARP_init
                           YARP::YARP_math
